@@ -14,7 +14,7 @@
   <script src= "mootzoo.js" type="text/javascript"></script>
 </head>
 
-<body ng-init="author=false;text='TanmayFusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.';logged = false;unused=false;">
+<body ng-controller="conversations">
   <div class="navbar navbar-inverse">
     <div class="container">
       <div class="navbar-header">
@@ -51,25 +51,17 @@
                 <div class="panel-body">
                 <form>
                 <div style="display:inline" >
-                <button ng-repeat="x in [10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]" 
-                        type="submit" class="btn btn-primary" ng-click="$parent.author=true;" >{{x}}</button>
+                <button ng-repeat="x in conversations" 
+                        type="submit" ng-class="convButton(x)"    ng-click="$parent.n=1;" >{{x.n}}</button>
                 </div>
                 </form>
                 </div>
 
-                <div class="panel-heading">Reader</div>
-                <div class="panel-body">
-                <form>
-
-                <button ng-repeat="x in [10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]" 
-                        type="submit" class="btn btn-info" ng-click="$parent.author=false;">{{x}}</button>
-                </form>
-                </div>
         </div>
         </div>
         <div class="col-md-3" ng-hide=logged></div>
         <div class="col-md-9">
-                <div class="row" ng-init="sel=new();sel.c=0;sel2=new();sel2.c=0">
+                <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
@@ -102,11 +94,11 @@
                                 <div class="panel-body" style="overflow-y:auto; height:400px;">
                                         <table class="table table-striped">
                                                 <tbody>
-                                                        <tr ng-repeat="x in [1,2,3,4,5,6,7,8,9,10,11,12]">
+                                                        <tr ng-repeat="x in conversations[n].messages">
                                                                 <td>
                                                                         <div class="message" ng-click=
                                                                                 "sel2.c==x ? sel2.c=0 : sel2.c = x">
-                                                                                {{text}}
+                                                                                {{x}}
                                                                         </div>
                                                                         <form ng-show="sel2.c == x">
                                                                                 <textarea style="overflow:hidden" class=
