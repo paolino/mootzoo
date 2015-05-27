@@ -47,12 +47,12 @@
         <div class=row>
         <div class="col-md-3" ng-show=logged>
         <div class="panel panel-info">
-                <div class="panel-heading">Author</div>
+                <div class="panel-heading">Conversations</div>
                 <div class="panel-body">
                 <form>
                 <div style="display:inline" >
                 <button ng-repeat="x in conversations" 
-                        type="submit" ng-class="convButton(x)"    ng-click="$parent.n=1;" >{{x.n}}</button>
+                        type="submit" ng-class="convButton(x)"    ng-click="$parent.n=x.n - 11;" >{{x.n}}</button>
                 </div>
                 </form>
                 </div>
