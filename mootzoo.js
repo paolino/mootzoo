@@ -1,7 +1,6 @@
 {
 var app = angular.module('mootzoo', []);
 
-
 };
 
 window.onload = function() {
