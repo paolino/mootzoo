@@ -32,11 +32,11 @@
                 <input type="text" placeholder="Email" class="form-control">
                 <button type="submit" class="btn btn-success"
                         data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">Invite</button> 
-                <button ng-click="logged=false;author=false;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">Logout</button>
+                <button ng-click="logout()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">Logout</button>
             </div>
             <div ng-hide=logged>
 
-             <button  ng-click="logged=true;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Should jump in from login link">Fake login</button>
+             <button  ng-click="login()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Should jump in from login link">Fake login</button>
             </div>
           </div>
         </form>
@@ -47,7 +47,7 @@
   <div class="container" ng-init="proposing=false">
             
         <div class=row>
-        <div class="col-md-5" ng-show=logged>
+        <div class="col-md-5">
         <div class="panel panel-info">
                 <div class="panel-heading">
                         <div class=row> 
@@ -69,15 +69,14 @@
 
         </div>
         </div>
-        <div class="col-md-5" ng-hide=logged></div>
         <div class="col-md-7">
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
-                                                <div class=row ng-hide="(!logged) || (conversations[n].type=='blank') "> 
+                                                <div class=row ng-hide="(conversations[n].type=='blank') "> 
                                                         <div>
-                                                                <div class="col-md-12" ng-show="logged">
+                                                                <div class="col-md-12">
                                         <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" >Forget</button>
                                         <button  ng-click="conversations[n].type='orphan'" ng-disabled="conversations[n].type != 'waiting'" class="btn btn-danger " > Leave</button>                            
                                         <button   ng-click="conversations[n].type='waiting'" ng-disabled="conversations[n].type != 'orphan'" class="btn btn-warning " > Take</button>
@@ -85,13 +84,13 @@
                                                                 </div>
                                                         </div>
                                                 </div><!-- row -->
-                                                <div class=row ng-show="(!logged) || (conversations[n].type=='blank') "> 
+                                                <div class=row ng-show="(conversations[n].type=='blank') "> 
                                                         <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
-                                                                        <input  type="text" class="form-control" placeholder="Identifier">
+                                                                        <input  type="text" class="form-control" placeholder="Identifier" ng-model=jumper>
                                                                       <span class="input-group-btn">
-                                                                        <button class="btn btn-success" type="button">Jump</button>
+                                                                        <button ng-click="jump(jumper)" class="btn btn-success" type="button">Jump</button>
                                                                       </span>
                                                                         </div>
                                                                 </div>
@@ -120,9 +119,9 @@
                                                         </tr>
                                               </tbody>
                                         </table>
-                                                        <div ng-show="conversations[n].type == 'blank'">
-                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
+                                                        <div  ng-show="conversations[n].type == 'blank'">
+                                                        <textarea  ng-disabled="!logged" style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-disabled="!logged" ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
                                                         </div>
 
                                                         <div ng-show="conversations[n].type == 'waiting'">

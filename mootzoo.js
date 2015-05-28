@@ -13,11 +13,28 @@ app.controller('conversations', function($scope, $http) {
         $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
         }
     $scope.message="";
-    $http.get("conversations.json").success(function(response) {
-        for (i=0;i < response.length;i ++)
-           $scope.conversations[i]=response[i];
-        
+    $scope.login=function(){
+        $http.get("conversations.json").success(function(response) {
+                for (i=0;i < response.length;i ++)
+                $scope.conversations[i]=response[i];
         });
+        $scope.logged=true;
+        };
+    $scope.jump=function(where){
+        $http.get("conversations.json").success(function(response) {
+                if(where < response.length){
+                        $scope.conversations[$scope.n]=response[where];
+                        $scope.conversations[$scope.n].type='complete';
+                        }
+                else alert("Conversation not found");
+                });
+        };
+    $scope.logout=function(){ 
+                $scope.conversations=Array();
+                for (i=0;i < 90;i ++)
+                $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
+                $scope.logged=false;
+                };
     $scope.canBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
                 || ($scope.conversations[$scope.n].type == 'conversata') 
                 || ($scope.conversations[$scope.n].type == 'personale');};
