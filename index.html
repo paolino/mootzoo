@@ -56,7 +56,6 @@
                                 </div>
                                 <div class="col-md-7" >
                                         <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" > Blank</button>
-                                        <button  ng-disabled="conversations[n].type != 'blank'" ng-click="removeConversation()" class="btn btn-default" > Remove</button>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
 
@@ -64,10 +63,9 @@
                 <div class="panel-body">
                 <form>
                 <div style="display:inline" >
-                <button ng-repeat="x in conversations" 
-                        type="submit" ng-class="convButton(x)"    ng-click="$parent.n=x.n - 11;" >{{x.n}}</button>
+                <button ng-repeat="i in cento" 
+                        type="submit" ng-class="convButton(conversations[i])"    ng-click="$parent.n=i;" >{{i+10}}</button>
                 </div>
-                <button  ng-click="addConversation()" class="btn btn-default" > Add</button>
                 </form>
                 </div>
 

@@ -4,15 +4,20 @@ app.author=false;
 app.logged = false;
 app.unused=false;
 app.controller('conversations', function($scope, $http) {
-    $scope.conversations=[];
+    $scope.conversations=Array();
     $scope.n=0;
+    $scope.cento=Array();
+    var i;
+    for(i=0;i < 90;i ++){
+        $scope.cento.push(i);
+        $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
+        }
     $scope.message="";
-    $http.get("conversations.json").success(function(response) {$scope.conversations = response;});
-    $scope.addConversation=function(){
-                var m = $scope.conversations.slice(-1)[0].n + 1;
-                $scope.conversations.push({n:m,id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
-                $scope.n=m-11;
-                };
+    $http.get("conversations.json").success(function(response) {
+        for (i=0;i < response.length;i ++)
+           $scope.conversations[i]=response[i];
+        
+        });
     $scope.canBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
                 || ($scope.conversations[$scope.n].type == 'conversata') 
                 || ($scope.conversations[$scope.n].type == 'personale');};
