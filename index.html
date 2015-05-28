@@ -31,10 +31,14 @@
                         data-toggle="tooltip" title="Send a mail to this address for a login link. If it's unknown you will use an invitation">Invite</button> 
                 <button ng-click="logged=false;author=false;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your position">Logout</button>
             </div>
-            <div ng-hide="logged">
+            <div ng-hide=logged>
 
+             <button  ng-click="logged=true;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your position">Fake login</button>
+            </div>
+            <div ng-hide=true>
+
+             <button  ng-click="logged=true;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your position">Send login to</button>
              <input type="text" placeholder="Email" class="form-control">
-             <button  ng-click="logged=true;" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your position">Ask login</button>
             </div>
           </div>
         </form>
@@ -64,12 +68,34 @@
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info">
-                                        <div class="panel-heading">
+                                        
+                                <div class="panel-body" style="overflow-y:auto; height:400px;">
+                                        <table class="table table-striped">
+                                                <tbody> <tr ng-show="conversations[n].type == 'waiting'"><td>
+                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-click="conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
+                                                        </td>
+
+                                                        <tr ng-repeat="x in conversations[n].messages">
+                                                                <td>
+                                                                        <div class="message">
+                                                                                {{x}}
+                                                                        </div>
+                                                                </td>
+                                                        </tr>
+                                              </tbody>
+                                        </table>
+                                                        <div ng-show="conversations[n].type == 'complete' && logged && proposing">
+                                                        <textarea style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button  class="btn btn-success btn-xs" >Go</button>
+                                                        </div>
+                                </div>
+                        <div class="panel-footer">
                                                 <div class=row> 
                                                         <div>
                                                                 <div class="col-md-5" ng-show="logged">
                                                                         <button  ng-click="conversations[n].type='orphan'" ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
-                                                                        <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Propose</button>
+                                                                        <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Inject</button>
                                                                         <button   ng-click="conversations[n].type='waiting'" ng-show="conversations[n].type == 'orphan'" class="btn btn-warning " > Take</button>
                                                                 
                                                                 </div>
@@ -91,29 +117,6 @@
                                                 </div><!-- row -->
                                         </div>
 
-                                <div class="panel-body" style="overflow-y:auto; height:400px;">
-                                        <table class="table table-striped">
-                                                <tbody> <tr ng-show="conversations[n].type == 'waiting'"><td>
-                                                        <textarea ng-model="message">Message..</textarea>
-                                                        <button  class="btn btn-success btn-xs" > Respond</button>
-                                                        </td>
-                                                        </tr>
-                                                        <tr ng-show="conversations[n].type == 'complete' && logged && proposing"><td>
-                                                        <textarea ng-model="message">Message..</textarea>
-                                                        <button  class="btn btn-success btn-xs" >Go</button>
-                                                        </td>
-                                                        </tr>
-
-                                                        <tr ng-repeat="x in conversations[n].messages">
-                                                                <td>
-                                                                        <div class="message">
-                                                                                {{x}}
-                                                                        </div>
-                                                                </td>
-                                                        </tr>
-                                              </tbody>
-                                        </table>
-                                </div>
                         </div>
                 </div>
         </div>
