@@ -55,7 +55,6 @@
                                 Conversations store
                                 </div>
                                 <div class="col-md-7" >
-                                        <button  ng-click="addConversation()" class="btn btn-default" > Add</button>
                                         <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" > Blank</button>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
@@ -67,6 +66,7 @@
                 <button ng-repeat="x in conversations" 
                         type="submit" ng-class="convButton(x)"    ng-click="$parent.n=x.n - 11;" >{{x.n}}</button>
                 </div>
+                <button  ng-click="addConversation()" class="btn btn-default" > Add</button>
                 </form>
                 </div>
 
