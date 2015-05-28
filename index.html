@@ -56,7 +56,7 @@
                                 </div>
                                 <div class="col-md-7" >
                                         <button  ng-click="addConversation()" class="btn btn-primary" > Add</button>
-                                        <button  ng-hide="conversations[n].type == 'waiting'" ng-click="removeConversation()" class="btn btn-primary" > Blank</button>
+                                        <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-primary" > Blank</button>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
 
@@ -79,22 +79,22 @@
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
                                                 <div class=row> 
-                                                        <div ng-hide="author">
+                                                        <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
-                                                                        <input type="text" class="form-control" placeholder="Identifier">
+                                                                        <input  ng-disabled="canBeLost()"  type="text" class="form-control" placeholder="Identifier">
                                                                       <span class="input-group-btn">
-                                                                        <button class="btn btn-success" type="button">Jump</button>
+                                                                        <button ng-disabled="canBeLost()" class="btn btn-success" type="button">Jump</button>
                                                                       </span>
                                                                         </div>
                                                                 </div>
                                                                 <div class="col-md-7" >
                                                                 <div class="input-group" >
-                                                                <input type="text" class="form-control" placeholder="Search for...">
+                                                                <input  ng-disabled="canBeLost()" type="text" class="form-control" placeholder="Search for...">
                                                                       <span class="input-group-btn">
-                                                                        <button class="btn btn-default" type="button">First</button>
-                                                                        <button class="btn btn-default" type="button">Next</button>
-                                                                        <button class="btn btn-default" type="button">Prev</button>
+                                                                        <button  ng-disabled="canBeLost()" class="btn btn-default" type="button">First</button>
+                                                                        <button  ng-disabled="canBeLost()" class="btn btn-default" type="button">Next</button>
+                                                                        <button  ng-disabled="canBeLost()" class="btn btn-default" type="button">Prev</button>
                                                                       </span>
                                                                 </div><!-- /input-group -->
                                                                 </div><!-- /input-group -->
@@ -115,12 +115,12 @@
                                         </table>
                                                         <div ng-show="conversations[n].type == 'blank'">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='orphan'" class="btn btn-success btn-xs" > Start</button>
+                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
                                                         </div>
 
                                                         <div ng-show="conversations[n].type == 'waiting'">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
+                                                        <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
                                                         </div>
 
                                 </div>

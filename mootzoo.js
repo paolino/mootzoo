@@ -13,6 +13,10 @@ app.controller('conversations', function($scope, $http) {
                 $scope.conversations.push({n:m,id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
                 $scope.n=m-11;
                 };
+    $scope.canBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
+                || ($scope.conversations[$scope.n].type == 'conversata') 
+                || ($scope.conversations[$scope.n].type == 'personale');};
+
     $scope.removeConversation=function(){
         $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
         $scope.conversations[$scope.n].type="blank";
@@ -29,6 +33,10 @@ app.controller('conversations', function($scope, $http) {
             return "btn btn-danger"
      else if(x.type=='waiting')
             return "btn btn-warning"
+     else if(x.type=='conversata')
+            return "btn btn-primary"
+     else if(x.type=='personale')
+            return "btn btn-info"
      else return "btn btn-default"
      };
 

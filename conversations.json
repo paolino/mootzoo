@@ -8,7 +8,7 @@
 {
 "n":12,
 "id":5490276,
-"type":"waiting",
+"type":"personale",
 "messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"]
 },
 {
@@ -21,7 +21,7 @@
 {
 "n":14,
 "id":5482902,
-"type":"complete",
+"type":"conversata",
 "messages":["sto per essere assunto","che lavoro?","potature","te ne intendi?","poco"]
 },
 {
