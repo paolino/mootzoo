@@ -74,7 +74,7 @@
                         <div class="col-md-12">
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
-                                                <div class=row ng-hide="(conversations[n].type=='blank') "> 
+                                                <div class=row ng-hide="(conversations[n].type=='blank') || (!logged)"> 
                                                         <div>
                                                                 <div class="col-md-12">
                                         <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" >Forget</button>
@@ -84,7 +84,7 @@
                                                                 </div>
                                                         </div>
                                                 </div><!-- row -->
-                                                <div class=row ng-show="(conversations[n].type=='blank') "> 
+                                                <div class=row ng-show="(conversations[n].type=='blank') !! (!logged) "> 
                                                         <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
