@@ -45,7 +45,7 @@
   <div class="container">
             
         <div class=row>
-        <div class="col-md-3" ng-show=logged>
+        <div class="col-md-5" ng-show=logged>
         <div class="panel panel-info">
                 <div class="panel-heading">Conversations</div>
                 <div class="panel-body">
@@ -59,8 +59,8 @@
 
         </div>
         </div>
-        <div class="col-md-3" ng-hide=logged></div>
-        <div class="col-md-9">
+        <div class="col-md-5" ng-hide=logged></div>
+        <div class="col-md-7">
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info">
@@ -96,20 +96,9 @@
                                                 <tbody>
                                                         <tr ng-repeat="x in conversations[n].messages">
                                                                 <td>
-                                                                        <div class="message" ng-click=
-                                                                                "sel2.c==x ? sel2.c=0 : sel2.c = x">
+                                                                        <div class="message">
                                                                                 {{x}}
                                                                         </div>
-                                                                        <form ng-show="sel2.c == x">
-                                                                                <textarea style="overflow:hidden" class=
-                                                                                        "form-control" placeholder="Message...">
-                                                                                </textarea> 
-                                                                                <button type="submit" style="float:right"
-                                                                                      class="btn btn-success btn-xs" data-toggle=
-                                                                                      "tooltip" title=
-                                                                                      "Start a new conversation with this background ">
-                                                                                Branch</button>
-                                                                        </form>
                                                                 </td>
                                                         </tr>
                                               </tbody>
