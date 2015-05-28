@@ -68,9 +68,9 @@
                                                 <div class=row> 
                                                         <div>
                                                                 <div class="col-md-5" ng-show="logged">
-                                                                        <button  ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
+                                                                        <button  ng-click="conversations[n].type='orphan'" ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
                                                                         <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Propose</button>
-                                                                        <button   ng-show="conversations[n].type == 'orphan'" class="btn btn-success " > Take</button>
+                                                                        <button   ng-click="conversations[n].type='waiting'" ng-show="conversations[n].type == 'orphan'" class="btn btn-warning " > Take</button>
                                                                 
                                                                 </div>
                                                         </div>

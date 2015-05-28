@@ -9,11 +9,11 @@ app.controller('conversations', function($scope, $http) {
 
     $scope.convButton= function(x){
      if(x.type=="complete")
-            return "btn btn-primary"
+            return "btn btn-success"
      else if(x.type=="orphan")
             return "btn btn-danger"
      else
-            return "btn btn-default"
+            return "btn btn-warning"
      };
 
 
