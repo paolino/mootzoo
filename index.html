@@ -68,38 +68,8 @@
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info">
-                                        
-                                <div class="panel-body" style="overflow-y:auto; height:400px;">
-                                        <table class="table table-striped">
-                                                <tbody> <tr ng-show="conversations[n].type == 'waiting'"><td>
-                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
-                                                        </td>
-
-                                                        <tr ng-repeat="x in conversations[n].messages">
-                                                                <td>
-                                                                        <div class="message">
-                                                                                {{x}}
-                                                                        </div>
-                                                                </td>
-                                                        </tr>
-                                              </tbody>
-                                        </table>
-                                                        <div ng-show="conversations[n].type == 'complete' && logged && proposing">
-                                                        <textarea style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button  class="btn btn-success btn-xs" >Go</button>
-                                                        </div>
-                                </div>
-                        <div class="panel-footer">
+                                        <div class="panel-heading">
                                                 <div class=row> 
-                                                        <div>
-                                                                <div class="col-md-5" ng-show="logged">
-                                                                        <button  ng-click="conversations[n].type='orphan'" ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
-                                                                        <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Inject</button>
-                                                                        <button   ng-click="conversations[n].type='waiting'" ng-show="conversations[n].type == 'orphan'" class="btn btn-warning " > Take</button>
-                                                                
-                                                                </div>
-                                                        </div>
                                                         <div ng-hide="author">
                                                                 <div class="col-md-5" >
                                                                 </div>
@@ -116,6 +86,39 @@
                                                         </div>
                                                 </div><!-- row -->
                                         </div>
+                                                                       <div class="panel-body" style="overflow-y:auto; height:400px;">
+                                        <table class="table table-striped">
+                                                <tbody> 
+                                                        <tr ng-repeat="x in conversations[n].messages">
+                                                                <td>
+                                                                        <div class="message">
+                                                                                {{x}}
+                                                                        </div>
+                                                                </td>
+                                                        </tr>
+                                              </tbody>
+                                        </table>
+                                                        <div ng-show="conversations[n].type == 'waiting'">
+                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-click="conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
+                                                        </div>
+
+                                                        <div ng-show="conversations[n].type == 'complete' && logged && proposing">
+                                                        <textarea style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button  ng-click="proposing=false;addMessage(n);" class="btn btn-success btn-xs" >Go</button>
+                                                        </div>
+                                </div>
+                        <div class="panel-footer">
+                                                <div class=row> 
+                                                        <div>
+                                                                <div class="col-md-5" ng-show="logged">
+                                                                        <button  ng-click="conversations[n].type='orphan'" ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
+                                                                        <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Branch</button>
+                                                                        <button   ng-click="conversations[n].type='waiting'" ng-show="conversations[n].type == 'orphan'" class="btn btn-warning " > Take</button>
+                                                                
+                                                                </div>
+                                                        </div>
+                                                </div><!-- row -->
 
                         </div>
                 </div>
