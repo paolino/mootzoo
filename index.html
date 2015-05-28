@@ -55,7 +55,6 @@
                                 Conversations store
                                 </div>
                                 <div class="col-md-7" >
-                                        <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" > Blank</button>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
 
@@ -63,8 +62,7 @@
                 <div class="panel-body">
                 <form>
                 <div style="display:inline" >
-                <button ng-repeat="i in cento" 
-                        type="submit" ng-class="convButton(conversations[i])"    ng-click="$parent.n=i;" >{{i+10}}</button>
+                <button ng-repeat="i in cento" type="submit" ng-class="convButton(conversations[i])"    ng-click="$parent.n=i;" >{{i+10}}</button>
                 </div>
                 </form>
                 </div>
@@ -77,23 +75,33 @@
                         <div class="col-md-12">
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
-                                                <div class=row> 
+                                                <div class=row ng-hide="(!logged) || (conversations[n].type=='blank') "> 
+                                                        <div>
+                                                                <div class="col-md-12" ng-show="logged">
+                                        <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" >Forget</button>
+                                        <button  ng-click="conversations[n].type='orphan'" ng-disabled="conversations[n].type != 'waiting'" class="btn btn-danger " > Leave</button>                            
+                                        <button   ng-click="conversations[n].type='waiting'" ng-disabled="conversations[n].type != 'orphan'" class="btn btn-warning " > Take</button>
+                                                                
+                                                                </div>
+                                                        </div>
+                                                </div><!-- row -->
+                                                <div class=row ng-show="(!logged) || (conversations[n].type=='blank') "> 
                                                         <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
-                                                                        <input  ng-disabled="canBeLost()"  type="text" class="form-control" placeholder="Identifier">
+                                                                        <input  type="text" class="form-control" placeholder="Identifier">
                                                                       <span class="input-group-btn">
-                                                                        <button ng-disabled="canBeLost()" class="btn btn-success" type="button">Jump</button>
+                                                                        <button class="btn btn-success" type="button">Jump</button>
                                                                       </span>
                                                                         </div>
                                                                 </div>
                                                                 <div class="col-md-7" >
                                                                 <div class="input-group" >
-                                                                <input  ng-disabled="canBeLost()" type="text" class="form-control" placeholder="Search for...">
+                                                                <input  type="text" class="form-control" placeholder="Search for...">
                                                                       <span class="input-group-btn">
-                                                                        <button  ng-disabled="canBeLost()" class="btn btn-success" type="button">First</button>
-                                                                        <button  ng-disabled="canBeLost()" class="btn btn-success" type="button">Next</button>
-                                                                        <button  ng-disabled="canBeLost()" class="btn btn-success" type="button">Prev</button>
+                                                                        <button  class="btn btn-success" type="button">Go</button>
+                                                                        <button  class="btn btn-success" type="button">Next</button>
+                                                                        <button  class="btn btn-success" type="button">Prev</button>
                                                                       </span>
                                                                 </div><!-- /input-group -->
                                                                 </div><!-- /input-group -->
@@ -123,18 +131,6 @@
                                                         </div>
 
                                 </div>
-                        <div class="panel-footer">
-                                                <div class=row> 
-                                                        <div>
-                                                                <div class="col-md-5" ng-show="logged">
-                                                                        <button  ng-click="conversations[n].type='orphan'" ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
-                                                                        <button   ng-click="conversations[n].type='waiting'" ng-show="conversations[n].type == 'orphan'" class="btn btn-warning " > Take</button>
-                                                                
-                                                                </div>
-                                                        </div>
-                                                </div><!-- row -->
-
-                        </div>
                 </div>
         </div>
     </div>
