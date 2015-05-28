@@ -115,7 +115,7 @@
                                         </table>
                                                         <div ng-show="conversations[n].type == 'blank'">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='complete'" class="btn btn-success btn-xs" > Start</button>
+                                                        <button ng-click="addMessage();conversations[n].type='orphan'" class="btn btn-success btn-xs" > Start</button>
                                                         </div>
 
                                                         <div ng-show="conversations[n].type == 'waiting'">
