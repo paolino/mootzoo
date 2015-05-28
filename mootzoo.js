@@ -4,16 +4,32 @@ app.author=false;
 app.logged = false;
 app.unused=false;
 app.controller('conversations', function($scope, $http) {
+    $scope.conversations=[];
+    $scope.n=0;
+    $scope.message="";
     $http.get("conversations.json").success(function(response) {$scope.conversations = response;});
-
-
+    $scope.addConversation=function(){
+                var m = $scope.conversations.slice(-1)[0].n + 1;
+                $scope.conversations.push({n:m,id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
+                $scope.n=m-11;
+                };
+    $scope.removeConversation=function(){
+        $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
+        $scope.conversations[$scope.n].type="blank";
+        $scope.conversations[$scope.n].messages=[];
+        };
+    $scope.addMessage=function(){
+        $scope.conversations[$scope.n].messages.push($scope.message);
+        $scope.message="";
+        };
     $scope.convButton= function(x){
      if(x.type=="complete")
             return "btn btn-success"
      else if(x.type=="orphan")
             return "btn btn-danger"
-     else
+     else if(x.type=='waiting')
             return "btn btn-warning"
+     else return "btn btn-default"
      };
 
 
