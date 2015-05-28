@@ -56,6 +56,7 @@
                                 </div>
                                 <div class="col-md-7" >
                                         <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" > Blank</button>
+                                        <button  ng-disabled="conversations[n].type != 'blank'" ng-click="removeConversation()" class="btn btn-default" > Remove</button>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
 
