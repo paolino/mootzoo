@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="container">
+  <div class="container" ng-init="n=0;proposing=false">
             
         <div class=row>
         <div class="col-md-5" ng-show=logged>
@@ -66,16 +66,16 @@
                                 <div class="panel panel-info">
                                         <div class="panel-heading">
                                                 <div class=row> 
-                                                        <div ng-show="logged && author">
-                                                                <div class="col-md-5" >
-                                                                        <button  ng-hide=unused class="btn btn-primary " > Leave</button>
-                                                                        <button  ng-hide=unused class="btn btn-success " > Respond</button>
-                                                                        <button  ng-show=unused class="btn btn-success " > Propose</button>
+                                                        <div>
+                                                                <div class="col-md-5" ng-show="logged">
+                                                                        <button  ng-show="conversations[n].type == 'waiting'" class="btn btn-danger " > Leave</button>
+                                                                        <button  ng-click="proposing=!proposing" ng-show= "conversations[n].type == 'complete'" class="btn btn-success " > Propose</button>
+                                                                        <button   ng-show="conversations[n].type == 'orphan'" class="btn btn-success " > Take</button>
+                                                                
                                                                 </div>
                                                         </div>
                                                         <div ng-hide="author">
                                                                 <div class="col-md-5" >
-                                                                <button   ng-show=logged class="btn btn-success " > Take</button>
                                                                 </div>
                                                                 <div class="col-md-7" >
                                                                 <div class="input-group" >
@@ -93,7 +93,17 @@
 
                                 <div class="panel-body" style="overflow-y:auto; height:400px;">
                                         <table class="table table-striped">
-                                                <tbody>
+                                                <tbody> <tr ng-show="conversations[n].type == 'waiting'"><td>
+                                                        <textarea ng-model="message">Message..</textarea>
+                                                        <button  class="btn btn-success btn-xs" > Respond</button>
+                                                        </td>
+                                                        </tr>
+                                                        <tr ng-show="conversations[n].type == 'complete' && logged && proposing"><td>
+                                                        <textarea ng-model="message">Message..</textarea>
+                                                        <button  class="btn btn-success btn-xs" >Go</button>
+                                                        </td>
+                                                        </tr>
+
                                                         <tr ng-repeat="x in conversations[n].messages">
                                                                 <td>
                                                                         <div class="message">
