@@ -120,7 +120,7 @@
 
                                                         <div ng-show="conversations[n].type == 'waiting'">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
+                                                        <button ng-click="addMessage();conversations[n].type='complete'" class="btn btn-success btn-xs" > Respond</button>
                                                         </div>
 
                                 </div>
