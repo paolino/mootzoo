@@ -6,11 +6,9 @@ app.unused=false;
 app.controller('conversations', function($scope, $http) {
     $scope.conversations=Array();
     $scope.n=0;
-    $scope.cento=Array();
     var i;
     for(i=0;i < 90;i ++){
-        $scope.cento.push(i);
-        $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
+        $scope.conversations.push({id:String(Math.floor((Math.random() * 10000000000000) + 1)),type:"blank",messages:[]});
         }
     $scope.message="";
     $scope.login=function(){
@@ -22,11 +20,13 @@ app.controller('conversations', function($scope, $http) {
         };
     $scope.jump=function(where){
         $http.get("conversations.json").success(function(response) {
-                if(where < response.length){
-                        $scope.conversations[$scope.n]=response[where];
-                        $scope.conversations[$scope.n].type='complete';
-                        }
-                else alert("Conversation not found");
+                var i=0;
+                for(;i < response.length; i ++)
+                        if (response[i].id==where){
+                                      $scope.conversations[$scope.n]=response[i];
+                                      break;
+                                      }
+                if(i >= response.length) alert("Conversation not found");
                 });
         };
     $scope.logout=function(){ 

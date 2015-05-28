@@ -19,9 +19,6 @@
     <div class="container">
       <div class="navbar-header">
         <a class="navbar-brand" href="/">Mootzoo conversational system</a>                                                        
-              <p class="navbar-text">
-                Conversation identifier {{conversations[n].id}}
-              </p>
       </div>
 
       <div id="navbar" class="navbar-collapse collapse">
@@ -52,9 +49,10 @@
                 <div class="panel-heading">
                         <div class=row> 
                                 <div class="col-md-5" >
-                                Conversations store
+                                <h4>Conversation bag.</h4>
                                 </div>
                                 <div class="col-md-7" >
+                                <h4> Selected :{{conversations[n].id}} </h4>
                                  </div><!-- /input-group -->
                         </div><!-- row -->
 
@@ -62,7 +60,7 @@
                 <div class="panel-body">
                 <form>
                 <div style="display:inline" >
-                <button ng-repeat="i in cento" type="submit" ng-class="convButton(conversations[i])"    ng-click="$parent.n=i;" >{{i+10}}</button>
+                <button  ng-repeat="x in conversations" type="submit" ng-class="convButton(x)"    ng-click="$parent.n=$index;" >{{$index+10}}</button>
                 </div>
                 </form>
                 </div>
@@ -84,13 +82,13 @@
                                                                 </div>
                                                         </div>
                                                 </div><!-- row -->
-                                                <div class=row ng-show="(conversations[n].type=='blank') !! (!logged) "> 
+                                                <div class=row ng-show="(conversations[n].type=='blank') || (!logged) "> 
                                                         <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
                                                                         <input  type="text" class="form-control" placeholder="Identifier" ng-model=jumper>
                                                                       <span class="input-group-btn">
-                                                                        <button ng-click="jump(jumper)" class="btn btn-success" type="button">Jump</button>
+                                                                        <button ng-click="jump(jumper)" class="btn btn-success" type="button">Go</button>
                                                                       </span>
                                                                         </div>
                                                                 </div>
@@ -119,7 +117,7 @@
                                                         </tr>
                                               </tbody>
                                         </table>
-                                                        <div  ng-show="conversations[n].type == 'blank'">
+                                                        <div  ng-show="(conversations[n].type == 'blank') && logged">
                                                         <textarea  ng-disabled="!logged" style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
                                                         <button ng-disabled="!logged" ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
                                                         </div>
