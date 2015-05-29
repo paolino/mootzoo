@@ -3,38 +3,49 @@
 "id":820348529,
 "type":"complete",
 "messages":["sto per essere assunto","che lavoro?","potature","te ne intendi?","poco"],
-"votes":[0,0,0,0,0]
+"votes":[0,0,0,0,0],
+"voted":[false,false,false,false,false]
 },
 {
 "id":5490276,
 "type":"personale",
 "messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"],
-"votes":[0,0,0,0]
+"votes":[0,0,0,0],
+"voted":[false,false,false,false]
+
 },
 {
 "id":55422902,
 "type":"orphan",
 "messages":["mi piace la torta","fa male","eh, ma io non posso farne a meno","a me piacciono i biscotti"],
-"votes":[0,0,0,0]
+"votes":[0,0,0,0],
+"voted":[false,false,false,false]
+
 },
 {
 "id":5482902,
 "type":"conversata",
 "messages":["sto per essere assunto","che lavoro?","potature","te ne intendi?","poco"],
-"votes":[0,0,0,0,0]
+"votes":[0,0,0,0,0],
+"voted":[false,false,false,false,false]
+
 },
 {
 "id":5490276,
 "type":"waiting",
 "messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"],
-"votes":[0,0,0,0]
+"votes":[0,0,0,0],
+"voted":[false,false,false,false]
+
 }
 ,
 {
 "id":55422902,
 "type":"orphan",
 "messages":["mi piace la torta","fa male","eh, ma io non posso farne a meno","a me piacciono i biscotti"],
-"votes":[0,0,0,0]
+"votes":[0,0,0,0],
+"voted":[false,false,false,false]
+
 }
 ]
 
