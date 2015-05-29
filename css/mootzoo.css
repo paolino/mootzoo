@@ -1,6 +1,15 @@
 .message {
         cursor:pointer;
         }
+.odd{
+        background-color:#777777;
+        }
+.even {
+        background-color:#666666;
+        }
+.btn-warning {
+        background-color:#aa0;
+        }
 textarea {
   margin:0px 0px;
   padding:5px;

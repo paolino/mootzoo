@@ -12,7 +12,7 @@ app.controller('conversations', function($scope, $http) {
         }
     $scope.message="";
     $scope.login=function(){
-        $http.get("conversations.json").success(function(response) {
+        $http.get("conversation.json").success(function(response) {
                 for (i=0;i < response.length;i ++)
                 $scope.conversations[i]=response[i];
         });
@@ -56,11 +56,21 @@ app.controller('conversations', function($scope, $http) {
     $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')
                 || ($scope.conversations[$scope.n].type == 'conversata') ||  ($scope.conversations[$scope.n].type == 'personale')  };
 
+    $scope.voteUp=function(i){
+                if(!$scope.conversations[$scope.n].voted[i])
+                        $scope.conversations[$scope.n].votes[i]+=1;
+                $scope.conversations[$scope.n].voted[i]=true;
+                }
 
+    $scope.voteDown=function(i){
+                if(!$scope.conversations[$scope.n].voted[i])
+                        $scope.conversations[$scope.n].votes[i]-=1;
+                $scope.conversations[$scope.n].voted[i]=true;
+                }
     $scope.backColor=function(){
         switch($scope.conversations[$scope.n].type) {
                 case 'personale': return "btn btn-default";
-                case 'conversata': return "btn btn-info";
+                case 'conversata': return "btn btn-danger";
                 case 'waiting':return "btn btn-danger";
                 }
         };
@@ -84,6 +94,7 @@ app.controller('conversations', function($scope, $http) {
         };
     $scope.addMessage=function(){
         $scope.conversations[$scope.n].messages.push($scope.message);
+        $scope.conversations[$scope.n].votes.push(0);
         $scope.message="";
         };
     $scope.switchRole=function(){
