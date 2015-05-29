@@ -35,9 +35,47 @@ app.controller('conversations', function($scope, $http) {
                 $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
                 $scope.logged=false;
                 };
-    $scope.canBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
-                || ($scope.conversations[$scope.n].type == 'conversata') 
-                || ($scope.conversations[$scope.n].type == 'personale');};
+    $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
+                || ($scope.conversations[$scope.n].type == 'conversata') };
+    $scope.back=function(){
+        switch($scope.conversations[$scope.n].type) {
+                case 'personale': 
+                                $scope.conversations[$scope.n].messages.pop();
+                                $scope.conversations[$scope.n].type="blank";
+                                break;
+                case 'conversata': 
+                                $scope.conversations[$scope.n].messages.pop();
+                                $scope.conversations[$scope.n].type="orphan";
+                                break;
+                case 'waiting':
+                                
+                                $scope.conversations[$scope.n].type="orphan";
+                                break;
+                }
+        };
+    $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')
+                || ($scope.conversations[$scope.n].type == 'conversata') ||  ($scope.conversations[$scope.n].type == 'personale')  };
+
+
+    $scope.backColor=function(){
+        switch($scope.conversations[$scope.n].type) {
+                case 'personale': return "btn btn-default";
+                case 'conversata': return "btn btn-info";
+                case 'waiting':return "btn btn-danger";
+                }
+        };
+
+    $scope.panelColor=function(){
+        switch($scope.conversations[$scope.n].type) {
+                case 'personale': return "panel panel-info";
+                case 'conversata': return "panel panel-primary";
+                case 'waiting':return "panel panel-warning";
+                case 'orphan':return "panel panel-danger";
+                case 'blank':return "panel panel-default";
+                }
+        };
+                                
+                
 
     $scope.removeConversation=function(){
         $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
@@ -45,6 +83,10 @@ app.controller('conversations', function($scope, $http) {
         $scope.conversations[$scope.n].messages=[];
         };
     $scope.addMessage=function(){
+        $scope.conversations[$scope.n].messages.push($scope.message);
+        $scope.message="";
+        };
+    $scope.switchRole=function(){
         $scope.conversations[$scope.n].messages.push($scope.message);
         $scope.message="";
         };

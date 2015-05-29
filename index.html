@@ -48,12 +48,9 @@
         <div class="panel panel-info">
                 <div class="panel-heading">
                         <div class=row> 
-                                <div class="col-md-7" >
-                                <h4>Conversation bag</h4>
-                                </div>
-                                <div class="col-md-5" >
-                                <h4> {{conversations[n].id}} </h4>
-                                 </div><!-- /input-group -->
+                                <div class="col-md-12" >
+                                <h4> Selection: {{n+10}} </h4>
+                                </div><!-- /input-group -->
                         </div><!-- row -->
 
                 </div>
@@ -65,24 +62,30 @@
                 </form>
                 </div>
 
+                <div class="panel-footer">
+                        <div class=row> 
+                                <div class="col-md-12" >
+                                <h4> Conversation identifier: {{conversations[n].id}} </h4>
+                                 </div><!-- /input-group -->
+                        </div><!-- row -->
+
+                </div>
         </div>
         </div>
         <div class="col-md-7">
                 <div class="row">
                         <div class="col-md-12">
-                                <div class="panel panel-info">
+                                <div ng-class="panelColor()">
                                         <div class="panel-heading">
-                                                <div class=row ng-hide="(conversations[n].type=='blank') || (!logged)"> 
+                                                <div class=row ng-hide="(conversations[n].type=='blank') ||(conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
                                                         <div>
                                                                 <div class="col-md-12">
-                                        <button  ng-disabled="canBeLost()" ng-click="removeConversation()" class="btn btn-default" >Forget</button>
-                                        <button  ng-click="conversations[n].type='orphan'" ng-disabled="conversations[n].type != 'waiting'" class="btn btn-danger " > Leave</button>                            
-                                        <button   ng-click="conversations[n].type='waiting'" ng-disabled="conversations[n].type != 'orphan'" class="btn btn-warning " > Take</button>
+                                                                        <button  ng-show="backPresent()" ng-click="back()" ng-class="backColor()" >Fail</button>
                                                                 
                                                                 </div>
                                                         </div>
                                                 </div><!-- row -->
-                                                <div class=row ng-show="(conversations[n].type=='blank') || (!logged) "> 
+                                                <div class=row ng-show="(conversations[n].type=='blank') || (conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
                                                         <div >
                                                                 <div class="col-md-5" >
                                                                         <div class="input-group" >
@@ -122,11 +125,12 @@
                                                         <button ng-disabled="!logged" ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
                                                         </div>
 
-                                                        <div ng-show="conversations[n].type == 'waiting'">
+                                                        <div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
                                                         <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
-                                                        </div>
+                                                        <button ng-show = "(conversations[n].type == 'waiting')" ng-click="switchRole();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Pass</button>
 
+                                                        </div>
                                 </div>
                 </div>
         </div>
