@@ -57,7 +57,7 @@ app.controller('conversations', function($scope, $http) {
     var i;
 
 
-    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[]}};
+    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[],prenoted:"free"}};
 
     for(i=0;i < 90;i ++){
         $scope.conversations.push(newc());
@@ -74,7 +74,7 @@ app.controller('conversations', function($scope, $http) {
                 }
         };
     $scope.login=function(){
-        $http.get("conversation.json").success(function(response) {
+        $http.get("conversations.json").success(function(response) {
                 for (i=0;i < response.length;i ++)
                 $scope.conversations[i]=response[i];
         });
@@ -212,8 +212,19 @@ app.controller('conversations', function($scope, $http) {
             return "btn btn-info"+ s
      else return "btn btn-default"+ s
      };
+   $scope.canPrenote=function(){
+       return ($scope.conversations[$scope.n].prenoted=="free")
+        }
+   $scope.canUnprenote=function(){
+       return ($scope.conversations[$scope.n].prenoted=="you")
+        }
+   $scope.prenote=function(){
+       $scope.conversations[$scope.n].prenoted="you";
+        }
 
-
+   $scope.unprenote=function(){
+       $scope.conversations[$scope.n].prenoted="free";
+        }
 });
 }
     

@@ -56,8 +56,8 @@
                                 <span ng-class="positionLabelClass()">{{positionText()}}</span>
                                 </div><!-- /input-group -->
                                 <div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
-                                <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
                                 <button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
+                                <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
                                 </div><!-- /input-group -->
                         </div><!-- row -->
 
@@ -108,38 +108,52 @@
                                                         </div>
                                                 </div><!-- row -->
                                         </div>
-                                                                       <div class="panel-body" style="overflow-y:auto; height:400px;">
+                                                                       <div class="panel-body" style="overflow-y:auto; height:350px;">
 
 
                                                                         <ul class=list-group>
                                                                           <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
-                                                                           <div class=message style="color:white" >
-                                                                             {{x}}
-                                                                                <div ng-show="testVote($index)" style="float:right" >
-                                                                                <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}</span>
-                                                                                <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
+                                                                                <div class=message style="color:white">{{x}}
+                                                                                </div>
+                                                                                <div class="vote label">
+
+                                                                                <span ng-show="testVote($index)">
+                                                                                        <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
                                                                                           <span class="glyphicon glyphicon-plus-sign"></span>
                                                                                         </button>
-                                                                                <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
+                                                                                </span>
+                                                                                <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
+                                                                                </span>
+                                                                                <span ng-show="testVote($index)">
+                                                                                        <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
                                                                                           <span class="glyphicon glyphicon-minus-sign"></span> 
                                                                                         </button>
-                                                                                        </div>
-                                                                           </div>
+                                                                                </span>
+                                                                                </div>
+                                                                           
                                                                           </li>
 
 
-                                                        <li  class=list-group-item ng-show="(conversations[n].type == 'blank') && logged">
+
+                                                </ul>
+                                
+                                </div>
+                                <div class="panel-footer">
+                                                        <div ng-show="(conversations[n].type == 'complete') ">
+                                                        <button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
+                                                        <button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
+                                                        </div>
+                                                        <div ng-show="(conversations[n].type == 'blank') && logged">
                                                         <textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
                                                         <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
-                                                        </li>
+                                                        </div>
 
-                                                        <li class=list-group-item ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
+                                                        <div class=list-group-item ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
                                                         <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
                                                         <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
 
-                                                        </li>
-                                                </ul>
-                                </div>
+                                                        </div>
+                </div>
 
 
                 </div>

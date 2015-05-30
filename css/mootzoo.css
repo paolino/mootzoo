@@ -1,11 +1,19 @@
-.message {
-        cursor:pointer;
-        }
+.message{
+    padding-right:15%;
+}
+.vote{
+    vertical-align: bottom;
+    width:15%;
+    position:absolute;
+    bottom:0;
+    right:0;
+}
 .odd{
         background-color:#777777;
         }
 .even {
         background-color:#666666;
+        margin-left:10px;
         }
 .btn-warning {
         background-color:#aa0;
