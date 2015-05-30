@@ -121,8 +121,8 @@
 
 
                                                         <li  class=list-group-item ng-show="(conversations[n].type == 'blank') && logged">
-                                                        <textarea  ng-disabled="!logged" style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-disabled="!logged" ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
+                                                        <textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
                                                         </li>
 
                                                         <li class=list-group-item ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">

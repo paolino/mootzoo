@@ -7,8 +7,10 @@ app.controller('conversations', function($scope, $http) {
     $scope.conversations=Array();
     $scope.n=0;
     var i;
+    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[]}};
+
     for(i=0;i < 90;i ++){
-        $scope.conversations.push({id:String(Math.floor((Math.random() * 10000000000000) + 1)),type:"blank",messages:[]});
+        $scope.conversations.push(newc());
         }
     $scope.message="";
     $scope.login=function(){
@@ -32,7 +34,7 @@ app.controller('conversations', function($scope, $http) {
     $scope.logout=function(){ 
                 $scope.conversations=Array();
                 for (i=0;i < 90;i ++)
-                $scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[]});
+                        $scope.conversations.push(newc());
                 $scope.logged=false;
                 };
     $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
