@@ -137,8 +137,7 @@ app.controller('conversations', function($scope, $http) {
                                 break;
                 }
         };
-    $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')
-                || ($scope.conversations[$scope.n].type == 'conversata') ||  ($scope.conversations[$scope.n].type == 'personale')  };
+    $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')};
     $scope.testVote=function(i){
                 switch($scope.conversations[$scope.n].type) {
                         case 'blank':return false;
@@ -162,6 +161,17 @@ app.controller('conversations', function($scope, $http) {
                         $scope.conversations[$scope.n].votes[i]-=1;
                 $scope.conversations[$scope.n].voted[i]=true;
                 }
+    $scope.testUndo=function(i){
+                switch($scope.conversations[$scope.n].type) {
+                        case 'blank':return false;
+                        case 'personale':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                        case 'orphan':return false
+                        case 'complete':return false
+                        case 'conversata':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                        case 'waiting':return false
+                }
+                }
+
     $scope.backColor=function(){
         switch($scope.conversations[$scope.n].type) {
                 case 'personale': return "btn btn-default";
@@ -181,6 +191,17 @@ app.controller('conversations', function($scope, $http) {
                 }
         };
                                 
+    $scope.glyphicon=function(n){
+        switch($scope.conversations[n].type){
+                case 'personale': return "glyphicon glyphicon-question-sign";
+                case 'complete': return "glyphicon glyphicon-transfer";
+                case 'conversata': return "glyphicon glyphicon-arrow-down";
+                case 'waiting':return "glyphicon glyphicon-arrow-up";
+                case 'orphan':return "glyphicon glyphicon-log-in";
+                case 'blank':return "glyphicon glyphicon-unchecked";
+                }
+        };
+
                 
 
     $scope.removeConversation=function(){
@@ -197,21 +218,18 @@ app.controller('conversations', function($scope, $http) {
         $scope.conversations[$scope.n].messages.push($scope.message);
         $scope.message="";
         };
-    $scope.convButton= function(x,i){
-     var s = ""
-     if (i==$scope.n) s=" ciao"; 
-     if(x.type=="complete")
-            return "btn btn-success" + s
-     else if(x.type=="orphan")
-            return "btn btn-danger"+ s
-     else if(x.type=='waiting')
-            return "btn btn-warning"+ s
-     else if(x.type=='conversata')
-            return "btn btn-primary"+ s
-     else if(x.type=='personale')
-            return "btn btn-info"+ s
-     else return "btn btn-default"+ s
-     };
+    $scope.selected= function(i){
+        if(i==$scope.n)
+                switch($scope.conversations[$scope.n].type) {
+                        case 'personale': return "btn-info";
+                        case 'complete': return "btn-success";
+                        case 'conversata': return "btn-primary";
+                        case 'waiting':return "btn-warning";
+                        case 'orphan':return "btn-danger";
+                        case 'blank':return "btn-default";
+                        }
+                else return "btn-grey"
+        }
    $scope.canPrenote=function(){
        return ($scope.conversations[$scope.n].prenoted=="free")
         }

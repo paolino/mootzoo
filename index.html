@@ -65,7 +65,8 @@
                 <div class="panel-body">
                 <form>
                 <div   style="display:inline" >
-                <button   ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)"    ng-click="$parent.n=$index;" >{{$index+10}}</button>
+                <button   ng-repeat="x in conversations" type="submit" class="btn" ng-class="selected($index)"    ng-click="$parent.n=$index;" >
+                        <span ng-class="glyphicon($index)"></span> </button>
                 </div>
                 </form>
                 </div>
@@ -76,13 +77,65 @@
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info" >
-                                        <div class="panel-heading ">
+                                                                       <div class="panel-body" style="overflow-y:auto; height:350px;">
+
+
+                                                                        <ul class=list-group>
+                                                                          <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
+                                                                                
+                                                                                <div class=message style="color:white">
+                                                                                
+                                                                                <button ng-show="testUndo($index)"  ng-click="back()" type="button" class="btn btn-danger btn-xs">
+                                                                                <span  class="glyphicon glyphicon-remove">
+                                                                                </span>
+                                                                                        </button>
+                                                                                {{x}}
+                                                                                </div>
+                                                                                <div class="vote label">
+
+                                                                                <span ng-show="testVote($index)">
+                                                                                        <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
+                                                                                          <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                                                        </button>
+                                                                                </span>
+                                                                                <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
+                                                                                </span>
+                                                                                <span ng-show="testVote($index)">
+                                                                                        <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
+                                                                                          <span class="glyphicon glyphicon-thumbs-down"></span> 
+                                                                                        </button>
+                                                                                </span>
+                                                                                </div>
+                                                                           
+                                                                          </li>
+
+
+                                <li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
+                                                        <div ng-show="(conversations[n].type == 'complete') ">
+                                                        <button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
+                                                        <button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
+                                                        </div>
+                                                        <div ng-show="(conversations[n].type == 'blank') && logged">
+                                                        <textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>                                                      
+                                                        </div>
+
+                                                        <div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
+                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+                                                        <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
+                                                        <button ng-show="(conversations[n].type == 'waiting')" ng-click="back()" class="btn btn-danger btn-xs" >Leave</button> 
+
+                                                        </div>
+                                </li>
+
+
+                                </div>
+                                                </ul>
+                                
+
+                                        <div class="panel-footer ">
                                                 <div class=row ng-hide="(conversations[n].type=='blank') ||(conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
                                                         <div>
-                                                                <div class="col-md-12">
-                                                                        <button  ng-show="backPresent()" ng-click="back()" ng-class="backColor()" >Give up</button>
-                                                                
-                                                                </div>
                                                         </div>
                                                 </div><!-- row -->
                                                 <div class=row ng-show="(conversations[n].type=='blank') || (conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
@@ -108,54 +161,6 @@
                                                         </div>
                                                 </div><!-- row -->
                                         </div>
-                                                                       <div class="panel-body" style="overflow-y:auto; height:350px;">
-
-
-                                                                        <ul class=list-group>
-                                                                          <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
-                                                                                <div class=message style="color:white">{{x}}
-                                                                                </div>
-                                                                                <div class="vote label">
-
-                                                                                <span ng-show="testVote($index)">
-                                                                                        <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
-                                                                                          <span class="glyphicon glyphicon-thumbs-up"></span>
-                                                                                        </button>
-                                                                                </span>
-                                                                                <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
-                                                                                </span>
-                                                                                <span ng-show="testVote($index)">
-                                                                                        <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
-                                                                                          <span class="glyphicon glyphicon-thumbs-down"></span> 
-                                                                                        </button>
-                                                                                </span>
-                                                                                </div>
-                                                                           
-                                                                          </li>
-
-
-
-                                                </ul>
-                                
-                                </div>
-                                <div class="panel-footer">
-                                                        <div ng-show="(conversations[n].type == 'complete') ">
-                                                        <button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
-                                                        <button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
-                                                        </div>
-                                                        <div ng-show="(conversations[n].type == 'blank') && logged">
-                                                        <textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>
-                                                        </div>
-
-                                                        <div class=list-group-item ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
-                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
-
-                                                        </div>
-                </div>
-
-
                 </div>
                 </div>
         </div>

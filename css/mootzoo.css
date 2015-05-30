@@ -22,6 +22,7 @@
         background-color:black;
         color:white;
         }
+
 .ciao:focus{
         background-color:black;
         color:white;
@@ -29,6 +30,12 @@
 .ciao:hover{
         background-color:black;
         color:white;
+        }
+.btn-default{
+        background-color:#aaa;
+        }
+.btn-grey > .btn-default {
+        background-color:#fff;     
         }
 textarea {
   margin:0px 0px;
