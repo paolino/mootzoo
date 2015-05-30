@@ -53,7 +53,7 @@ app.directive('ngMouseWheelUp', function() {
 });
 app.controller('conversations', function($scope, $http) {
     $scope.conversations=Array();
-    $scope.n=3;
+    $scope.n=0;
     var i;
 
 
@@ -197,18 +197,20 @@ app.controller('conversations', function($scope, $http) {
         $scope.conversations[$scope.n].messages.push($scope.message);
         $scope.message="";
         };
-    $scope.convButton= function(x){
+    $scope.convButton= function(x,i){
+     var s = ""
+     if (i==$scope.n) s=" ciao"; 
      if(x.type=="complete")
-            return "btn btn-success"
+            return "btn btn-success" + s
      else if(x.type=="orphan")
-            return "btn btn-danger"
+            return "btn btn-danger"+ s
      else if(x.type=='waiting')
-            return "btn btn-warning"
+            return "btn btn-warning"+ s
      else if(x.type=='conversata')
-            return "btn btn-primary"
+            return "btn btn-primary"+ s
      else if(x.type=='personale')
-            return "btn btn-info"
-     else return "btn btn-default"
+            return "btn btn-info"+ s
+     else return "btn btn-default"+ s
      };
 
 
