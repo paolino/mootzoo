@@ -74,7 +74,7 @@ app.controller('conversations', function($scope, $http) {
                 }
         };
     $scope.login=function(){
-        $http.get("conversations.json").success(function(response) {
+        $http.get("conversation.json").success(function(response) {
                 for (i=0;i < response.length;i ++)
                 $scope.conversations[i]=response[i];
         });
