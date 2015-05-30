@@ -3,16 +3,76 @@ var app = angular.module('mootzoo', []);
 app.author=false;
 app.logged = false;
 app.unused=false;
+app.directive('ngMouseWheelDown', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function(event) {
+                        // cross-browser wheel delta
+                        var event = window.event || event; // old IE support
+                        var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail || -event.originalEvent.detail)));
+                
+                        if(delta < 0) {
+                            scope.$apply(function(){
+                                scope.$eval(attrs.ngMouseWheelDown);
+                            });
+                        
+                            // for IE
+                            event.returnValue = false;
+                            // for Chrome and Firefox
+                            if(event.preventDefault)  {
+                                event.preventDefault();
+                            }
+
+                        }
+            });
+        };
+});
+app.directive('ngMouseWheelUp', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function(event) {
+                   
+                        // cross-browser wheel delta
+                        var event = window.event || event; // old IE support
+                        var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail || -event.originalEvent.detail)));
+                
+                        //alert(event.originalEvent.detail);                   
+                        if(delta > 0) {
+                            scope.$apply(function(){
+                                scope.$eval(attrs.ngMouseWheelUp);
+                            });
+                        
+                            // for IE
+                            event.returnValue = false;
+                            // for Chrome and Firefox
+                            if(event.preventDefault) {
+                                event.preventDefault();                        
+                            }
+
+                        }
+            });
+        };
+});
 app.controller('conversations', function($scope, $http) {
     $scope.conversations=Array();
-    $scope.n=0;
+    $scope.n=3;
     var i;
+
+
     newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[]}};
 
     for(i=0;i < 90;i ++){
         $scope.conversations.push(newc());
         }
     $scope.message="";
+    $scope.npiu=function(){
+                if($scope.n < (90-1)){
+                        $scope.n=$scope.n+1;
+                        }
+        };
+    $scope.nmeno=function(){
+                        if(($scope.n > 0)){
+                        $scope.n=$scope.n-1;
+                }
+        };
     $scope.login=function(){
         $http.get("conversation.json").success(function(response) {
                 for (i=0;i < response.length;i ++)
@@ -31,6 +91,28 @@ app.controller('conversations', function($scope, $http) {
                 if(i >= response.length) alert("Conversation not found");
                 });
         };
+    $scope.positionText=function(){
+                switch($scope.conversations[$scope.n].type) {
+                        case 'blank':return "no one is partecipating"
+                        case 'personale':return "you are waiting for a partecipant"
+                        case 'orphan':return "you can partecipate"
+                        case 'complete':return "two others are partecipating"
+                        case 'conversata':return "you are waiting for a response"
+                        case 'waiting':return "you are asked to respond"
+                }
+                }
+        
+    $scope.positionLabelClass=function(){
+                switch($scope.conversations[$scope.n].type) {
+                        case 'blank':return "label label-default"
+                        case 'personale':return "label label-info"
+                        case 'orphan':return "label label-danger"
+                        case 'complete':return "label label-success"
+                        case 'conversata':return "label label-primary"
+                        case 'waiting':return "label label-warning"
+
+                }
+                }
     $scope.logout=function(){ 
                 $scope.conversations=Array();
                 for (i=0;i < 90;i ++)
@@ -57,7 +139,18 @@ app.controller('conversations', function($scope, $http) {
         };
     $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')
                 || ($scope.conversations[$scope.n].type == 'conversata') ||  ($scope.conversations[$scope.n].type == 'personale')  };
-
+    $scope.testVote=function(i){
+                switch($scope.conversations[$scope.n].type) {
+                        case 'blank':return false;
+                        case 'personale':return false
+                        case 'orphan':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                        case 'complete':return (i == $scope.conversations[$scope.n].messages.length - 1) || 
+                                        (i == $scope.conversations[$scope.n].messages.length - 2)
+                        case 'conversata':return false
+                        case 'waiting':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                }
+                }
+                        
     $scope.voteUp=function(i){
                 if(!$scope.conversations[$scope.n].voted[i])
                         $scope.conversations[$scope.n].votes[i]+=1;
@@ -80,6 +173,7 @@ app.controller('conversations', function($scope, $http) {
     $scope.panelColor=function(){
         switch($scope.conversations[$scope.n].type) {
                 case 'personale': return "panel panel-info";
+                case 'complete': return "panel panel-success";
                 case 'conversata': return "panel panel-primary";
                 case 'waiting':return "panel panel-warning";
                 case 'orphan':return "panel panel-danger";

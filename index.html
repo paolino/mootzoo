@@ -45,18 +45,29 @@
             
         <div class=row>
         <div class="col-md-5">
-        <div class="panel panel-info">
+        <div ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
                 <div class="panel-heading">
+                        
                         <div class=row> 
-                                <div class="col-md-12" >
-                                <h4> Selection: {{n+10}} </h4>
+                                <div class="col-md-1" >
+                                <span class="label label-default">{{n+10}}</span>
+                                </div><!-- /input-group -->
+                                <div class="col-md-3" >
+                                <span class="label label-default">{{conversations[n].id}}</span>
+                                 </div><!-- /input-group -->
+                                <div class="col-md-5" >
+                                <span ng-class="positionLabelClass()">{{positionText()}}</span>
+                                </div><!-- /input-group -->
+                                <div class="col-md-3" >
+                                <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
+                                <button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
                                 </div><!-- /input-group -->
                         </div><!-- row -->
 
                 </div>
                 <div class="panel-body">
                 <form>
-                <div style="display:inline" >
+                <div   style="display:inline" >
                 <button  ng-repeat="x in conversations" type="submit" ng-class="convButton(x)"    ng-click="$parent.n=$index;" >{{$index+10}}</button>
                 </div>
                 </form>
@@ -72,7 +83,7 @@
                                                 <div class=row ng-hide="(conversations[n].type=='blank') ||(conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
                                                         <div>
                                                                 <div class="col-md-12">
-                                                                        <button  ng-show="backPresent()" ng-click="back()" ng-class="backColor()" >Fail</button>
+                                                                        <button  ng-show="backPresent()" ng-click="back()" ng-class="backColor()" >Give up</button>
                                                                 
                                                                 </div>
                                                         </div>
@@ -107,7 +118,7 @@
                                                                           <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
                                                                            <div class=message style="color:white" >
                                                                              {{x}}
-                                                                                <div style="float:right" >
+                                                                                <div ng-show="testVote($index)" style="float:right" >
                                                                                 <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}</span>
                                                                                 <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
                                                                                           <span class="glyphicon glyphicon-plus-sign"></span>
@@ -133,12 +144,6 @@
                                                 </ul>
                                 </div>
 
-                <div class="panel-footer">
-                        <div class=row> 
-                                <div class="col-md-12" >
-                                <h4> Conversation identifier: {{conversations[n].id}} </h4>
-                                 </div><!-- /input-group -->
-                        </div><!-- row -->
 
                 </div>
                 </div>
