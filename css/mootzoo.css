@@ -1,9 +1,9 @@
 .message{
-    padding-right:15%;
+    padding-right:100px;
 }
 .vote{
     vertical-align: bottom;
-    width:15%;
+    width:100px;
     position:absolute;
     bottom:0;
     right:0;

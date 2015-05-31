@@ -85,13 +85,10 @@ app.controller('conversations', function($scope, $http) {
 
 
     newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[],prenoted:"free"}};
-
-    for(i=0;i < 80;i ++){
-        $scope.conversations.push(newc());
-        }
+    $scope.conversations.push(newc());
     $scope.message="";
     $scope.npiu=function(){
-                if($scope.n < (80-1)){
+                if($scope.n < $scope.conversations.length-1){
                         $scope.n=$scope.n+1;
                         }
         };
@@ -105,6 +102,7 @@ app.controller('conversations', function($scope, $http) {
                 for (i=0;i < response.length;i ++)
                 $scope.conversations[i]=response[i];
         });
+        $scope.conversations.push(newc());
         $scope.logged=true;
         };
     $scope.jump=function(where){
@@ -142,8 +140,7 @@ app.controller('conversations', function($scope, $http) {
                 }
     $scope.logout=function(){ 
                 $scope.conversations=Array();
-                for (i=0;i < 80;i ++)
-                        $scope.conversations.push(newc());
+                $scope.conversations.push(newc());
                 $scope.logged=false;
                 };
     $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')

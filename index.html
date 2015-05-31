@@ -1,194 +1,170 @@
 <!DOCTYPE html>
 
 <html lang="en" ng-app="mootzoo" ng-controller="conversations">
+	<head>
+		<title>mootzoo chatline</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+		<script src= "js/jquery.min.js" type="text/javascript"></script>
+		<script src= "js/bootstrap.min.js" type="text/javascript"> </script>
+		<script src= "js/angular.min.js" type="text/javascript"></script>
+		<script src= "js/mootzoo.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="css/mootzoo.css" type="text/css">
+	</head>
 
-<head>
-  <title>mootzoo chatline</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-  <script src= "js/jquery.min.js" type="text/javascript"></script>
-  <script src= "js/bootstrap.min.js" type="text/javascript"> </script>
-  <script src= "js/angular.min.js" type="text/javascript"></script>
-  <script src= "js/mootzoo.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="css/mootzoo.css" type="text/css">
-</head>
+	<body >
+		<div class="navbar navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/">Mootzoo chatting system</a>							
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<form class="navbar-form navbar-right">
+						<div class="form-group">
+							<div ng-show="logged">
+								<input type="text" placeholder="Email" class="form-control">
+									<button type="submit" class="btn btn-success"
+											data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">
+										Invite
+									</button> 
+									<button ng-click="logout()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">Logout</button>
+							</div>
+							<div ng-hide=logged>
+								<button  ng-click="login()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Should jump in from login link">Fake login</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
-<body >
-  <div class="navbar navbar-inverse">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/">Mootzoo chatting system</a>                                                        
-      </div>
-
-      <div id="navbar" class="navbar-collapse collapse">
-        <form class="navbar-form navbar-right">
-          <div class="form-group">
-                
-            <div ng-show="logged">
-                <input type="text" placeholder="Email" class="form-control">
-                <button type="submit" class="btn btn-success"
-                        data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">Invite</button> 
-                <button ng-click="logout()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">Logout</button>
-            </div>
-            <div ng-hide=logged>
-
-             <button  ng-click="login()" type="submit" class="btn btn-danger" data-toggle="tooltip" title="Should jump in from login link">Fake login</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="container" ng-init="proposing=false">
-            
-        <div class=row>
-        <div class="col-md-4">
-        <div ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
-                                <div class="panel-heading">
-                                Store
-                                </div>
-                <div class="panel-body" >
-                <div   style="display:inline" >
-                        <button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
-                                ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
-                <span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
-                <span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
-                </button>
-                  </div>
-                </div>
-
-        </div>
-        </div>
-        <div class="col-md-7">
-                <div class="row">
-                        <div class="col-md-12">
-                                <div class="panel panel-info" >
-                                        <div class="panel-heading">
-                                                
-                                                <div class=row> 
-                                                        <div class="col-md-4" >
-                                                        <span class="label label-default">{{conversations[n].id}}</span>
-                                                         </div><!-- /input-group -->
-                                                        <div class="col-md-5" >
-                                                        <span ng-class="positionLabelClass()">{{positionText()}}</span>
-                                                        </div><!-- /input-group -->
-                                                        <div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
-                                                        <button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
-                                                        <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
-                                                        </div><!-- /input-group -->
-                                                </div><!-- row -->
-
-                                        </div>
-                                               <div class="panel-body" style="overflow-y:auto; height:350px;">
-
-
-                                                <ul class=list-group>
-                                                  <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
-                                                        
-                                                        <div class=message style="color:white">
-                                                        
-
-                                                        {{x}}
-                                                        </div>
-                                                        <div class="vote label">
-
-                                                        <span ng-show="testVote($index)">
-                                                                <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
-                                                                  <span class="glyphicon glyphicon-thumbs-up"></span>
-                                                                </button>
-                                                        </span>
-                                                        <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
-                                                        </span>
-                                                        <span ng-show="testVote($index)">
-                                                                <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
-                                                                  <span class="glyphicon glyphicon-thumbs-down"></span> 
-                                                                </button>
-                                                        </span>
-                                                        </div>
-                                                   
-                                                  </li> 
-                                                <li ng-show="testUndo()" class="list-group-item">
-                                                        <button   ng-click="back()" type="button" class="btn btn-danger btn-xs">
-                                                        Retract        
-                                                        </button>
-                                                </li>
-
-                                <li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
-                                                        <div ng-show="(conversations[n].type == 'complete') ">
-                                                        <button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
-                                                        <button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
-                                                        </div>
-                                                        <div ng-show="(conversations[n].type == 'blank') && logged">
-                                                        <textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>                                                      
-                                                        </div>
-
-                                                        <div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
-                                                        <textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-                                                        <button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
-                                                        <button ng-show="(conversations[n].type == 'waiting')" ng-click="back()" class="btn btn-danger btn-xs" >Leave</button> 
-
-                                                        </div>
-                                </li>
-
-
-                                </div>
-                                                </ul>
-                                
-
-                                        <div class="panel-footer ">
-                                                <div class=row ng-hide="(conversations[n].type=='blank') ||(conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
-                                                        <div>
-                                                        </div>
-                                                </div><!-- row -->
-                                                <div class=row ng-show="(conversations[n].type=='blank') || (conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
-                                                        <div >
-                                                                <div class="col-md-5" >
-                                                                        <div class="input-group" >
-                                                                        <input  type="text" class="form-control" placeholder="Identifier" ng-model=jumper>
-                                                                      <span class="input-group-btn">
-                                                                        <button ng-click="jump(jumper)" class="btn btn-success" type="button">Go</button>
-                                                                      </span>
-                                                                        </div>
-                                                                </div>
-                                                                <div class="col-md-7" >
-                                                                <div class="input-group" >
-                                                                <input  type="text" class="form-control" placeholder="Search for...">
-                                                                      <span class="input-group-btn">
-                                                                        <button  class="btn btn-success" type="button">Go</button>
-                                                                        <button  class="btn btn-success" type="button">Next</button>
-                                                                        <button  class="btn btn-success" type="button">Prev</button>
-                                                                      </span>
-                                                                </div><!-- /input-group -->
-                                                                </div><!-- /input-group -->
-                                                        </div>
-                                                </div><!-- row -->
-                                        </div>
-                </div>
-                </div>
-    
-    </div>
-        </div>
-                <div class="col-md-1" >
-                        <div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
-                                <div class="panel-heading">
-                                News
-                                </div>
-                                
-                        <div class="panel-body" >
-                                <div   style="display:inline" >
-                                        <button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
-                                                ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
-                                <span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
-                                <span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
-                                </button>
-                                  </div>
-                        </div>
-                        </div>
-    </div>
-  </div>
-  </div>
-</body>
+		<div class="container" ng-init="proposing=false"> 
+			<div class=row>
+				<div class="col-md-4">
+					<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
+						<div class="panel-heading">News</div>
+							<div class="panel-body" >
+								<div style="display:inline" >
+									<button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
+										ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
+										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
+										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
+							<div class="panel-heading">Hints</div>
+							<div class="panel-body" >
+								<div   style="display:inline" >
+									<button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
+										ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
+										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
+										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
+							<div class="panel-heading">Store</div>
+							<div class="panel-body" >
+								<div   style="display:inline" >
+									<button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
+											ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
+										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
+										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-info" >
+								<div class="panel-heading"> 
+									<div class=row> 
+										<div class="col-md-4" >
+											<span class="label label-default">{{conversations[n].id}}</span>
+										</div>
+										<div class="col-md-5" >
+											<span ng-class="positionLabelClass()">{{positionText()}}</span>
+										</div>
+										<div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
+											<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
+											<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
+										</div>
+									</div><!-- row -->
+								</div><!-- heading -->
+								<div class="panel-body" style="overflow-y:auto; height:350px;">
+									<ul class=list-group>
+										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
+											<div class=message style="color:white">{{x}}
+											</div>
+											<div class="vote label">
+												<span ng-show="testVote($index)">
+													<button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-thumbs-up">
+														</span>
+													</button>
+												</span>
+												<span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
+												</span>
+												<span ng-show="testVote($index)">
+													<button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-thumbs-down"></span> 
+													</button>
+												</span>
+											</div><!--vote -->
+										</li> 
+										<li ng-show="testUndo()" class="list-group-item">
+											<button   ng-click="back()" type="button" class="btn btn-danger btn-xs">Retract</button>
+										</li>
+										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
+											<div ng-show="(conversations[n].type == 'complete') ">
+												<button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
+												<button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
+											</div>
+											<div ng-show="(conversations[n].type == 'blank') && logged">
+												<textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+												<button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>						      
+											</div>
+											<div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
+													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+													<button ng-click="addMessage();conversations[n].type='conversata'" class="btn btn-primary btn-xs" > Respond</button>
+													<button ng-show="(conversations[n].type == 'waiting')" ng-click="back()" class="btn btn-danger btn-xs" >Leave</button>	
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="panel-footer ">
+									<div class=row ng-show="(conversations[n].type=='blank') || (conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
+										<div class="col-md-5" >
+											<div class="input-group" >
+												<input  type="text" class="form-control" placeholder="Identifier" ng-model=jumper>
+													<span class="input-group-btn">
+														<button ng-click="jump(jumper)" class="btn btn-success" type="button">Go</button>
+													</span>
+											</div>
+										</div>
+										<div class="col-md-7" >
+											<div class="input-group" >
+												<input  type="text" class="form-control" placeholder="Search for..."></input>
+												<span class="input-group-btn">
+													<button  class="btn btn-success" type="button">Go</button>
+													<button  class="btn btn-success" type="button">Next</button>
+													<button  class="btn btn-success" type="button">Prev</button>
+												</span>
+											</div><!-- -->
+										</div><!--  -->
+									</div>
+								</div><!-- footer -->
+							</div><!-- panel -->
+						</div><!-- col -->
+					</div><!-- row -->
+				</div><!-- col -->
+			</div><!-- row -->
+		</div><!-- container -->
+	</body>
 </html>
