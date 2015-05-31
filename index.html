@@ -66,8 +66,8 @@
                 <form>
                 <div   style="display:inline" >
  <button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" ng-click="$parent.n=$index;" >
-                <span ng-show="convButtonSelected($index)" class="glyphicon glyphicon-ok"></span>
-                <span ng-hide="convButtonSelected($index)">{{$index + 10}}</span>
+                <span ng-show="convButtonSelected($index)" style="font-weight:bold" >{{$index + 10}}</span>
+                <span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
                 </button>
                   </div>
                 </form>
