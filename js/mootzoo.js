@@ -94,16 +94,20 @@ app.directive('ngMouseWheelUp', function() {
         };
 });
 app.controller('conversations', function($scope, $http) {
-    $scope.convers=Array();
-    $scope.conversations=$scope.convers;
-    $scope.news=Array();
-    $scope.hints=Array();
-    $scope.n=0;
+    
     var i;
-
-
     newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:false,prenoted:"free"}};
-    $scope.message="";
+    
+    $scope.logout=function(){ 
+            $scope.convers=Array();
+            $scope.news=Array();
+            $scope.hints=Array();
+            $scope.conversations=$scope.convers;
+            $scope.n=0;
+            $scope.logged=false;
+            $scope.message="";
+            };
+    $scope.logout();
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
                         $scope.n=$scope.n+1;
@@ -162,10 +166,6 @@ app.controller('conversations', function($scope, $http) {
 
                 }
                 }
-    $scope.logout=function(){ 
-                $scope.conversations=Array();
-                $scope.logged=false;
-                };
     $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
                 || ($scope.conversations[$scope.n].type == 'conversata') };
     $scope.back=function(){
