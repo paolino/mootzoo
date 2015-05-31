@@ -86,12 +86,12 @@ app.controller('conversations', function($scope, $http) {
 
     newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[],prenoted:"free"}};
 
-    for(i=0;i < 90;i ++){
+    for(i=0;i < 80;i ++){
         $scope.conversations.push(newc());
         }
     $scope.message="";
     $scope.npiu=function(){
-                if($scope.n < (90-1)){
+                if($scope.n < (80-1)){
                         $scope.n=$scope.n+1;
                         }
         };
@@ -142,7 +142,7 @@ app.controller('conversations', function($scope, $http) {
                 }
     $scope.logout=function(){ 
                 $scope.conversations=Array();
-                for (i=0;i < 90;i ++)
+                for (i=0;i < 80;i ++)
                         $scope.conversations.push(newc());
                 $scope.logged=false;
                 };
@@ -188,13 +188,13 @@ app.controller('conversations', function($scope, $http) {
                         $scope.conversations[$scope.n].votes[i]-=1;
                 $scope.conversations[$scope.n].voted[i]=true;
                 }
-    $scope.testUndo=function(i){
+    $scope.testUndo=function(){
                 switch($scope.conversations[$scope.n].type) {
                         case 'blank':return false;
-                        case 'personale':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                        case 'personale':return true
                         case 'orphan':return false
                         case 'complete':return false
-                        case 'conversata':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                        case 'conversata':return true 
                         case 'waiting':return false
                 }
                 }

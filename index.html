@@ -44,33 +44,19 @@
   <div class="container" ng-init="proposing=false">
             
         <div class=row>
-        <div class="col-md-5">
+        <div class="col-md-4">
         <div ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
-                <div class="panel-heading">
-                        
-                        <div class=row> 
-                                <div class="col-md-4" >
-                                <span class="label label-default">{{conversations[n].id}}</span>
-                                 </div><!-- /input-group -->
-                                <div class="col-md-5" >
-                                <span ng-class="positionLabelClass()">{{positionText()}}</span>
-                                </div><!-- /input-group -->
-                                <div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
-                                <button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
-                                <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
-                                </div><!-- /input-group -->
-                        </div><!-- row -->
-
-                </div>
+                                <div class="panel-heading">
+                                Store
+                                </div>
                 <div class="panel-body" >
-                <form>
                 <div   style="display:inline" >
- <button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
+                        <button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
+                                ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
                 <span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
                 <span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
                 </button>
                   </div>
-                </form>
                 </div>
 
         </div>
@@ -79,38 +65,55 @@
                 <div class="row">
                         <div class="col-md-12">
                                 <div class="panel panel-info" >
-                                                                       <div class="panel-body" style="overflow-y:auto; height:350px;">
+                                        <div class="panel-heading">
+                                                
+                                                <div class=row> 
+                                                        <div class="col-md-4" >
+                                                        <span class="label label-default">{{conversations[n].id}}</span>
+                                                         </div><!-- /input-group -->
+                                                        <div class="col-md-5" >
+                                                        <span ng-class="positionLabelClass()">{{positionText()}}</span>
+                                                        </div><!-- /input-group -->
+                                                        <div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
+                                                        <button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
+                                                        <button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
+                                                        </div><!-- /input-group -->
+                                                </div><!-- row -->
+
+                                        </div>
+                                               <div class="panel-body" style="overflow-y:auto; height:350px;">
 
 
-                                                                        <ul class=list-group>
-                                                                          <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
-                                                                                
-                                                                                <div class=message style="color:white">
-                                                                                
-                                                                                <button ng-show="testUndo($index)"  ng-click="back()" type="button" class="btn btn-danger btn-xs">
-                                                                                <span  class="glyphicon glyphicon-remove">
-                                                                                </span>
-                                                                                        </button>
-                                                                                {{x}}
-                                                                                </div>
-                                                                                <div class="vote label">
+                                                <ul class=list-group>
+                                                  <li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
+                                                        
+                                                        <div class=message style="color:white">
+                                                        
 
-                                                                                <span ng-show="testVote($index)">
-                                                                                        <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
-                                                                                          <span class="glyphicon glyphicon-thumbs-up"></span>
-                                                                                        </button>
-                                                                                </span>
-                                                                                <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
-                                                                                </span>
-                                                                                <span ng-show="testVote($index)">
-                                                                                        <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
-                                                                                          <span class="glyphicon glyphicon-thumbs-down"></span> 
-                                                                                        </button>
-                                                                                </span>
-                                                                                </div>
-                                                                           
-                                                                          </li>
+                                                        {{x}}
+                                                        </div>
+                                                        <div class="vote label">
 
+                                                        <span ng-show="testVote($index)">
+                                                                <button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs">
+                                                                  <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                                </button>
+                                                        </span>
+                                                        <span style="background-color:#aaa" class="badge">{{conversations[n].votes[$index]}}
+                                                        </span>
+                                                        <span ng-show="testVote($index)">
+                                                                <button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs">
+                                                                  <span class="glyphicon glyphicon-thumbs-down"></span> 
+                                                                </button>
+                                                        </span>
+                                                        </div>
+                                                   
+                                                  </li> 
+                                                <li ng-show="testUndo()" class="list-group-item">
+                                                        <button   ng-click="back()" type="button" class="btn btn-danger btn-xs">
+                                                        Retract        
+                                                        </button>
+                                                </li>
 
                                 <li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
                                                         <div ng-show="(conversations[n].type == 'complete') ">
@@ -166,6 +169,23 @@
                 </div>
                 </div>
         </div>
+        </div>
+                <div class="col-md-1" >
+                        <div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
+                                <div class="panel-heading">
+                                News
+                                </div>
+                                
+                        <div class="panel-body" >
+                                <div   style="display:inline" >
+                                        <button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
+                                                ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
+                                <span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
+                                <span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
+                                </button>
+                                  </div>
+                        </div>
+                        </div>
     </div>
   </div>
   </div>
