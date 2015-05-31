@@ -1,0 +1,64 @@
+[
+{
+"id":820348529,
+"type":"complete",
+"messages":["I wouldn't bother with the length check, your function will traverse both lists twice","if you can order the elements, then you can get O(n log n) algorithms very easily","I don't know how to write one nicely, but it may well be worth it to pick up a factor of n/log n","obviously it isn't a good idea to write a dozen different versions of every command such as ls or grep","Non possiamo certo dire che siano uguali... Anzitutto, salta all'occhio la differente altezza, pur avendola entrambi impostata su 50px. Secondo poi, il contenuto racchiuso dal DIV possiede una lunghezza differente da quello racchiuso dallo SPAN. Perchè?"],
+"votes":[0,0,0,0,0],
+"voted":false,
+"prenoted":"free"
+},
+{
+"id":5490276,
+"type":"personale",
+"messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"],
+"votes":[0,0,0,0],
+"voted":false,
+"prenoted":"free"
+
+
+},
+{
+"id":55422902,
+"type":"orphan",
+"messages":["mi piace la torta","fa male","eh, ma io non posso farne a meno","a me piacciono i biscotti"],
+"votes":[0,0,0,0],
+"voted":false,
+"prenoted":"free"
+
+
+},
+{
+"id":5482902,
+"type":"conversata",
+"messages":["sto per essere assunto","che lavoro?","potature","te ne intendi?","poco"],
+"votes":[0,0,0,0,0],
+"voted":false,
+"prenoted":"other"
+
+
+},
+{
+"id":5490276,
+"type":"waiting",
+"messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"],
+"votes":[0,0,0,0],
+"voted":false,
+"prenoted":"free"
+
+
+}
+,
+{
+"id":55422902,
+"type":"orphan",
+"messages":["mi piace la torta","fa male","eh, ma io non posso farne a meno","a me piacciono i biscotti"],
+"votes":[0,0,0,0],
+"voted":false,
+"prenoted":"free"
+
+
+}
+]
+
+
+
