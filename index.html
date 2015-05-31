@@ -2,7 +2,7 @@
 
 <html lang="en" ng-app="mootzoo" ng-controller="conversations">
 	<head>
-		<title>mootzoo chatline</title>
+		<title>mootzoo collective</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -43,57 +43,77 @@
 			<div class=row>
 				<div class="col-md-4">
 					<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
-						<div class="panel-heading">News</div>
-							<div class="panel-body" >
-								<div style="display:inline" >
-									<button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
-										ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
-										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
-										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
-									</button>
+						<div class="panel-heading" data-toggle="tooltip" title="Conversations in your store recently updated">
+							<div class=row>
+								<div class="col-md-8" > News </div>
+								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
+									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
+									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
 								</div>
 							</div>
 						</div>
-						<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
-							<div class="panel-heading">Hints</div>
-							<div class="panel-body" >
-								<div   style="display:inline" >
-									<button ng-repeat="x in conversations.slice(0,10)" type="submit" ng-class="convButton(x,$index)" 
-										ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
-										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
-										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
-									</button>
-								</div>
-							</div>
-						</div>
-						<div ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
-							<div class="panel-heading">Store</div>
-							<div class="panel-body" >
-								<div   style="display:inline" >
-									<button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
-											ng-click="$parent.n=$index;"  ng-right="npiu()" ng-left="nmeno()" >
-										<span ng-show="convButtonSelected($index)" style="font-weight:bold;color:black" >{{$index + 10}}</span>
-										<span ng-hide="convButtonSelected($index)" style="opacity:0.6">{{$index + 10}}</span>
-									</button>
-								</div>
+						<div class="panel-body" >
+							<div style="display:inline" >
+								<button ng-repeat="x in news.slice(0,15)" type="submit" ng-class="convButton(x,$index)" 
+									ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
+									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.index}}</span>
+									<span ng-hide="convButtonSelected(x)" style="opacity:0.7">{{x.index}}</span>
+								</button>
 							</div>
 						</div>
 					</div>
+					<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-info">
+						<div class="panel-heading" data-toggle="tooltip" title="Conversations hinted from mootzoo">
+							<div class=row>
+								<div class="col-md-8" > Hints </div>
+								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
+									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
+									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
+								</div>
+							</div>
+						</div>
+						<div class="panel-body" >
+							<div   style="display:inline" >
+								<button ng-repeat="x in hints.slice(0,15)" type="submit" ng-class="convButton(x,$index)" 
+									ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
+									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" > {{conversations.length}}</span>
+									<span ng-hide="convButtonSelected(x)" style="opacity:0.7"> {{conversations.length}}</span>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div ng-show="logged" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-info">
+						<div class="panel-heading" data-toggle="tooltip" title="Conversations you are reading or partecipating">
+							<div class=row>
+								<div class="col-md-8" > Store </div>
+								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
+									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
+									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
+								</div>
+							</div>
+						</div>
+						<div class="panel-body" >
+							<div   style="display:inline" >
+								<button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
+										ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
+									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.index}}</span>
+									<span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.index}}</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="col-md-6">
 					<div class="row">
 						<div class="col-md-12">
 							<div class="panel panel-info" >
-								<div class="panel-heading"> 
+								<div class="panel-heading" > 
 									<div class=row> 
 										<div class="col-md-4" >
 											<span class="label label-default">{{conversations[n].id}}</span>
 										</div>
 										<div class="col-md-5" >
-											<span ng-class="positionLabelClass()">{{positionText()}}</span>
-										</div>
-										<div class="col-md-3" data-toggle="tooltip" title="Use mousewheel instead" >
-											<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default">prev</button>
-											<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default">next</button>
+											<span ng-show="logged" ng-class="positionLabelClass()">{{positionText()}}</span>
 										</div>
 									</div><!-- row -->
 								</div><!-- heading -->
@@ -118,7 +138,7 @@
 												</span>
 											</div><!--vote -->
 										</li> 
-										<li ng-show="testUndo()" class="list-group-item">
+										<li ng-show="testUndo() && (logged)" class="list-group-item">
 											<button   ng-click="back()" type="button" class="btn btn-danger btn-xs">Retract</button>
 										</li>
 										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
@@ -164,6 +184,13 @@
 						</div><!-- col -->
 					</div><!-- row -->
 				</div><!-- col -->
+				<div class="col-md-2" class="advertise">
+					<div class="panel panel-info" >
+							<div class="panel-heading">Advertise</div>
+							<div class="panel-body">Subscribe to get rid of this</div>
+					</div><!-- panel -->
+				</div><!-- col 2  -->
+
 			</div><!-- row -->
 		</div><!-- container -->
 	</body>

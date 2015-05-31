@@ -1,4 +1,19 @@
 {
+Array.prototype.shuffle = function() {
+	var input = this;
+	
+	for (var i = input.length-1; i >=0; i--) {
+	
+		var randomIndex = Math.floor(Math.random()*(i+1)); 
+		var itemAtIndex = input[randomIndex]; 
+		
+		input[randomIndex] = input[i]; 
+		input[i] = itemAtIndex;
+	}
+	return input;
+} 
+}
+{
 var app = angular.module('mootzoo', []);
 app.author=false;
 app.logged = false;
@@ -79,13 +94,15 @@ app.directive('ngMouseWheelUp', function() {
         };
 });
 app.controller('conversations', function($scope, $http) {
-    $scope.conversations=Array();
+    $scope.convers=Array();
+    $scope.conversations=$scope.convers;
+    $scope.news=Array();
+    $scope.hints=Array();
     $scope.n=0;
     var i;
 
 
-    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:[],prenoted:"free"}};
-    $scope.conversations.push(newc());
+    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:false,prenoted:"free"}};
     $scope.message="";
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
@@ -98,11 +115,18 @@ app.controller('conversations', function($scope, $http) {
                 }
         };
     $scope.login=function(){
-        $http.get("conversation.json").success(function(response) {
-                for (i=0;i < response.length;i ++)
-                $scope.conversations[i]=response[i];
+        $http.get("conversations.json").success(function(response) {
+                for (i=0;i < response.length;i ++){
+                        response[i].index=i
+                        $scope.convers.push(response[i]);
+                        $scope.news.push(response[i]);
+                        if((response[i].type != 'conversata') && (response[i].type != 'personale') && (response[i].type != 'waiting'))
+                                $scope.hints.push(response[i]);
+                        }
+                        
+                $scope.conversations.push(newc());
+                $scope.news.shuffle();
         });
-        $scope.conversations.push(newc());
         $scope.logged=true;
         };
     $scope.jump=function(where){
@@ -119,11 +143,11 @@ app.controller('conversations', function($scope, $http) {
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].type) {
                         case 'blank':return "you can propose"
-                        case 'personale':return "you proposed"
-                        case 'orphan':return "you can respond"
-                        case 'complete':return "you are observerving"
-                        case 'conversata':return "you responded"
-                        case 'waiting':return "you must respond"
+                        case 'personale':return "you proposed, anyone can respond"
+                        case 'orphan':return "you can respond, among others"
+                        case 'complete':return "you can only read"
+                        case 'conversata':return "you responded, only one can respond"
+                        case 'waiting':return "only you can respond"
                 }
                 }
         
@@ -140,7 +164,6 @@ app.controller('conversations', function($scope, $http) {
                 }
     $scope.logout=function(){ 
                 $scope.conversations=Array();
-                $scope.conversations.push(newc());
                 $scope.logged=false;
                 };
     $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
@@ -163,12 +186,12 @@ app.controller('conversations', function($scope, $http) {
         };
     $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')};
     $scope.testVote=function(i){
+                if($scope.conversations[$scope.n].voted)return false;
                 switch($scope.conversations[$scope.n].type) {
                         case 'blank':return false;
                         case 'personale':return false
                         case 'orphan':return (i == $scope.conversations[$scope.n].messages.length - 1)
-                        case 'complete':return (i == $scope.conversations[$scope.n].messages.length - 1) || 
-                                        (i == $scope.conversations[$scope.n].messages.length - 2)
+                        case 'complete':return (i == $scope.conversations[$scope.n].messages.length - 1)  
                         case 'conversata':return false
                         case 'waiting':return (i == $scope.conversations[$scope.n].messages.length - 1)
                 }
@@ -177,17 +200,17 @@ app.controller('conversations', function($scope, $http) {
     $scope.voteUp=function(i){
                 if(!$scope.conversations[$scope.n].voted[i])
                         $scope.conversations[$scope.n].votes[i]+=1;
-                $scope.conversations[$scope.n].voted[i]=true;
+                $scope.conversations[$scope.n].voted=true;
                 }
 
     $scope.voteDown=function(i){
                 if(!$scope.conversations[$scope.n].voted[i])
                         $scope.conversations[$scope.n].votes[i]-=1;
-                $scope.conversations[$scope.n].voted[i]=true;
+                $scope.conversations[$scope.n].voted=true;
                 }
     $scope.testUndo=function(){
                 switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return false;
+                        case 'blank':return false
                         case 'personale':return true
                         case 'orphan':return false
                         case 'complete':return false
@@ -228,24 +251,24 @@ app.controller('conversations', function($scope, $http) {
 
                
       
-        $scope.convButtonSelected= function(i){
-             return (i==$scope.n); 
+        $scope.convButtonSelected= function(x){
+             return ($scope.n==x.index); 
         }
       
         $scope.convButton= function(x,i){
              var s = ""
              if (i==$scope.n) s=""; 
              if(x.type=="complete")
-                    return "btn btn-success" + s
+                    return "btn btn-xs btn-success" + s
              else if(x.type=="orphan")
-                    return "btn btn-danger"+ s
+                    return "btn btn-xs btn-danger"+ s
              else if(x.type=='waiting')
-                    return "btn btn-warning"+ s
+                    return "btn btn-xs btn-warning"+ s
              else if(x.type=='conversata')
-                    return "btn btn-primary"+ s
+                    return "btn btn-xs btn-primary"+ s
              else if(x.type=='personale')
-                    return "btn btn-info"+ s
-             else return "btn btn-default"+ s
+                    return "btn btn-xs btn-info"+ s
+             else return "btn btn-xs btn-default"+ s
              };
     $scope.removeConversation=function(){
         $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
@@ -288,7 +311,7 @@ app.controller('conversations', function($scope, $http) {
         }
 });
 }
-    
+   
 window.onload = function() {
     var t = document.getElementsByTagName('textarea')[0];
     var offset= !window.opera ? (t.offsetHeight - t.clientHeight) : (t.offsetHeight + parseInt(window.getComputedStyle(t, null).getPropertyValue('border-top-width'))) ;

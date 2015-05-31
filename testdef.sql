@@ -5,11 +5,14 @@ create table users (
         );
 create table conversations (
         id integer primary key autoincrement not null,
-        pusher integer not null,
-        message text not null,
+        pusher integer ,
+        messagepusher integer,
         opponent integer,
+        messageopponent integer,
         foreign key(pusher) references users(id),
         foreign key(opponent) references users(id)
+        foreign key(messagepusher) references messages(id)
+        foreign key(messageopponent) references messages(id)
         );
 
 
