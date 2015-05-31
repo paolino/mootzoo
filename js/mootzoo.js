@@ -120,12 +120,12 @@ app.controller('conversations', function($scope, $http) {
         };
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return "no one is partecipating"
-                        case 'personale':return "you are waiting for a partecipant"
-                        case 'orphan':return "you can partecipate"
-                        case 'complete':return "two others are partecipating"
-                        case 'conversata':return "you are waiting for a response"
-                        case 'waiting':return "you are asked to respond"
+                        case 'blank':return "you can propose"
+                        case 'personale':return "you proposed"
+                        case 'orphan':return "you can respond"
+                        case 'complete':return "you are observerving"
+                        case 'conversata':return "you responded"
+                        case 'waiting':return "you must respond"
                 }
                 }
         
