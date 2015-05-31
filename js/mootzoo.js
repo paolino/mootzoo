@@ -202,8 +202,27 @@ app.controller('conversations', function($scope, $http) {
                 }
         };
 
-                
-
+               
+      
+        $scope.convButtonSelected= function(i){
+             return (i==$scope.n); 
+        }
+      
+        $scope.convButton= function(x,i){
+             var s = ""
+             if (i==$scope.n) s=""; 
+             if(x.type=="complete")
+                    return "btn btn-success" + s
+             else if(x.type=="orphan")
+                    return "btn btn-danger"+ s
+             else if(x.type=='waiting')
+                    return "btn btn-warning"+ s
+             else if(x.type=='conversata')
+                    return "btn btn-primary"+ s
+             else if(x.type=='personale')
+                    return "btn btn-info"+ s
+             else return "btn btn-default"+ s
+             };
     $scope.removeConversation=function(){
         $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
         $scope.conversations[$scope.n].type="blank";
