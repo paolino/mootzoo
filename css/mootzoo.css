@@ -33,6 +33,7 @@
         }
 .btn-default{
         background-color:#aaa;
+        color:white;
         }
 .btn-grey > .btn-default {
         background-color:#fff;     

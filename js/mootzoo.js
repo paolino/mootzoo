@@ -3,6 +3,33 @@ var app = angular.module('mootzoo', []);
 app.author=false;
 app.logged = false;
 app.unused=false;
+app.directive('ngLeft', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which===37) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngLeft);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
+app.directive('ngRight', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which===39) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngRight);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
+
 app.directive('ngMouseWheelDown', function() {
         return function(scope, element, attrs) {
             element.bind("DOMMouseScroll mousewheel onmousewheel", function(event) {
