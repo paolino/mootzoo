@@ -96,7 +96,7 @@ app.directive('ngMouseWheelUp', function() {
 app.controller('conversations', function($scope, $http) {
     
     var i;
-    newc = function (){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",messages:[],votes:[],voted:false,prenoted:"free"}};
+    newc = function (l){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",index:l,messages:[],votes:[],voted:false,prenoted:"free"}};
     
     $scope.logout=function(){ 
             $scope.convers=Array();
@@ -127,7 +127,7 @@ app.controller('conversations', function($scope, $http) {
                                 $scope.hints.push(response[i]);
                         }
                         
-                $scope.conversations.push(newc());
+                $scope.convers.push(newc(i));
                 $scope.news.shuffle();
         });
         $scope.logged=true;
