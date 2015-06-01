@@ -1,3 +1,5 @@
+
+
 {
 Array.prototype.shuffle = function() {
 	var input = this;
@@ -14,7 +16,7 @@ Array.prototype.shuffle = function() {
 } 
 }
 {
-var app = angular.module('mootzoo', []);
+var app = angular.module('mootzoo', ['luegg.directives']);
 app.author=false;
 app.logged = false;
 app.unused=false;
@@ -96,13 +98,14 @@ app.directive('ngMouseWheelUp', function() {
 app.controller('conversations', function($scope, $http) {
     newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
                         index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
+    
+    
+    $scope.logout=function(){ 
     $scope.convers=Array();
     $scope.conversations=$scope.convers;
     $scope.news=Array();
     $scope.hints=Array();
-    
-    
-    $scope.logout=function(){ 
+    $scope.message="Message..";
             $scope.n=0;
             $scope.logged=false;
             $scope.message="";
@@ -299,6 +302,9 @@ app.controller('conversations', function($scope, $http) {
                         }
                 else return "btn-grey"
         }
+    $scope.scrollDown=function(){
+        $( "#conversation" ).scrollTop(100000);
+        }
     $scope.stepIn = function(){
         $scope.filterBlanks();
                         
@@ -309,6 +315,7 @@ app.controller('conversations', function($scope, $http) {
         c.votes.push(0);
         c.voted=true;
         $scope.n = c.index;
+        $scope.message=null;
         }
 });
 }

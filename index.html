@@ -10,6 +10,7 @@
 		<script src= "js/bootstrap.min.js" type="text/javascript"> </script>
 		<script src= "js/angular.min.js" type="text/javascript"></script>
 		<script src= "js/mootzoo.js" type="text/javascript"></script>
+		<script src= "js/scrollglue.js" type="text/javascript"></script>
 		<link rel="stylesheet" href="css/mootzoo.css" type="text/css">
 	</head>
 
@@ -53,11 +54,11 @@
 							</div>
 						</div>
 						<div class="panel-body" >
-							<div style="display:inline" >
-								<button ng-repeat="x in news.slice(0,15)" type="submit" ng-class="convButton(x,$index)" 
-									ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
-									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.index}}</span>
-									<span ng-hide="convButtonSelected(x)" style="opacity:0.7">{{x.index}}</span>
+							<div class="col-md-12" ng-repeat="x in news.slice(0,15)" >
+								<button style="color:black" type="submit" ng-class="convButton(x,$index)" 
+									ng-click="$parent.n=x.index"  ng-right="npiu()" ng-left="nmeno()" >
+									<span  ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
+									<span  ng-hide="convButtonSelected(x)" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 								</button>
 							</div>
 						</div>
@@ -98,8 +99,8 @@
 										</div>
 									</div><!-- row -->
 								</div><!-- heading -->
-								<div class="panel-body" style="overflow-y:auto; height:350px;">
-									<ul class=list-group>
+								<div  id=conversation class="panel-body" style="overflow-y:auto; height:350px;" scroll-glue >
+									<ul class=list-group >
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
 											<div class=message style="color:white">{{x}}
 											</div>

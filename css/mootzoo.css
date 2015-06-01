@@ -1,3 +1,4 @@
+
 .message{
     padding-right:100px;
 }
@@ -22,7 +23,9 @@
         background-color:black;
         color:white;
         }
-
+.btn {
+    white-space: normal;
+}
 .ciao:focus{
         background-color:black;
         color:white;
