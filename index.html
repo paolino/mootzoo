@@ -41,12 +41,12 @@
 
 		<div class="container" ng-init="proposing=false"> 
 			<div class=row>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-primary">
 						<div class="panel-heading" data-toggle="tooltip" title="Conversations in your store recently updated">
 							<div class=row>
-								<div class="col-md-8"> <span class="label"> News </span></div>
-								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
+								<div class="col-md-6"> <span class="label"> News </span></div>
+								<div class="col-md-6" data-toggle="tooltip" title="Use mousewheel instead" >
 									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
 									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
 								</div>
@@ -62,31 +62,11 @@
 							</div>
 						</div>
 					</div>
-					<div ng-mouse-wheel-up="kpiu()" ng-mouse-wheel-down="kmeno()" class="panel panel-primary">
-						<div class="panel-heading" data-toggle="tooltip" title="Conversations hinted from mootzoo">
-							<div class=row>
-								<div class="col-md-8" > <span class="label"> Hints</span> </div>
-								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
-									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
-									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
-								</div>
-							</div>
-						</div>
-						<div class="panel-body" >
-							<div   style="display:inline" >
-								<button ng-repeat="x in hints.slice(0,15)" type="submit" ng-class="convButton(x,$index)" 
-									ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
-									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" > {{n}}</span>
-									<span ng-hide="convButtonSelected(x)" style="opacity:0.7"> {{n}}</span>
-								</button>
-							</div>
-						</div>
-					</div>
 					<div ng-show="logged" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()" class="panel panel-primary">
 						<div class="panel-heading" data-toggle="tooltip" title="Conversations you are reading or partecipating">
 							<div class=row>
-								<div class="col-md-8" > <span class="label"> Store </span> </div>
-								<div class="col-md-4" data-toggle="tooltip" title="Use mousewheel instead" >
+								<div class="col-md-6" > <span class="label"> Store </span> </div>
+								<div class="col-md-6" data-toggle="tooltip" title="Use mousewheel instead" >
 									<button ng-click="nmeno()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
 									<button ng-click="npiu()" type="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
 								</div>
@@ -103,12 +83,13 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-7">
 					<div class="row">
 						<div class="col-md-12">
-							<div class="panel panel-info" >
+							<div class="panel panel-primary" >
 								<div class="panel-heading" > 
 									<div class=row> 
+											<div class="col-md-3" > <span class="label"> Conversation </span> </div>
 										<div class="col-md-4" >
 											<span class="label label-default">{{conversations[n].id}}</span>
 										</div>
@@ -160,7 +141,10 @@
 								</div>
 								<div class="panel-footer ">
 									<div class=row ng-show="(conversations[n].type=='blank') || (conversations[n].type=='complete')||(conversations[n].type=='orphan')"> 
-										<div class="col-md-5" >
+										<div class="col-md-2" >
+											<button ng-click="hint()" class="btn btn-success" type="button" data-toggle="tooltip" title="Get a hint from mootzoo algorithm">Hint</button>
+										</div>
+										<div class="col-md-3" >
 											<div class="input-group" >
 												<input  type="text" class="form-control" placeholder="Identifier" ng-model=jumper>
 													<span class="input-group-btn">
@@ -185,9 +169,11 @@
 					</div><!-- row -->
 				</div><!-- col -->
 				<div class="col-md-2" class="advertise">
-					<div class="panel panel-info" >
-							<div class="panel-heading">Advertise</div>
-							<div class="panel-body">Subscribe to get rid of this</div>
+					<div class="panel panel-primary" >
+							<div class="panel-heading">
+								<span class="label"> Advertise </span> 
+							</div>
+							<div class="panel-body"> <button class="btn btn-info"> Subscribe to get rid</button> </div>
 					</div><!-- panel -->
 				</div><!-- col 2  -->
 

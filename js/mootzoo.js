@@ -107,7 +107,6 @@ app.controller('conversations', function($scope, $http) {
             $scope.logged=false;
             $scope.message="";
             };
-    $scope.logout();
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
                         $scope.n=$scope.n+1;
@@ -309,6 +308,7 @@ app.controller('conversations', function($scope, $http) {
    $scope.unprenote=function(){
        $scope.conversations[$scope.n].prenoted="free";
         }
+   $scope.logout();
 });
 }
    
