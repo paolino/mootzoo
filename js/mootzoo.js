@@ -16,7 +16,7 @@ Array.prototype.shuffle = function() {
 } 
 }
 {
-var app = angular.module('mootzoo', ['luegg.directives']);
+var app = angular.module('mootzoo', []);
 app.author=false;
 app.logged = false;
 app.unused=false;
