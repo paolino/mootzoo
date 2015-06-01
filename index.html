@@ -124,12 +124,10 @@
 										</li>
 										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
 											<div ng-show="(conversations[n].type == 'complete') ">
-												<button ng-show="canPrenote()" ng-click="prenote()" class="btn btn-warning" > Prenote partecipation</button>
-												<button ng-show="canUnprenote()" ng-click="unprenote()" class="btn btn-danger" > Unprenote</button>
-											</div>
-											<div ng-show="(conversations[n].type == 'blank') && logged">
-												<textarea   style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-												<button ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" > Start</button>						      
+												<div>
+													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+													<button  ng-click="stepIn()" class="btn btn-info" data-toggle="tooltip" title="Open a new conversation to this conversation followers" > Step in </button>
+												</div>
 											</div>
 											<div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>

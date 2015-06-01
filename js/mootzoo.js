@@ -94,19 +94,20 @@ app.directive('ngMouseWheelUp', function() {
         };
 });
 app.controller('conversations', function($scope, $http) {
+    newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
+                        index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
+    $scope.convers=Array();
+    $scope.conversations=$scope.convers;
+    $scope.news=Array();
+    $scope.hints=Array();
     
-    var i;
-    newc = function (l){return  {id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",index:l,messages:[],votes:[],voted:false,prenoted:"free"}};
     
     $scope.logout=function(){ 
-            $scope.convers=Array();
-            $scope.news=Array();
-            $scope.hints=Array();
-            $scope.conversations=$scope.convers;
             $scope.n=0;
             $scope.logged=false;
             $scope.message="";
             };
+    $scope.logout();
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
                         $scope.n=$scope.n+1;
@@ -117,31 +118,33 @@ app.controller('conversations', function($scope, $http) {
                         $scope.n=$scope.n-1;
                 }
         };
+    $scope.filterBlanks = function(){
+        for(i=0,j=0;i<$scope.convers.length;i ++)
+                if ($scope.convers[i].type != 'blank'){
+                        $scope.convers[j] = $scope.convers[i];
+                        $scope.convers[j].index=j++;
+                        }
+        for(;j<i;j++) $scope.convers.pop();
+        $scope.n=0;
+        }
+
     $scope.login=function(){
         $http.get("conversations.json").success(function(response) {
+                var j = $scope.convers.length;
                 for (i=0;i < response.length;i ++){
-                        response[i].index=i
+                        response[i].index=j++
                         $scope.convers.push(response[i]);
                         $scope.news.push(response[i]);
                         if((response[i].type != 'conversata') && (response[i].type != 'personale') && (response[i].type != 'waiting'))
                                 $scope.hints.push(response[i]);
                         }
                         
-                $scope.convers.push(newc(i));
                 $scope.news.shuffle();
+                $scope.filterBlanks();
         });
         $scope.logged=true;
         };
     $scope.jump=function(where){
-        $http.get("conversations.json").success(function(response) {
-                var i=0;
-                for(;i < response.length; i ++)
-                        if (response[i].id==where){
-                                      $scope.conversations[$scope.n]=response[i];
-                                      break;
-                                      }
-                if(i >= response.length) alert("Conversation not found");
-                });
         };
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].type) {
@@ -182,6 +185,7 @@ app.controller('conversations', function($scope, $http) {
                                 $scope.conversations[$scope.n].type="orphan";
                                 break;
                 }
+        $scope.filterBlanks();
         };
     $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')};
     $scope.testVote=function(i){
@@ -295,20 +299,17 @@ app.controller('conversations', function($scope, $http) {
                         }
                 else return "btn-grey"
         }
-   $scope.canPrenote=function(){
-       return ($scope.conversations[$scope.n].prenoted=="free")
+    $scope.stepIn = function(){
+        $scope.filterBlanks();
+                        
+        newc();
+        c = $scope.convers[$scope.convers.length - 1];
+        c.type='personale'
+        c.messages.push($scope.message);
+        c.votes.push(0);
+        c.voted=true;
+        $scope.n = c.index;
         }
-   $scope.canUnprenote=function(){
-       return ($scope.conversations[$scope.n].prenoted=="you")
-        }
-   $scope.prenote=function(){
-       $scope.conversations[$scope.n].prenoted="you";
-        }
-
-   $scope.unprenote=function(){
-       $scope.conversations[$scope.n].prenoted="free";
-        }
-   $scope.logout();
 });
 }
    
