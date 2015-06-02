@@ -99,7 +99,12 @@ app.controller('conversations', function($scope, $http) {
     newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
                         index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
     
-    
+    $scope.continueExecution = function(){
+        $('#conversation').scrollTop(10000);
+        } 
+    $scope.gotoBottom=function(){
+         setTimeout($scope.continueExecution, 100);
+         }
     $scope.logout=function(){ 
     $scope.convers=Array();
     $scope.conversations=$scope.convers;

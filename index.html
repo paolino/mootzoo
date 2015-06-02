@@ -53,7 +53,7 @@
 						<div class="panel-body" >
 							<div class="col-md-12" ng-repeat="x in news.slice(0,15)" >
 								<button style="color:black" type="submit" ng-class="convButton(x,$index)" 
-									ng-click="$parent.n=x.index"  ng-right="npiu()" ng-left="nmeno()" >
+									ng-click="$parent.n=x.index;gotoBottom()"  ng-right="npiu()" ng-left="nmeno()" >
 									<span  ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 									<span  ng-hide="convButtonSelected(x)" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 								</button>
