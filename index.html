@@ -73,7 +73,7 @@
 						<div class="panel-body" >
 							<div   style="display:inline" >
 								<button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
-										ng-click="$parent.n=x.index;"  ng-right="npiu()" ng-left="nmeno()" >
+										ng-click="$parent.n=x.index;gotoBottom()"  ng-right="npiu()" ng-left="nmeno()" >
 									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.index}}</span>
 									<span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.index}}</span>
 								</button>
