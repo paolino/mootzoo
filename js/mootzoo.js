@@ -99,31 +99,35 @@ app.controller('conversations', function($scope, $http) {
     newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
                         index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
     
-    $scope.continueExecution = function(){
-        $('#conversation').scrollTop(10000);
+    $scope.gotoBottom = function(){
+        if (!$scope.bottomed)
+                $('#conversation').scrollTop(10000);
+        $scope.bottomed=true;
         } 
-    $scope.gotoBottom=function(){
-         setTimeout($scope.continueExecution, 100);
-         }
     $scope.logout=function(){ 
     $scope.convers=Array();
     $scope.conversations=$scope.convers;
     $scope.news=Array();
     $scope.hints=Array();
     $scope.message="Message..";
-            $scope.n=0;
+            $scope.setn(0);
             $scope.logged=false;
             $scope.message="";
             };
+    $scope.setn=function(i){
+        $scope.n=i;
+        $scope.bottomed=false;  
+        newc();
+        }
     $scope.logout();
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
-                        $scope.n=$scope.n+1;
+                        $scope.setn($scope.n+1);
                         }
         };
     $scope.nmeno=function(){
                         if(($scope.n > 0)){
-                        $scope.n=$scope.n-1;
+                        $scope.setn($scope.n-1);
                 }
         };
     $scope.filterBlanks = function(){
@@ -319,7 +323,7 @@ app.controller('conversations', function($scope, $http) {
         c.messages.push($scope.message);
         c.votes.push(0);
         c.voted=true;
-        $scope.n = c.index;
+        $scope.setn(c.index);
         $scope.message=null;
         }
 });

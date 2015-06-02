@@ -53,7 +53,7 @@
 						<div class="panel-body" >
 							<div class="col-md-12" ng-repeat="x in news.slice(0,15)" >
 								<button style="color:black" type="submit" ng-class="convButton(x,$index)" 
-									ng-click="$parent.n=x.index;gotoBottom()"  ng-right="npiu()" ng-left="nmeno()" >
+									ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
 									<span  ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 									<span  ng-hide="convButtonSelected(x)" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 								</button>
@@ -73,7 +73,7 @@
 						<div class="panel-body" >
 							<div   style="display:inline" >
 								<button ng-repeat="x in conversations" type="submit" ng-class="convButton(x,$index)" 
-										ng-click="$parent.n=x.index;gotoBottom()"  ng-right="npiu()" ng-left="nmeno()" >
+										ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
 									<span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.index}}</span>
 									<span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.index}}</span>
 								</button>
@@ -96,7 +96,7 @@
 										</div>
 									</div><!-- row -->
 								</div><!-- heading -->
-								<div  id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
+								<div  ng-click="gotoBottom()" id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
 									<ul class=list-group >
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
 											<div class=message style="color:white">{{x}}
@@ -165,12 +165,35 @@
 					</div><!-- row -->
 				</div><!-- col -->
 				<div class="col-md-2" class="advertise">
-					<div class="panel panel-primary" >
+					<div class="panel panel-primary" ng-hide=logged >
 							<div class="panel-heading">
-								<span class="label"> Advertise </span> 
+								<span class="label"> Advertisement </span> 
 							</div>
 							<div class="panel-body"> <button class="btn btn-info"> Subscribe to get rid</button> </div>
 					</div><!-- panel -->
+					<div class="panel panel-primary" ng-show=logged>
+						<div class="panel-heading">
+							<span class="label"> Private </span> 
+						</div>
+						<div class="panel-body"> 
+							<div class="form-group">
+								<div>    
+								<span class="label label-warning">Room name:</span> <div>
+								<input type="text" class="form-control" ng-model="roomname">
+							</div>
+							<div ng-show=roomname>    
+								<span class="label label-warning">Number of partecipants:</span> 
+									<input type="text" class="form-control" ng-model="roomnumber">
+							</div>
+							<div ng-show=roomnumber>    
+								<span class="label label-warning">Price: {{(roomnumber * 0.10)}} € a year</span> 
+							</div>
+							<div ng-show=roomnumber>    
+								<button  ng-click="roomname=null;roomnumber=null" class="btn btn-info" data-toggle="tooltip" title="Buy via Paypal" > Buy </button>
+							</div>
+						</div>
+					</div><!-- panel -->
+
 				</div><!-- col 2  -->
 
 			</div><!-- row -->

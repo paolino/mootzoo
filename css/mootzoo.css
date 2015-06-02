@@ -26,6 +26,9 @@
 .btn {
     white-space: normal;
 }
+.label {
+    white-space: normal;
+}
 .ciao:focus{
         background-color:black;
         color:white;
