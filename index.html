@@ -122,6 +122,13 @@
                                 title="{{retractMeaning()}}">Retract</button>
 										</li>
 										<li id="last" class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
+											<div ng-show="(conversations[n].type == 'blank') ">
+												<div>
+													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
+													<button  ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" 
+                                data-toggle="tooltip" title="Propose a message to restart this conversation" > Step in </button>
+												</div>
+											</div>
 											<div ng-show="(conversations[n].type == 'complete') ">
 												<div>
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>

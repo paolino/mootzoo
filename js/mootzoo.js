@@ -128,7 +128,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
         };
     $scope.filterBlanks = function(){
         for(i=0,j=0;i<$scope.convers.length;i ++)
-                if ($scope.convers[i].type != 'blank'){
+                if (($scope.convers[i].type != 'blank') && ($scope.convers[i].messages.length>0) ){
                         $scope.convers[j] = $scope.convers[i];
                         $scope.convers[j].index=j++;
                         }
@@ -148,7 +148,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
                         }
                         
                 $scope.news.shuffle();
-                $scope.filterBlanks();
+                //$scope.filterBlanks();
         });
         $scope.logged=true;
         };
@@ -193,7 +193,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
                                 $scope.conversations[$scope.n].type="orphan";
                                 break;
                 }
-        $scope.filterBlanks();
+        //$scope.filterBlanks();
         };
     $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')};
     $scope.testVote=function(i){
@@ -302,9 +302,11 @@ app.controller('conversations', function($scope, $http,$timeout) {
         $scope.conversations[$scope.n].messages=[];
         };
     $scope.addMessage=function(){
+        if($scope.message){
         $scope.conversations[$scope.n].messages.push($scope.message);
         $scope.conversations[$scope.n].votes.push(0);
         $scope.message="";
+        }
         };
     $scope.switchRole=function(){
         $scope.conversations[$scope.n].messages.push($scope.message);
