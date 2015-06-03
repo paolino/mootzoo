@@ -156,7 +156,10 @@ app.controller('conversations', function($scope, $http,$timeout) {
         };
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return "you can propose"
+                        case 'blank':if($scope.conversations[$scope.n].messages.length < 1) 
+                                        return "you can start or a conversation";
+                                        return "you can restart this conversation";
+                                     
                         case 'personale':return "you proposed, anyone can respond"
                         case 'orphan':return "you can respond, among others"
                         case 'complete':return "you can only read"
@@ -302,7 +305,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
         $scope.conversations[$scope.n].messages=[];
         };
     $scope.addMessage=function(){
-        if($scope.message){
+        if($scope.message != ""){
         $scope.conversations[$scope.n].messages.push($scope.message);
         $scope.conversations[$scope.n].votes.push(0);
         $scope.message="";
