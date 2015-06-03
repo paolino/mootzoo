@@ -186,7 +186,7 @@
 									<input type="text" class="form-control" ng-model="roomnumber">
 							</div>
 							<div ng-show=roomnumber>    
-								<span class="label label-warning">Price: {{(roomnumber * 0.10)}} € a year</span> 
+								<span class="label label-warning">Price: {{price(roomnumber)}} € a year</span> 
 							</div>
 							<div ng-show=roomnumber>    
 								<button  ng-click="roomname=null;roomnumber=null" class="btn btn-info" data-toggle="tooltip" title="Buy via Paypal" > Buy </button>

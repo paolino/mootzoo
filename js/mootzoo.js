@@ -240,7 +240,9 @@ app.controller('conversations', function($scope, $http) {
                 }
                 }
         
-
+    $scope.price=function(n){
+                return Math.sqrt(n).toFixed(2);
+                }
     $scope.backColor=function(){
         switch($scope.conversations[$scope.n].type) {
                 case 'personale': return "btn btn-default";
