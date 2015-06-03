@@ -233,6 +233,13 @@ app.controller('conversations', function($scope, $http) {
                         case 'waiting':return false
                 }
                 }
+    $retractColor=function(){
+                switch($scope.conversations[$scope.n].type) {
+                        case 'personale':return "btn-default"
+                        case 'conversata':return "btn-danger"
+                }
+                }
+        
 
     $scope.backColor=function(){
         switch($scope.conversations[$scope.n].type) {

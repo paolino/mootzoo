@@ -118,13 +118,13 @@
 											</div><!--vote -->
 										</li> 
 										<li ng-show="testUndo() && (logged)" class="list-group-item">
-											<button   ng-click="back()" type="button" class="btn btn-danger btn-xs">Retract</button>
+											<button   ng-click="back()" type="button" class="btn  btn-xs" ng-class="retractColor()" >Retract</button>
 										</li>
 										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
 											<div ng-show="(conversations[n].type == 'complete') ">
 												<div>
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-													<button  ng-click="stepIn()" class="btn btn-info" data-toggle="tooltip" title="Open a new conversation to this conversation followers" > Step aside </button>
+													<button  ng-click="stepIn()" class="btn btn-info btn-xs" data-toggle="tooltip" title="Open a new conversation to this conversation followers" > Step aside </button>
 												</div>
 											</div>
 											<div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
