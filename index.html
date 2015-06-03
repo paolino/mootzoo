@@ -119,7 +119,7 @@
 										</li> 
 										<li ng-show="testUndo() && (logged)" class="list-group-item">
 											<button   ng-click="back()" type="button" class="btn  btn-xs" ng-class="retractColor()" data-toggle="tooltip" 
-                                title="retractMeaning()">Retract</button>
+                                title="{{retractMeaning()}}">Retract</button>
 										</li>
 										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
 											<div ng-show="(conversations[n].type == 'complete') ">

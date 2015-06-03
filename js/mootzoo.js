@@ -243,7 +243,7 @@ app.controller('conversations', function($scope, $http) {
                  
                 switch($scope.conversations[$scope.n].type) {
                         case 'personale':return "Trash your last message and its feedback leaving the conversation with no partecipants"
-                        case 'conversata':return "Trash your last message and its feedback leaving the conversation open be taken from others"
+                        case 'conversata':return "Trash your last message and its feedback leaving the conversation open to be taken from others"
                 }
                 }
     $scope.price=function(n){
