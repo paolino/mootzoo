@@ -117,7 +117,7 @@ app.controller('conversations', function($scope, $http) {
     $scope.setn=function(i){
         $scope.n=i;
         $scope.bottomed=false;  
-        newc();
+        if($scope.convers.length < 1)newc();
         }
     $scope.logout();
     $scope.npiu=function(){
@@ -233,13 +233,19 @@ app.controller('conversations', function($scope, $http) {
                         case 'waiting':return false
                 }
                 }
-    $retractColor=function(){
+    $scope.retractColor=function(){
                 switch($scope.conversations[$scope.n].type) {
                         case 'personale':return "btn-default"
                         case 'conversata':return "btn-danger"
                 }
                 }
-        
+    $scope.retractMeaning=function(){
+                 
+                switch($scope.conversations[$scope.n].type) {
+                        case 'personale':return "Trash your last message and its feedback leaving the conversation with no partecipants"
+                        case 'conversata':return "Trash your last message and its feedback leaving the conversation open be taken from others"
+                }
+                }
     $scope.price=function(n){
                 return Math.sqrt(n).toFixed(2);
                 }
