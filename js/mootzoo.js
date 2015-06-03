@@ -157,7 +157,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].type) {
                         case 'blank':if($scope.conversations[$scope.n].messages.length < 1) 
-                                        return "you can start or a conversation";
+                                        return "you can start a new conversation";
                                         return "you can restart this conversation";
                                      
                         case 'personale':return "you proposed, anyone can respond"
@@ -241,8 +241,8 @@ app.controller('conversations', function($scope, $http,$timeout) {
     $scope.retractMeaning=function(){
                  
                 switch($scope.conversations[$scope.n].type) {
-                        case 'personale':return "Trash your last message and its feedback leaving the conversation with no partecipants"
-                        case 'conversata':return "Trash your last message and its feedback leaving the conversation open to be taken from others"
+                        case 'personale':return "Delete your message and its feedback leaving the conversation with no partecipants"
+                        case 'conversata':return "Delete your message and its feedback leaving the conversation open to be taken from others"
                 }
                 }
     $scope.price=function(n){
