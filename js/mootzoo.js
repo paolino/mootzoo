@@ -95,15 +95,10 @@ app.directive('ngMouseWheelUp', function() {
             });
         };
 });
-app.controller('conversations', function($scope, $http) {
+app.controller('conversations', function($scope, $http,$timeout) {
     newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
                         index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
     
-    $scope.gotoBottom = function(){
-        if (!$scope.bottomed)
-                $('#conversation').scrollTop(10000);
-        $scope.bottomed=true;
-        } 
     $scope.logout=function(){ 
     $scope.convers=Array();
     $scope.conversations=$scope.convers;
@@ -116,8 +111,9 @@ app.controller('conversations', function($scope, $http) {
             };
     $scope.setn=function(i){
         $scope.n=i;
-        $scope.bottomed=false;  
+        //$scope.bottomed=false;  
         if($scope.convers.length < 1)newc();
+        $timeout(function () {$('#conversation').animate({scrollTop:1000000});});
         }
     $scope.logout();
     $scope.npiu=function(){
@@ -137,7 +133,7 @@ app.controller('conversations', function($scope, $http) {
                         $scope.convers[j].index=j++;
                         }
         for(;j<i;j++) $scope.convers.pop();
-        $scope.n=0;
+        $scope.setn(0);
         }
 
     $scope.login=function(){

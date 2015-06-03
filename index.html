@@ -96,7 +96,7 @@
 										</div>
 									</div><!-- row -->
 								</div><!-- heading -->
-								<div  ng-click="gotoBottom()" id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
+								<div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
 									<ul class=list-group >
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
 											<div class=message style="color:white">{{x}}
@@ -117,11 +117,11 @@
 												</span>
 											</div><!--vote -->
 										</li> 
-										<li ng-show="testUndo() && (logged)" class="list-group-item">
+										<li id="last" ng-show="testUndo() && (logged)" class="list-group-item">
 											<button   ng-click="back()" type="button" class="btn  btn-xs" ng-class="retractColor()" data-toggle="tooltip" 
                                 title="{{retractMeaning()}}">Retract</button>
 										</li>
-										<li class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
+										<li id="last" class="list-group-item" ng-hide="(conversations[n].type == 'personale') || (!logged) ||(conversations[n].type == 'conversata') ">
 											<div ng-show="(conversations[n].type == 'complete') ">
 												<div>
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
