@@ -152,6 +152,25 @@ app.controller('conversations', function($scope, $http,$timeout) {
         });
         $scope.logged=true;
         };
+    $scope.showFork=function(i){
+                var l =$scope.conversations[$scope.n].messages.length -1;
+                switch($scope.conversations[$scope.n].type) {
+                        case 'blank': return true
+                        case 'personale':return (i < l);
+                        case 'orphan':return (i < l);
+                        case 'complete':return (i < l -1);
+                        case 'conversata':return (i < l - 1); 
+                        case 'waiting':return (i < l -1);
+                }
+                }
+        
+    $scope.fork=function(i){
+        newc();
+        var c = $scope.convers[$scope.convers.length - 1];
+        c.messages=$scope.convers[$scope.n].messages.splice(0,i+1);
+        c.votes=$scope.convers[$scope.n].votes.splice(0,i+1);
+        $scope.n=$scope.convers.length - 1;
+        }
     $scope.jump=function(where){
         };
     $scope.positionText=function(){
@@ -342,6 +361,7 @@ app.controller('conversations', function($scope, $http,$timeout) {
         $scope.setn(c.index);
         $scope.message=null;
         }
+
 });
 }
    

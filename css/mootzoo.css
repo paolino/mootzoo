@@ -1,13 +1,21 @@
 
 .message{
-    padding-right:100px;
+    padding-right:80px;
+    padding-left:40px;
 }
 .vote{
     vertical-align: bottom;
-    width:100px;
+    width:40px;
     position:absolute;
-    bottom:0;
+    top:0;
+    left:0;
+}
+.op{
+    vertical-align: bottom;
+    width:80px;
+    position:absolute;
     right:0;
+    bottom:0;
 }
 .odd{
         background-color:#777777;
@@ -24,6 +32,7 @@
         color:white;
         }
 .btn {
+    color:white;
     white-space: normal;
 }
 .label {

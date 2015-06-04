@@ -99,23 +99,33 @@
 								<div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
 									<ul class=list-group >
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
-											<div class=message style="color:white">{{x}}
+											<div  class="vote label">
+												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="How readers judge this message" >{{conversations[n].votes[$index]}}
+												</span>
 											</div>
-											<div class="vote label">
+											<div  class=message style="color:white" style="display:inline">{{x}}
+											</div>
+											<div  class="op label">
 												<span ng-show="testVote($index)">
 													<button ng-click="voteUp($index)" type="button" class="btn btn-default btn-xs"  data-toggle="tooltip" title="Thumbs down for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-up">
 														</span>
 													</button>
 												</span>
-												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="How readers judge this message" >{{conversations[n].votes[$index]}}
+                        <span ng-show="showFork($index)">
+                          <button ng-click="fork($index)" type="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
+                                        title="Start a new conversation with this background" >
+														<span class="glyphicon glyphicon-plus"></span>
+													</button>
 												</span>
+                        
 												<span ng-show="testVote($index)">
 													<button ng-click="voteDown($index)" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" title="Thumbs up for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-down"></span> 
 													</button>
 												</span>
 											</div><!--vote -->
+
 										</li> 
 										<li id="last" ng-show="testUndo() && (logged)" class="list-group-item">
 											<button   ng-click="back()" type="button" class="btn  btn-xs" ng-class="retractColor()" data-toggle="tooltip" 
@@ -127,12 +137,6 @@
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
 													<button  ng-click="addMessage();conversations[n].type='personale'" class="btn btn-info btn-xs" 
                                 data-toggle="tooltip" title="Propose a message to restart this conversation" > Step in </button>
-												</div>
-											</div>
-											<div ng-show="(conversations[n].type == 'complete') ">
-												<div>
-													<textarea  style="overflow:hidden" class="form-control" ng-model="message">Message..</textarea>
-													<button  ng-click="stepIn()" class="btn btn-info btn-xs" data-toggle="tooltip" title="Propose a new conversation to this conversation readers" > Partecipate </button>
 												</div>
 											</div>
 											<div ng-show="(conversations[n].type == 'waiting') ||(conversations[n].type == 'orphan') ">
