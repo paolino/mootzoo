@@ -2,7 +2,7 @@
 {
 "id":820348529,
 "type":"complete",
-"messages":["I wouldn't bother with the length check, your function will traverse both lists twice","if you can order the elements, then you can get O(n log n) algorithms very easily","I don't know how to write one nicely, but it may well be worth it to pick up a factor of n/log n","obviously it isn't a good idea to write a dozen different versions of every command such as ls or grep","Non possiamo certo dire che siano uguali... Anzitutto, salta all'occhio la differente altezza, pur avendola entrambi impostata su 50px. Secondo poi, il contenuto racchiuso dal DIV possiede una lunghezza differente da quello racchiuso dallo SPAN. Perchè?"],
+"messages":["Chi sei? che cerchi in questi luoghi dove la tua specie era incognita?","Sono un povero Islandese, che vo fuggendo la Natura; e fuggitala quasi tutto il tempo della mia vita per cento parti della terra, la fuggo adesso per questa","Così fugge lo scoiattolo dal serpente a sonaglio, finché gli cade in gola da se medesimo. Io sono quella che tu fuggi","La Natura?","Non altri","Me ne dispiace fino all'anima; e tengo per fermo che maggior disavventura di questa non mi potesse sopraggiungere","Ben potevi pensare che io frequentassi specialmente queste parti; dove non ignori che si dimostra più che altrove la mia potenza. Ma che era che ti moveva a fuggirmi?","Tu devi sapere che il mio paese nativo è da sempre preso di mira dalle intemperie della natura, e non ardisco di tentar olte ma ti chiedo perchè?","Forse tu immaginavi che il mondo è stato fatto per voi umani?","Ma allora perchè ci abitiamo dentro?"],
 "votes":[4,-2,3,-1,4],
 "voted":false,
 "prenoted":"free"
@@ -10,7 +10,7 @@
 {
 "id":5490276,
 "type":"personale",
-"messages":["chat, chat","non fare rumore","eh, ma che serve sto mootzoo","a stare in silenzio"],
+"messages":["Qual è la legge oraria del M.R.U.?","Cheeeeeee?","Moto Rettilineo Uniforme","Ah...:s=v*t+s0"],
 "votes":[0,0,0,-2],
 "voted":false,
 "prenoted":"free"
@@ -20,7 +20,7 @@
 {
 "id":55422902,
 "type":"orphan",
-"messages":["mi piace la torta","fa male","eh, ma io non posso farne a meno","a me piacciono i biscotti"],
+"messages":["Da quanto tempo stai su mootzoo?","Eh... Anni","Io da oggi","Ti piace","Sì"],
 "votes":[7,3,-2,-4],
 "voted":false,
 "prenoted":"free"
@@ -30,7 +30,7 @@
 {
 "id":5482902,
 "type":"conversata",
-"messages":["sto per essere assunto","che lavoro?","potature","te ne intendi?","poco purtroppo, ho fatto un corso a Cuneo, 2 settimane"],
+"messages":["Che lavoro fai?","Ingegnere","è bello?","Abbastanza","Mi picerebbe anche e me fare l'ingegnere","Tu che lavoro fai?","Tassista a Roma"],
 "votes":[10,0,15,0,-3],
 "voted":false,
 "prenoted":"other"
@@ -40,7 +40,7 @@
 {
 "id":5490276,
 "type":"waiting",
-"messages":["chit, chat","non fare rumore con le ciabatte","ma a che serve mootzoo?","a parlare del più e del meno"],
+"messages":["Sai per caso il significato di Maelstrom?","Sì","Qual'è?","È un gorgo marino che si crea al largo della Norvegia a causa di forti venti contrapposti","Grazie mille"],
 "votes":[0,2,5,4],
 "voted":false,
 "prenoted":"free"
