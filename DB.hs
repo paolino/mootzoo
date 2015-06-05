@@ -6,6 +6,7 @@ module DB where
 import Control.Applicative
 import Data.String
 import Control.Monad
+import Control.Monad.Reader
 import Database.SQLite.Simple
 import System.Process
 import Database.SQLite.Simple.FromRow
@@ -13,15 +14,55 @@ import System.Random
 import Data.Typeable
 import Control.Exception
 
+
+type Mail = String
+type Login = String
+
+
+data Env = Env {
+        sendLogin :: Login -> ConnectionMonad (),
+        equery :: (ToRow q, FromRow r) => Query -> q -> ConnectionMonad [r],
+        eexecute :: ToRow q => Query -> q -> ConnectionMonad (),
+        eexecute_ :: Query -> ConnectionMonad ()
+        etransaction :: ConnectionMonad () -> ConnectionMonad ()
+        checkingLogin :: Login -> ConnectionMonad a -> ConnectionMonad a
+        }
+
+data DatabaseError = UnknownUser | UnknownMail | 
+
+type ConnectionMonad = ErrorT DatabaseException ReaderT Env IO
+-- | compute a new 30 digits login key
+
+
+
+mkLogin :: ConnectionMonad Login
+mkLogin =  liftIO $ show <$> foldr (\n m -> m *10 + n) 1 <$> forM [0..30] (const $ randomRIO (0,9))
+
+-- | insert a new user by mail
+addUser :: Login -> Mail -> ConnectionMonad ()
+addUser (User e) = etransaction $ do
+        r <- equery "select id from users where email=?" (Only e)
+        n <- mkLogin
+        case (r :: [Only Integer]) of 
+                [] -> eexecute "insert into users values (null,?,?)" (e,n)
+                _ ->  eexecute "update users set login=? where email=?" (n,e)
+
+-- | change the user login
+logout :: Login -> ConnectionMonad ()
+logout c l = mkLogin >>= \l' -> eexecute c "update users set login=? where login=?" (l',e)
+
+-- | change the user mail
+migrate :: Connection -> Login -> Mail -> User
+migrate c l m = eexecute c "update users set mail=? where login=?" (m,l)
+
+
+
+
 data Message = Message String deriving (Show)
-
-data User = User String deriving (Show)
-
 data Conversation
 
 type Id a = Integer
 
-type Login = String
 
 data MootzooException = UnknownUser | UnknownMail
     deriving (Show, Typeable)
@@ -30,25 +71,15 @@ instance Exception MootzooException
 
 instance FromRow Message where
    fromRow = Message <$> field 
-
+{-
 -- | select the full set of messages of a conversation
 selectMessages :: Connection -> Int -> IO [Message]
 selectMessages conn conv =  do
         b <- query conn  "SELECT message from messages where conversation= ?" (Only conv)
         l <- query conn  "SELECT message from conversations where id= ?" (Only conv)
         return $ b ++ l
+-}
 
-
-
--- | insert a new user by mail
-addUser :: Connection -> User -> IO String
-addUser conn (User e) = withTransaction conn $ do
-        r <- query conn "select id from users where email=?" (Only e)
-        (n :: Integer) <- foldr (\n m -> m *10 + n) 1 <$> forM [0..30] (const $ randomRIO (0,9))
-        case (r :: [Only Integer]) of 
-                [] -> execute conn "insert into users values (null,?,?)" (e,show n)
-                _ ->  execute conn "update users set login=? where email=?" (show n,e)
-        return $ show n
 
 
 
