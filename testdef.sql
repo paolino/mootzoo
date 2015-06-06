@@ -16,12 +16,20 @@ create table messages (
 
 create table conversations (
         id integer primary key autoincrement not null,
-        rif integer references messages(id)
+        rif integer not null references messages(id)
         );
 
 create table voting (
         message integer references messages(id),
         user integer references users(id)
         );
+
+create table store (
+        conversation integer references conversations(id),
+        user integer references users(id)
+        );
+        
 create index voting1 on voting (message,user);
 create index voting2 on voting (message);
+create index store1 on store (conversation,user);
+create index store2 on store (user);

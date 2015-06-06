@@ -34,11 +34,15 @@ data DBError
         | NotRespondable
         | NotBranchable
 	| UnknownUser
-	| UserAlreadyInvited
-	| UserUnreacheable
+	| UserInvitedBySomeoneElse
         | NotRetractable
-        | NotAuthor
+        | NotOpponent
+        | NotProponent
+        | Proponent
+        | Opponent
         | AlreadyVoted
+        | AlreadyStored
+        | NotStored
         | DatabaseError String
         deriving Show
 
@@ -89,13 +93,21 @@ mkLogin =  liftIO $ show <$> foldr (\n m -> m *10 + n) 1 <$> forM [0..30] (const
 -- | insert a new user by mail
 inviteUser :: Env -> Login -> Mail -> ConnectionMonad ()
 inviteUser e l m = checkingLogin e l $ \(CheckLogin i m' _) -> etransaction e $ do
-        r <- equery e "select id from users where email=?" (Only m)
+        r <- equery e "select inviter from users where email=?" (Only m)
         l' <- mkLogin
-        case (r :: [Only Integer]) of 
-                [] ->   do 
+        let newuser = do 
                         eexecute e "insert into users values (null,?,?,?)" (m,l',i) 
+                        r <- equery e "select last_insert_rowid()" ()
+                        case (r :: [Only UserId]) of 
+                                [Only ui'] -> copyStore e i ui'
+                                _ -> throwError $ DatabaseError "last rowid lost"
                         tell . return $ EvSendMail m (Invitation m' l')
-                _ ->  throwError UserAlreadyInvited
+
+        case (r :: [Only (Maybe UserId)]) of 
+                [] -> newuser
+                [Only (Just ((==i) -> True))] -> newuser
+                [Only (Just ((==i) -> False))] -> throwError UserInvitedBySomeoneElse
+                _ ->  throwError $ DatabaseError "user multiple email inconsistence"
 
 -- | change the user login
 logout :: Env -> Login -> ConnectionMonad ()
@@ -128,12 +140,12 @@ checkingConv e ci f = do
                 [Only mi] -> f mi
                 _ ->  throwError UnknownIdConversation
 
-newConv :: Env -> MessageId -> ConnectionMonad ()
-newConv e mi = do 
+newConv :: Env -> MessageId -> (ConvId -> ConnectionMonad ()) -> ConnectionMonad ()
+newConv e mi f = do 
         eexecute e "insert into conversations values (null,?)" (Only mi)
         r <- equery e "select last_insert_rowid()" ()
         case (r :: [Only ConvId]) of 
-                [Only ci] -> tell [EvNewConversation ci]
+                [Only ci] -> tell [EvNewConversation ci] >> f ci
                 _ -> throwError $ DatabaseError "last rowid lost"
         
 
@@ -157,20 +169,21 @@ data Attach
 
 insertMessage :: Env -> Login -> Attach -> String -> ConnectionMonad ()
 insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ _) -> case at of
-                DontAttach -> newMessage e ui Nothing x $ newConv e
+                DontAttach -> newMessage e ui Nothing x $ \mi -> newConv e mi (\ci -> storeAdd' e ui ci  $ return ())
                 AttachMessage mi -> do
                         r <- equery e "select retractable from messages where id=?" (Only mi)
                         case  (r ::[Only Bool]) of
-                                [Only False] -> newMessage e ui (Just mi) x $ newConv e
+                                [Only False] -> newMessage e ui (Just mi) x $ \mi -> newConv e mi (\ci -> storeAdd' e ui ci  $ return ())
                                 [] -> throwError UnknownIdMessage
                                 _ -> throwError NotBranchable
                 AttachConversation ci -> checkingConv e ci $ \mi ->  do
                         r <- equery e "select retractable,parent,user from messages where id=?" (Only mi)
                         let update = newMessage e ui (Just mi) x $ \mi' -> do
                                         eexecute e "update conversations set rif=? where id=?" (mi',ci)
+                                        storeAdd' e ui ci  $ return ()
                                         tell [EvUpdateConversation ci]
                         case r :: [(Bool, Maybe MessageId,UserId)] of
-                                [(True,_,(==ui) -> True)] -> throwError NotRespondable
+                                [(True,_,(==ui) -> True)] -> throwError Proponent
                                 [(False,_,_)] -> update
                                 [(True,Nothing,_)] -> update
                                 [(True,Just mi',_)] -> do
@@ -180,7 +193,7 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                                                 [(True,ui')] -> if ui == ui' then do
                                                                         update
                                                                         eexecute e "update messages set retractable=0 where id=?" (Only mi')
-                                                                else throwError NotRespondable
+                                                                else throwError NotOpponent
                                                 _ -> throwError $ DatabaseError "parent missing or multiple"
                                 _ -> throwError $ DatabaseError "missed rif retractable in conversation"
                         
@@ -190,12 +203,12 @@ retractMessage e l ci =  etransaction e $ checkingLogin e l $  \(CheckLogin ui _
                 
                         case r :: [(Bool,Maybe MessageId, UserId)] of
                                 [(True,mp,(==ui) -> True)] -> do
-                                        eexecute e "delete from messages where id=?" (Only mi)
                                         case mp of 
                                                 Nothing -> eexecute e "delete from conversations where id=?" (Only ci)
                                                 Just mi' -> eexecute e "update conversations set rif=?" (Only mi')
+                                        eexecute e "delete from messages where id=?" (Only mi)
                                 [(False,_,_)] -> throwError NotRetractable
-                                [(_,_,_)] -> throwError NotAuthor
+                                [(_,_,_)] -> throwError NotProponent
                                 _ -> throwError $ DatabaseError "retractMessage inconsistence"
 
 leaveConversation :: Env -> Login -> ConvId -> ConnectionMonad ()
@@ -203,12 +216,12 @@ leaveConversation e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui
                         r <- equery e "select retractable,parent from messages where id=?" (Only mi)
                         case r :: [(Bool,Maybe MessageId)] of
                                 [(False,_)] -> throwError NotRetractable
-                                [(True,Nothing)] -> throwError NotAuthor
+                                [(True,Nothing)] -> throwError NotOpponent
                                 [(True,Just mi')] -> do
                                         r <- equery e "select retractable,user from messages where id=?" (Only mi')
                                         case r :: [(Bool,UserId)] of
                                                 [(False,_)] -> throwError NotRetractable
-                                                [(_,(== ui) -> False)] -> throwError NotAuthor
+                                                [(_,(== ui) -> False)] -> throwError NotOpponent
                                                 [(_,_)] -> eexecute e "update messages set retractable=0 where id=?" (Only mi')
                                                 _ -> throwError $ DatabaseError "leaveConversation inconsistence"
 -- | change the user mail
@@ -218,12 +231,6 @@ migrate e l m = checkingLogin e l $ \(CheckLogin i m' _) -> do
          tell . return $ EvSendMail m (Migration m' l)
 
 				
-catchDBException :: IO a -> ConnectionMonad a
-catchDBException f = do
-        	r <- liftIO $ catch (Right <$> f) (\(e :: SomeException) -> return (Left e)) 
-                case r of 
-                        Left e -> throwError $ DatabaseError (show e)
-                        Right x -> return x
 
 vote :: Env -> Login -> MessageId -> Bool -> ConnectionMonad ()
 vote e l mi b = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
@@ -238,98 +245,90 @@ vote e l mi b = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
                 _ -> throwError AlreadyVoted
                 
 		
-data Put
-        = Boot Mail			
-        | Invite Login Mail
-        | Logout Login
-        | Reminds Mail
-        | Migrate Login Mail
-        | NewMessage Login Attach String
-        | RetractMessage Login ConvId
-        | LeaveConversation Login ConvId
-        | VoteMessage Login MessageId Bool
-        deriving Read
+       
+checkingMessage :: Env -> MessageId -> ConnectionMonad () 
+checkingMessage e mi = do
+                        r <- equery e "select id from messages where id=?" (Only mi)
+                        case r :: [Only MessageId] of
+                                [] -> throwError UnknownIdMessage
+                                [_] -> return ()
+                                _ -> throwError $ DatabaseError "multiple message id inconsistence"
+        
+retrieveMessages :: Env -> MessageId -> Integer -> ConnectionMonad [MessageRow]
+retrieveMessages e mi n = do
+        checkingMessage e mi 
+        equery e "with recursive ex(id,parent,message,vote,retractable,user) as (select id,parent,message,vote,retractable,user from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.retractable,messages.user from messages,ex where messages.id=ex.parent limit ?) select id,message,vote,retractable,user from ex" (mi,n)
 
-put' :: Env -> Put -> ConnectionMonad ()
-put' e (Boot m) = boot e m
-put' e (Invite l m) = inviteUser e l m
-put' e (Logout l) = logout e l
-put' e (Reminds m) = reminder e m
-put' e (Migrate l m) = migrate e l m
-put' e (NewMessage l at x) = insertMessage e l at x
-put' e (RetractMessage l ci) = retractMessage e l ci
-put' e (LeaveConversation l ci) = leaveConversation e l ci 
-put' e (VoteMessage l mi v) = vote e l mi v
+data Color = Blank | Green | Blue | Yellow | Azur | Red deriving Show
 
-      
-put :: Env -> Put -> WriterT [Event] IO ()  
-put e l = do 
-        r <- runErrorT (put' e l)
-        case r of
-                Left s -> liftIO $ print s
-                Right () -> return ()
-   
-data Get 
-        = GetMessages ConvId 
-        | GetStore Login
-        deriving Read
- 
-get'  :: Env -> Get -> ConnectionMonad String
-get' e (GetMessages ci) = show <$> retrieveMessages e ci
+getColor' e mi ui = do
+        ms <- retrieveMessages e mi 2
+        case filter isRetractable ms of 
+                [] -> return Blank
+                [MessageRow _ _ _ _ ((==ui) -> True)] -> return Azur
+                [MessageRow _ _ _ _ ((==ui) -> False)] -> return Red
+                [MessageRow _ _ _ _ ((==ui) -> False),MessageRow _ _ _ _ ((==ui) -> False)] -> return Green
+                [MessageRow _ _ _ _ ((==ui) -> True),MessageRow _ _ _ _ ((==ui) -> False)] -> return Blue
+                [MessageRow _ _ _ _ ((==ui) -> False),MessageRow _ _ _ _ ((==ui) -> True)] -> return Yellow
+                _ -> throwError $ DatabaseError "retractable inconsistence"
+               
+isRetractable (MessageRow _ _ _ True _) = True
+isRetractable _ = False 
+data MessageRow = MessageRow {
+        mid :: MessageId,
+        mtext :: String,
+        mvote :: Integer,
+        mretr :: Bool,
+        muser :: UserId
+        }
+        deriving Show
 
-get :: Env -> Get -> WriterT [Event] IO (Maybe String)
-get e l = do 
-        r <- runErrorT (get' e l)
-        case r of
-                Left s -> liftIO (print s) >> return Nothing
-                Right x -> return (Just x)
+instance FromRow MessageRow where
+        fromRow = MessageRow <$> field <*> field <*> field <*> field <*> field
 
-mkEnv :: Connection -> Env
-mkEnv conn = Env 
-        (\q r -> catchDBException $ query conn q r) 
-        (\q r -> catchDBException $ execute conn q r) (\q -> catchDBException $ execute_ conn q) 
-        $ 
-        \c -> do
-                liftIO $ execute_ conn "begin transaction"
-                r <- lift $ runErrorT c
-                case r of 
-                        Left e -> do
-                                liftIO $ execute_ conn "rollback"
-                                throwError e
-                        Right x -> do
-                                liftIO $ execute_ conn "commit transaction"
-                                return  x
-prepare = do         
-        callCommand "rm test.sql"
-        callCommand "cat testdef.sql | sqlite3 test.sql"
-        conn <- open "test.sql"
-        execute_ conn "PRAGMA foreign_keys = ON"
-        let     p = put (mkEnv conn)
-                g = get (mkEnv conn)
-        return (p,g,close conn)
+storeAdd' :: Env -> UserId -> ConvId -> ConnectionMonad () -> ConnectionMonad ()
+storeAdd' e ui ci  f =   do
+        r <- equery e "select user from store where conversation=? and user=?" (ci,ui)
+        case r :: [Only UserId] of 
+                [] ->  eexecute e "insert into store values (?,?)" (ci,ui)    
+                _ -> f
 
-console :: IO ()
-console = do
-        (p,g,_) <- prepare 
-        runInputT defaultSettings $ forever $ do 
-                l <- getInputLine "> "
-                case fmap readMaybe l of 
-                        Nothing -> outputStrLn "should stop here"
-                        Just (Just x) -> liftIO $ do 
-                                ((),w) <- runWriterT (p x)
-                                print w
-                        Just Nothing -> case fmap readMaybe l of 
-                                Nothing -> outputStrLn "should stop here"
-                                Just Nothing -> outputStrLn "no parse"
-                                Just (Just x) -> liftIO $ do 
-                                        (y,w) <- runWriterT (g x)
-                                        case y of 
-                                                Just y-> putStrLn y
-                                                Nothing -> return ()
-                                        print w
+storeAdd e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \_ -> storeAdd' e ui ci $ throwError AlreadyStored
 
+storeDel :: Env -> Login -> ConvId -> ConnectionMonad ()
+storeDel e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \_ ->  do
+        r <- equery e "select user from store where conversation=? and user=?" (ci,ui)
+        case r :: [Only UserId] of 
+                [_] -> do 
+                        c <- getColor' e ci ui
+                        case c of
+                                Azur -> throwError Proponent 
+                                Blue -> throwError Proponent 
+                                Yellow -> throwError Opponent
+                                _  -> eexecute e "delete from store where conversation=? and user=?" (ci,ui)    
+                _ -> throwError NotStored
 
-retrieveMessages :: Env -> ConvId -> ConnectionMonad [(MessageId,String,Integer)]
-retrieveMessages e ci = checkingConv e ci $ \mi -> do
-        r <- equery e "with recursive ex(id,parent,message,vote) as (select id,parent,message,vote from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote from messages,ex where messages.id=ex.parent) select id,message,vote from ex" (Only mi)
-        return r
+data UserConv = UserConv {
+        cid :: ConvId,
+        ccol :: Color,
+        cmsg :: MessageId
+        }
+        deriving Show
+
+getStore :: Env -> Login -> ConnectionMonad [UserConv]
+getStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
+        rs <- equery e "select conversation from store where user=?" (Only ui)
+        ms <- forM rs $ \ci -> do
+                r <-  equery e "select rif from conversations where id=?" (ci :: Only ConvId)
+                case r of
+                        [] -> throwError $ DatabaseError "rif of conversation missing"
+                        [x] -> return x
+                        _ -> throwError $ DatabaseError "multiple messageid"
+        cs <- forM ms $ \(Only mi) -> getColor' e mi ui
+        return $ zipWith3 (\(Only ci) co (Only mi) -> UserConv ci co mi) rs cs ms
+                
+
+copyStore :: Env -> UserId -> UserId -> ConnectionMonad ()
+copyStore e ui ui' = do
+        r <- equery e "select conversation from store where user=?" (Only ui)
+        forM_ r $ \(Only (ci :: ConvId)) -> eexecute e "insert into store values (?,?)" (ci,ui')    
