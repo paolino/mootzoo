@@ -95,27 +95,23 @@ app.directive('ngMouseWheelUp', function() {
             });
         };
 });
-app.controller('conversations', function($scope, $http,$timeout) {
-    newc = function (){$scope.convers.push({id:Math.floor((Math.random() * 10000000000000) + 1),type:"blank",
-                        index:$scope.convers.length,messages:[],votes:[],voted:false,prenoted:"free"})};
+app.controller('conversations', function($scope, $http,$timeout,$interval) {
+    newc = function (){$scope.conversations.push({id:Math.floor((Math.random() * 10000000000000) + 1),color:"Blank",
+                        index:$scope.conversations.length,messages:[],votes:[],voted:false,prenoted:"free"})};
     
-    $scope.logout=function(){ 
-    $scope.convers=Array();
-    $scope.conversations=$scope.convers;
-    $scope.news=Array();
-    $scope.hints=Array();
-    $scope.message="Message..";
-            $scope.setn(0);
-            $scope.logged=false;
-            $scope.message="";
-            };
     $scope.setn=function(i){
         $scope.n=i;
         //$scope.bottomed=false;  
-        if($scope.convers.length < 1)newc();
+        if($scope.conversations.length < 1)newc();
         $timeout(function () {$('#conversation').animate({scrollTop:1000000});});
         }
-    $scope.logout();
+    $scope.logout=function(){ };
+
+    $scope.conversations=Array();
+    $scope.news=Array();
+    $scope.message="";
+    $scope.setn(0);
+    $scope.logged=false;
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
                         $scope.setn($scope.n+1);
@@ -126,242 +122,204 @@ app.controller('conversations', function($scope, $http,$timeout) {
                         $scope.setn($scope.n-1);
                 }
         };
-    $scope.filterBlanks = function(){
-        for(i=0,j=0;i<$scope.convers.length;i ++)
-                if (($scope.convers[i].type != 'blank') && ($scope.convers[i].messages.length>0) ){
-                        $scope.convers[j] = $scope.convers[i];
-                        $scope.convers[j].index=j++;
-                        }
-        for(;j<i;j++) $scope.convers.pop();
-        $scope.setn(0);
-        }
 
     $scope.login=function(){
-        $http.get("conversations.json").success(function(response) {
-                var j = $scope.convers.length;
-                for (i=0;i < response.length;i ++){
-                        response[i].index=j++
-                        $scope.convers.push(response[i]);
-                        $scope.news.push(response[i]);
-                        if((response[i].type != 'conversata') && (response[i].type != 'personale') && (response[i].type != 'waiting'))
-                                $scope.hints.push(response[i]);
-                        }
-                        
-                $scope.news.shuffle();
-                //$scope.filterBlanks();
-        });
-        $scope.logged=true;
+        $http.get("api/GetStore/"+$scope.userkey).success(function(response) {
+                $scope.conversations=Array();
+                $scope.news=Array();
+                var f = function(i) {$http.get("api/GetMessages/" + response.result[i].mid + "/100").success (
+                                function(messages) {
+                                        for(var j=0;j<messages.result.length;j++){
+                                                $scope.conversations[i].messages.push(messages.result[j]);
+                                                }
+                                        });}
+                for (i=0;i < response.result.length;i ++){
+                        response.result[i].index=i;
+                        $scope.conversations.push(response.result[i]);
+                        $scope.conversations[i].messages=Array();
+                        f (i);
+                        }        
+                });
+                $scope.logged=true;
         };
-    $scope.showFork=function(i){
-                var l =$scope.conversations[$scope.n].messages.length -1;
-                switch($scope.conversations[$scope.n].type) {
-                        case 'blank': return true
-                        case 'personale':return (i < l);
-                        case 'orphan':return (i < l);
-                        case 'complete':return (i < l -1);
-                        case 'conversata':return (i < l - 1); 
-                        case 'waiting':return (i < l -1);
-                }
-                }
+
+    $scope.showFork=function(i){return !$scope.conversations[$scope.n].messages[i].retr;}
         
-    $scope.fork=function(i){
-        newc();
-        var c = $scope.convers[$scope.convers.length - 1];
-        c.messages=$scope.convers[$scope.n].messages.splice(0,i+1);
-        c.votes=$scope.convers[$scope.n].votes.splice(0,i+1);
-        $scope.n=$scope.convers.length - 1;
-        }
-    $scope.jump=function(where){
-        };
     $scope.positionText=function(){
-                switch($scope.conversations[$scope.n].type) {
-                        case 'blank':if($scope.conversations[$scope.n].messages.length < 1) 
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Blank':if($scope.conversations[$scope.n].messages.length < 1) 
                                         return "you can start a new conversation";
                                         return "you can restart this conversation";
                                      
-                        case 'personale':return "you proposed, anyone can respond"
-                        case 'orphan':return "you can respond, among others"
-                        case 'complete':return "you can only read"
-                        case 'conversata':return "you responded, only one can respond"
-                        case 'waiting':return "only you can respond"
+                        case 'Azur':return "you proposed, anyone can respond"
+                        case 'Red':return "you can respond, among others"
+                        case 'Green':return "you can only read"
+                        case 'Blue':return "you responded, only one can respond"
+                        case 'Yellow':return "only you can respond"
                 }
                 }
         
     $scope.positionLabelClass=function(){
-                switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return "label label-default"
-                        case 'personale':return "label label-info"
-                        case 'orphan':return "label label-danger"
-                        case 'complete':return "label label-success"
-                        case 'conversata':return "label label-primary"
-                        case 'waiting':return "label label-warning"
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Blank':return "label label-default"
+                        case 'Azur':return "label label-info"
+                        case 'Red':return "label label-danger"
+                        case 'Green':return "label label-success"
+                        case 'Blue':return "label label-primary"
+                        case 'Yellow':return "label label-warning"
 
                 }
                 }
-    $scope.cantBeLost=function(){return ($scope.conversations[$scope.n].type == 'waiting')
-                || ($scope.conversations[$scope.n].type == 'conversata') };
-    $scope.back=function(){
-        switch($scope.conversations[$scope.n].type) {
-                case 'personale': 
-                                $scope.conversations[$scope.n].messages.pop();
-                                $scope.conversations[$scope.n].type="blank";
-                                break;
-                case 'conversata': 
-                                $scope.conversations[$scope.n].messages.pop();
-                                $scope.conversations[$scope.n].type="orphan";
-                                break;
-                case 'waiting':
-                                
-                                $scope.conversations[$scope.n].type="orphan";
-                                break;
-                }
-        //$scope.filterBlanks();
-        };
-    $scope.backPresent=function(){return ($scope.conversations[$scope.n].type == 'waiting')};
+    $scope.testLeave=function(){return ($scope.conversations[$scope.n].color == 'Yellow')};
     $scope.testVote=function(i){
                 if($scope.conversations[$scope.n].voted)return false;
-                switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return false;
-                        case 'personale':return false
-                        case 'orphan':return (i == $scope.conversations[$scope.n].messages.length - 1)
-                        case 'complete':return (i == $scope.conversations[$scope.n].messages.length - 1)  
-                        case 'conversata':return false
-                        case 'waiting':return (i == $scope.conversations[$scope.n].messages.length - 1)
+                var c = ($scope.conversations[$scope.n].messages[i].mid == $scope.conversations[$scope.n].mid)
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Blank':return false;
+                        case 'Azur':return false
+                        case 'Red':return c
+                        case 'Green':return c
+                        case 'Blue':return false
+                        case 'Yellow':return c
                 }
                 }
                         
-    $scope.voteUp=function(i){
-                if(!$scope.conversations[$scope.n].voted[i])
-                        $scope.conversations[$scope.n].votes[i]+=1;
-                $scope.conversations[$scope.n].voted=true;
-                }
-
-    $scope.voteDown=function(i){
-                if(!$scope.conversations[$scope.n].voted[i])
-                        $scope.conversations[$scope.n].votes[i]-=1;
-                $scope.conversations[$scope.n].voted=true;
-                }
     $scope.testUndo=function(){
-                switch($scope.conversations[$scope.n].type) {
-                        case 'blank':return false
-                        case 'personale':return true
-                        case 'orphan':return false
-                        case 'complete':return false
-                        case 'conversata':return true 
-                        case 'waiting':return false
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Blank':return false
+                        case 'Azur':return true
+                        case 'Red':return false
+                        case 'Green':return false
+                        case 'Blue':return true 
+                        case 'Yellow':return false
                 }
                 }
     $scope.retractColor=function(){
-                switch($scope.conversations[$scope.n].type) {
-                        case 'personale':return "btn-default"
-                        case 'conversata':return "btn-danger"
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Azur':return "btn-default"
+                        case 'Blue':return "btn-danger"
                 }
                 }
     $scope.retractMeaning=function(){
                  
-                switch($scope.conversations[$scope.n].type) {
-                        case 'personale':return "Delete your message and its feedback leaving the conversation with no partecipants"
-                        case 'conversata':return "Delete your message and its feedback leaving the conversation open to be taken from others"
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Azur':return "Delete your message and its feedback leaving the conversation with no partecipants"
+                        case 'Blue':return "Delete your message and its feedback leaving the conversation open to be taken from others"
                 }
                 }
     $scope.price=function(n){
                 return Math.sqrt(n).toFixed(2);
                 }
     $scope.backColor=function(){
-        switch($scope.conversations[$scope.n].type) {
-                case 'personale': return "btn btn-default";
-                case 'conversata': return "btn btn-danger";
-                case 'waiting':return "btn btn-danger";
+        switch($scope.conversations[$scope.n].color) {
+                case 'Azur': return "btn btn-default";
+                case 'Blue': return "btn btn-danger";
+                case 'Yellow':return "btn btn-danger";
                 }
         };
 
     $scope.panelColor=function(){
-        switch($scope.conversations[$scope.n].type) {
-                case 'personale': return "panel panel-info";
-                case 'complete': return "panel panel-success";
-                case 'conversata': return "panel panel-primary";
-                case 'waiting':return "panel panel-warning";
-                case 'orphan':return "panel panel-danger";
-                case 'blank':return "panel panel-default";
+        switch($scope.conversations[$scope.n].color) {
+                case 'Azur': return "panel panel-info";
+                case 'Green': return "panel panel-success";
+                case 'Blue': return "panel panel-primary";
+                case 'Yellow':return "panel panel-warning";
+                case 'Red':return "panel panel-danger";
+                case 'Blank':return "panel panel-default";
                 }
         };
                                 
     $scope.glyphicon=function(n){
-        switch($scope.conversations[n].type){
-                case 'personale': return "glyphicon glyphicon-question-sign";
-                case 'complete': return "glyphicon glyphicon-transfer";
-                case 'conversata': return "glyphicon glyphicon-arrow-down";
-                case 'waiting':return "glyphicon glyphicon-arrow-up";
-                case 'orphan':return "glyphicon glyphicon-log-in";
-                case 'blank':return "glyphicon glyphicon-unchecked";
+        switch($scope.conversations[n].color){
+                case 'Azur': return "glyphicon glyphicon-question-sign";
+                case 'Green': return "glyphicon glyphicon-transfer";
+                case 'Blue': return "glyphicon glyphicon-arrow-down";
+                case 'Yellow':return "glyphicon glyphicon-arrow-up";
+                case 'Red':return "glyphicon glyphicon-log-in";
+                case 'Blank':return "glyphicon glyphicon-unchecked";
                 }
         };
 
                
       
-        $scope.convButtonSelected= function(x){
+    $scope.convButtonSelected= function(x){
              return ($scope.n==x.index); 
         }
       
-        $scope.convButton= function(x,i){
-             var s = ""
-             if (i==$scope.n) s=""; 
-             if(x.type=="complete")
-                    return "btn btn-xs btn-success" + s
-             else if(x.type=="orphan")
-                    return "btn btn-xs btn-danger"+ s
-             else if(x.type=='waiting')
-                    return "btn btn-xs btn-warning"+ s
-             else if(x.type=='conversata')
-                    return "btn btn-xs btn-primary"+ s
-             else if(x.type=='personale')
-                    return "btn btn-xs btn-info"+ s
-             else return "btn btn-xs btn-default"+ s
+    $scope.convButton= function(x){
+                switch(x.color) {
+                        case 'Azur': return "btn-info";
+                        case 'Green': return "btn-success";
+                        case 'Blue': return "btn-primary";
+                        case 'Yellow':return "btn-warning";
+                        case 'Red':return "btn-danger";
+                        case 'Blank':return "btn-default";
              };
-    $scope.removeConversation=function(){
-        $scope.conversations[$scope.n].id=Math.floor((Math.random() * 10000000000000) + 1);
-        $scope.conversations[$scope.n].type="blank";
-        $scope.conversations[$scope.n].messages=[];
-        };
-    $scope.addMessage=function(){
-        if($scope.message != ""){
-        $scope.conversations[$scope.n].messages.push($scope.message);
-        $scope.conversations[$scope.n].votes.push(0);
-        $scope.message="";
-        }
-        };
-    $scope.switchRole=function(){
-        $scope.conversations[$scope.n].messages.push($scope.message);
-        $scope.message="";
-        };
+             };
     $scope.selected= function(i){
         if(i==$scope.n)
-                switch($scope.conversations[$scope.n].type) {
-                        case 'personale': return "btn-info";
-                        case 'complete': return "btn-success";
-                        case 'conversata': return "btn-primary";
-                        case 'waiting':return "btn-warning";
-                        case 'orphan':return "btn-danger";
-                        case 'blank':return "btn-default";
+                switch($scope.conversations[$scope.n].color) {
+                        case 'Azur': return "btn-info";
+                        case 'Green': return "btn-success";
+                        case 'Blue': return "btn-primary";
+                        case 'Yellow':return "btn-warning";
+                        case 'Red':return "btn-danger";
+                        case 'Blank':return "btn-default";
                         }
                 else return "btn-grey"
         }
     $scope.scrollDown=function(){
         $( "#conversation" ).scrollTop(100000);
         }
-    $scope.stepIn = function(){
-        $scope.filterBlanks();
-                        
-        newc();
-        c = $scope.convers[$scope.convers.length - 1];
-        c.type='personale'
-        c.messages.push($scope.message);
-        c.votes.push(0);
-        c.voted=true;
-        $scope.setn(c.index);
-        $scope.message=null;
-        }
+    //voting stuff
+    $scope.voteUp=function(i){
+        $http.put("api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/True").success(
+                function () {$scope.login()});
+        };
 
+    $scope.voteDown=function(i){
+        $http.put("api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/False").success(
+                function () {$scope.login()});
+        };
+
+    // messaging stuff
+    $scope.respond=function(){
+        if($scope.message != ""){
+                $http.post("api/NewMessage/"+$scope.userkey + "/AttachConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
+                        function () {$scope.login()});
+                $scope.message="";
+                }
+        };
+    $scope.comment = function(i){
+        if($scope.message != ""){
+                $http.post("api/NewMessage/"+$scope.userkey + "/AttachMessage/" + $scope.conversations[$scope.n].messages[i].mid,$scope.message).success(
+                        function () {$scope.login()});
+                $scope.message="";
+                }
+        };
+    $scope.open = function(){
+        if($scope.message != ""){
+                $http.post("api/NewMessage/"+$scope.userkey + "/DontAttach",$scope.message).success(
+                        function () {$scope.login()});
+                $scope.message="";
+                }
+        };
+    $scope.retract = function (){
+        $http.put("api/RetractMessage/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
+                function () {$scope.login()});
+        }
+        
+    $scope.leave = function (){
+        $http.put("api/LeaveConversation/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
+                function () {$scope.login()});
+        }
+    $scope.hint = function (){
+        $http.put("api/HintConversation/"+$scope.userkey ).success(
+                function () {$scope.login()});
+        }
+    $interval(function(){
+        if($scope.userkey>0) $scope.login();
+        },10000);
 });
 }
    

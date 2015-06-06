@@ -19,10 +19,26 @@ import Data.Typeable
 import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
+import Text.JSON
 
 
 import DB1
 
+instance JSON MessageRow where
+        showJSON (MessageRow mid mtext mvote mretr muser) = makeObj [
+                ("mid",JSRational False $ fromIntegral mid),
+                ("txt",JSString $ toJSString mtext),  
+                ("vote",JSRational False $ fromIntegral mvote),
+                ("retr",JSBool mretr),
+                ("muser",JSRational False $ fromIntegral muser)
+                ]
+instance JSON UserConv where
+        showJSON (UserConv cid ccol cmsg cvo) = makeObj [
+                ("cid",JSRational False $ fromIntegral cid), 
+                ("color",JSString $ toJSString $ show ccol),
+                ("mid",JSRational False $ fromIntegral cmsg),
+                ("voted",JSBool cvo)
+                ] 
 catchDBException :: IO a -> ConnectionMonad a
 catchDBException f = do
         	r <- liftIO $ catch (Right <$> f) (\(e :: SomeException) -> return (Left e)) 
@@ -41,6 +57,7 @@ data Put
         | VoteMessage Login MessageId Bool
         | StoreConversation Login ConvId
         | ForgetConversation Login ConvId
+        | HintConversation Login
         deriving Read
 
 put' :: Env -> Put -> ConnectionMonad ()
@@ -55,31 +72,23 @@ put' e (LeaveConversation l ci) = leaveConversation e l ci
 put' e (VoteMessage l mi v) = vote e l mi v
 put' e (StoreConversation l ci ) = storeAdd e l ci
 put' e (ForgetConversation l ci ) = storeDel e l ci
+put' e (HintConversation l ) = hintStore e l 
 
       
-put :: Env -> Put -> WriterT [Event] IO ()  
-put e l = do 
-        r <- runErrorT (put' e l)
-        case r of
-                Left s -> liftIO $ print s
-                Right () -> return ()
+put :: Env -> Put -> WriterT [Event] IO (Either DBError ())
+put e l = runErrorT (put' e l)
    
 data Get 
         = GetMessages MessageId Integer
         | GetStore Login
         -- | GetHints
         deriving Read
+get'  :: Env -> Get -> ConnectionMonad JSValue
+get' e (GetMessages mi n) = showJSON <$> retrieveMessages e mi n
+get' e (GetStore l) = showJSON <$> getStore e l 
 
-get'  :: Env -> Get -> ConnectionMonad String
-get' e (GetMessages mi n) = show <$> retrieveMessages e mi n
-get' e (GetStore l) = show <$> getStore e l 
-
-get :: Env -> Get -> WriterT [Event] IO (Maybe String)
-get e l = do 
-        r <- runErrorT (get' e l)
-        case r of
-                Left s -> liftIO (print s) >> return Nothing
-                Right x -> return (Just x)
+get :: Env -> Get -> WriterT [Event] IO (Either DBError JSValue)
+get e l = runErrorT (get' e l)
 
 mkEnv :: Connection -> Env
 mkEnv conn = Env 
@@ -96,9 +105,10 @@ mkEnv conn = Env
                         Right x -> do
                                 liftIO $ execute_ conn "commit transaction"
                                 return  x
-prepare = do         
+clean = do
         callCommand "rm test.sql"
         callCommand "cat testdef.sql | sqlite3 test.sql"
+prepare = do         
         conn <- open "test.sql"
         execute_ conn "PRAGMA foreign_keys = ON"
         let     p = put (mkEnv conn)
@@ -113,7 +123,7 @@ console = do
                 case fmap readMaybe l of 
                         Nothing -> outputStrLn "should stop here"
                         Just (Just x) -> liftIO $ do 
-                                ((),w) <- runWriterT (p x)
+                                (e,w) <- runWriterT (p x)
                                 print w
                         Just Nothing -> case fmap readMaybe l of 
                                 Nothing -> outputStrLn "should stop here"
@@ -121,7 +131,7 @@ console = do
                                 Just (Just x) -> liftIO $ do 
                                         (y,w) <- runWriterT (g x)
                                         case y of 
-                                                Just y-> putStrLn y
-                                                Nothing -> return ()
+                                                Left y -> print y
+                                                Right y  -> print y
                                         print w
 

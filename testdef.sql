@@ -21,12 +21,14 @@ create table conversations (
 
 create table voting (
         message integer references messages(id),
-        user integer references users(id)
+        user integer references users(id),
+        unique (message,user)
         );
 
 create table store (
         conversation integer references conversations(id),
-        user integer references users(id)
+        user integer references users(id),
+        unique (conversation,user)
         );
         
 create index voting1 on voting (message,user);

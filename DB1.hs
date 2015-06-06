@@ -193,6 +193,7 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                                                 [(True,ui')] -> if ui == ui' then do
                                                                         update
                                                                         eexecute e "update messages set retractable=0 where id=?" (Only mi')
+                                                                        eexecute e "delete from voting where message=? " (Only mi')
                                                                 else throwError NotOpponent
                                                 _ -> throwError $ DatabaseError "parent missing or multiple"
                                 _ -> throwError $ DatabaseError "missed rif retractable in conversation"
@@ -204,8 +205,11 @@ retractMessage e l ci =  etransaction e $ checkingLogin e l $  \(CheckLogin ui _
                         case r :: [(Bool,Maybe MessageId, UserId)] of
                                 [(True,mp,(==ui) -> True)] -> do
                                         case mp of 
-                                                Nothing -> eexecute e "delete from conversations where id=?" (Only ci)
-                                                Just mi' -> eexecute e "update conversations set rif=?" (Only mi')
+                                                Nothing -> do 
+                                                        eexecute e "delete from store where conversation=? and user=?" (ci,ui)
+                                                        eexecute e "delete from voting where message=? " (Only mi)
+                                                        eexecute e "delete from conversations where id=?" (Only ci)
+                                                Just mi' -> eexecute e "update conversations set rif=? where id=?" (mi',ci)
                                         eexecute e "delete from messages where id=?" (Only mi)
                                 [(False,_,_)] -> throwError NotRetractable
                                 [(_,_,_)] -> throwError NotProponent
@@ -222,7 +226,9 @@ leaveConversation e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui
                                         case r :: [(Bool,UserId)] of
                                                 [(False,_)] -> throwError NotRetractable
                                                 [(_,(== ui) -> False)] -> throwError NotOpponent
-                                                [(_,_)] -> eexecute e "update messages set retractable=0 where id=?" (Only mi')
+                                                [(_,_)] -> do 
+                                                        eexecute e "update messages set retractable=0 where id=?" (Only mi')
+                                                        eexecute e "delete from voting where message=? " (Only mi')
                                                 _ -> throwError $ DatabaseError "leaveConversation inconsistence"
 -- | change the user mail
 migrate :: Env -> Login -> Mail -> ConnectionMonad ()
@@ -258,7 +264,6 @@ retrieveMessages :: Env -> MessageId -> Integer -> ConnectionMonad [MessageRow]
 retrieveMessages e mi n = do
         checkingMessage e mi 
         equery e "with recursive ex(id,parent,message,vote,retractable,user) as (select id,parent,message,vote,retractable,user from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.retractable,messages.user from messages,ex where messages.id=ex.parent limit ?) select id,message,vote,retractable,user from ex" (mi,n)
-
 data Color = Blank | Green | Blue | Yellow | Azur | Red deriving Show
 
 getColor' e mi ui = do
@@ -311,7 +316,8 @@ storeDel e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> 
 data UserConv = UserConv {
         cid :: ConvId,
         ccol :: Color,
-        cmsg :: MessageId
+        cmsg :: MessageId,
+        voted :: Bool
         }
         deriving Show
 
@@ -324,11 +330,34 @@ getStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
                         [] -> throwError $ DatabaseError "rif of conversation missing"
                         [x] -> return x
                         _ -> throwError $ DatabaseError "multiple messageid"
-        cs <- forM ms $ \(Only mi) -> getColor' e mi ui
-        return $ zipWith3 (\(Only ci) co (Only mi) -> UserConv ci co mi) rs cs ms
+        cs <- forM ms $ \(Only mi) -> do
+                        c <- getColor' e mi ui
+                        rs <- equery e "select message,user from voting where message= ? and user=?" (mi,ui)
+                        vo <- case rs :: [(MessageId,UserId)] of 
+                                [] -> return False
+                                _ -> return True
+                        return (c,vo)
+                        
+        return $ zipWith3 (\(Only ci) (co,vo) (Only mi) -> UserConv ci co mi vo) rs cs ms
                 
 
 copyStore :: Env -> UserId -> UserId -> ConnectionMonad ()
 copyStore e ui ui' = do
         r <- equery e "select conversation from store where user=?" (Only ui)
         forM_ r $ \(Only (ci :: ConvId)) -> eexecute e "insert into store values (?,?)" (ci,ui')    
+
+hintStore :: Env -> Login -> ConnectionMonad ()
+hintStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
+        rs <- equery e "select id from conversations order by rif desc limit 1000" () 
+        case rs :: [(Only ConvId)] of
+                [] -> return ()
+                rs -> do 
+                        n <- liftIO $ randomRIO (0,length rs - 1 )
+                        let (Only ci) = rs !! n
+                        rs <- equery e "select conversation from store where user=? and conversation=?" (ui,ci)
+                        case rs :: [Only ConvId] of 
+                                [] -> eexecute e "insert or replace into store values (?,?)" (ci,ui)
+                                _ -> return ()
+                
+                        
+        
