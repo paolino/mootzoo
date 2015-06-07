@@ -9,11 +9,9 @@ import DB1
 import Text.Read 
 import Network.HTTP.Server
 import Network.HTTP.Server.Logger
-import Network.HTTP.Server.HtmlForm as Form
 import Network.URL as URL
 import Text.JSON
 import Text.JSON.String(runGetJSON)
-import Text.XHtml
 import Codec.Binary.UTF8.String
 import Control.Exception(try,SomeException)
 import System.FilePath
