@@ -361,7 +361,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         if($scope.userkey>0) $scope.login();
         });
     $interval(function(){
-        if($scope.userkey>0) $scope.login();
+        if($scope.userkey>0) $scope.hint();
         },10000);
 });
 }
