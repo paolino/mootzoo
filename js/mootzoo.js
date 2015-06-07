@@ -103,7 +103,6 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         $scope.n=i;
         //$scope.bottomed=false;  
         if($scope.conversations.length < 1)newc();
-        $timeout(function () {$('#conversation').animate({scrollTop:1000000});});
         }
     $scope.logout=function(){ };
 
