@@ -20,7 +20,7 @@ import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
 import Text.JSON
-
+import System.Directory
 
 import DB1
 
@@ -104,19 +104,19 @@ mkEnv conn = Env
                         Right x -> do
                                 liftIO $ execute_ conn "commit transaction"
                                 return  x
-clean = do
-        callCommand "rm test.sql"
-        callCommand "cat testdef.sql | sqlite3 test.sql"
+clean = callCommand "cat testdef.sql | sqlite3 test.db"
 prepare = do         
-        conn <- open "test.sql"
+        b <- doesFileExist "test.db"
+        when (not b) clean
+        conn <- open "test.db"
         execute_ conn "PRAGMA foreign_keys = ON"
         let     p = put (mkEnv conn)
                 g = get (mkEnv conn)
-        return (p,g,close conn)
+        return (not b,p,g)
 
 console :: IO ()
 console = do
-        (p,g,_) <- prepare 
+        (t,p,g) <- prepare 
         runInputT defaultSettings $ forever $ do 
                 l <- getInputLine "> "
                 case fmap readMaybe l of 

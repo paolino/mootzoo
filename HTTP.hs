@@ -18,6 +18,9 @@ import System.FilePath
 import Data.List(isPrefixOf)
 import Data.List.Split
 import Data.String.Utils (replace)
+import Control.Concurrent
+
+import System.Environment
 
 jsError x = makeObj [("error",JSString $ toJSString x)]
 jsDBError x  = makeObj [("dberror",JSString $ toJSString $ show x)]
@@ -30,58 +33,65 @@ sendResponse g v = case v of
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
                         Right x -> return $ sendJSON OK $ jsCompund x w
-sendResponseP p v = case v of 
+sendResponseP pwd p v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
                 (x,w) <- runWriterT $ p v
+                forM_ w $ \y ->
+                        case y of
+                                EvSendMail s m -> void $ forkIO $ sendAMail pwd s m 
+                                _ -> return ()
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
-                        Right x -> return $ sendJSON OK $ jsCompund JSNull w
+                        Right () -> return $ sendJSON OK $ jsCompund JSNull w
 
 main :: IO ()
 main = do
+        [pwd,mailbooter] <- getArgs
         putStrLn "running" 
-        (p,g,_) <- prepare
+        (t,p,g) <- prepare
+        let responseP = sendResponseP pwd p
+        when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
                                 case splitOn "/" $ url_path url of
-                                        ["Invite",sl] ->sendResponseP p $ do
+                                        ["Invite",sl] -> responseP $ do
                                                         return $ Invite sl msg
-                                        ["Migrate",sl] ->sendResponseP p $ do
+                                        ["Migrate",sl] -> responseP $ do
                                                         return $ Migrate sl msg
-                                        ["Reminds"] ->sendResponseP p $ do
+                                        ["Reminds"] -> responseP $ do
                                                         return $ Reminds msg
-                                        ["NewMessage",sl,"DontAttach"] -> sendResponseP p $  Just $ NewMessage sl DontAttach msg
-                                        ["NewMessage",sl,"AttachConversation",sci] -> sendResponseP p $ do
+                                        ["NewMessage",sl,"DontAttach"] ->  responseP $  Just $ NewMessage sl DontAttach msg
+                                        ["NewMessage",sl,"AttachConversation",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ NewMessage sl (AttachConversation ci) msg
-                                        ["NewMessage",sl,"AttachMessage",smi] ->sendResponseP p $ do
+                                        ["NewMessage",sl,"AttachMessage",smi] -> responseP $ do
                                                         mi <- readMaybe smi
                                                         return $ NewMessage sl (AttachMessage mi) msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of
-                                        ["VoteMessage",sl,smi,sb] ->sendResponseP p $ do
+                                        ["VoteMessage",sl,smi,sb] -> responseP $ do
                                                         mi <- readMaybe smi
                                                         b <- readMaybe sb
                                                         return $ VoteMessage sl mi b
-                                        ["StoreConversation",sl,sci] ->sendResponseP p $ do
+                                        ["StoreConversation",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ StoreConversation sl ci
-                                        ["ForgetConversation",sl,sci] ->sendResponseP p $ do
+                                        ["ForgetConversation",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ ForgetConversation sl ci
-                                        ["HintConversation",sl] ->sendResponseP p $ do
+                                        ["HintConversation",sl] -> responseP $ do
                                                         return $ HintConversation sl 
-                                        ["Logout",sl] ->sendResponseP p $ do
+                                        ["Logout",sl] -> responseP $ do
                                                         return $ Logout sl
-                                        ["RetractMessage",sl,sci] ->sendResponseP p $ do
+                                        ["RetractMessage",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ RetractMessage sl ci
-                                        ["LeaveConversation",sl,sci] ->sendResponseP p $ do
+                                        ["LeaveConversation",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ LeaveConversation sl ci
                                         _ -> return $ sendJSON BadRequest $ JSNull

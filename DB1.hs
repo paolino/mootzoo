@@ -5,6 +5,7 @@
 {-# LANGUAGE GADTs #-}
 module DB1 where 
 
+import Prelude hiding (readFile)
 import System.Console.Haskeline hiding (catch)
 import Control.Applicative
 import Data.String
@@ -18,7 +19,11 @@ import Data.Typeable
 import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
-
+import Data.Text.Lazy.IO (readFile)
+import Data.Text.Lazy (Text,replace,pack)
+import qualified Data.Text as S (pack)
+import Network.Mail.Client.Gmail
+import Network.Mail.Mime (Address (..))
 
 type Mail = String
 type Login = String
@@ -53,6 +58,28 @@ data Mailer
         | Migration Mail Login
         | Booting Login
         deriving Show
+
+getTemplateMail m (Booting l) = do
+        x <- readFile "invitation.txt"
+        let x' = replace "invitante" "mootzoo service" $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
+        return ("Mootzoo conversational system: booting",S.pack m,x')
+getTemplateMail m (Invitation m' l) = do
+        x <- readFile "invitation.txt"
+        let x' = replace "invitante" (pack m') $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
+        return ("Mootzoo conversational system: invitation",S.pack m,x')
+getTemplateMail m (Reminding l) = do
+        x <- readFile "reminder.txt"
+        let x' = replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
+        return ("Mootzoo conversational system: reminder",S.pack m,x')
+getTemplateMail m (LogginOut l) = do
+        x <- readFile "newlogin.txt"
+        let x' = replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
+        return ("Mootzoo conversational system reminder: new login",S.pack m,x')
+
+sendAMail :: String -> Mail -> Mailer -> IO ()
+sendAMail pwd as ty = do
+        (t,m,b) <- getTemplateMail as ty
+        sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 10000000
 
 data Event 
         = EvSendMail Mail Mailer
@@ -92,16 +119,16 @@ mkLogin =  liftIO $ show <$> foldr (\n m -> m *10 + n) 1 <$> forM [0..30] (const
 
 -- | insert a new user by mail
 inviteUser :: Env -> Login -> Mail -> ConnectionMonad ()
-inviteUser e l m = checkingLogin e l $ \(CheckLogin i m' _) -> etransaction e $ do
-        r <- equery e "select inviter from users where email=?" (Only m)
+inviteUser e l m' = checkingLogin e l $ \(CheckLogin i m _) -> etransaction e $ do
+        r <- equery e "select inviter from users where email=?" (Only m')
         l' <- mkLogin
         let newuser = do 
-                        eexecute e "insert into users values (null,?,?,?)" (m,l',i) 
+                        eexecute e "insert into users values (null,?,?,?)" (m',l',i) 
                         r <- equery e "select last_insert_rowid()" ()
                         case (r :: [Only UserId]) of 
                                 [Only ui'] -> copyStore e i ui'
                                 _ -> throwError $ DatabaseError "last rowid lost"
-                        tell . return $ EvSendMail m (Invitation m' l')
+                        tell . return $ EvSendMail m' (Invitation m l')
 
         case (r :: [Only (Maybe UserId)]) of 
                 [] -> newuser
