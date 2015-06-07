@@ -1,4 +1,4 @@
-Sei stato invitato da invitante su mootzoo, lo zoo della conversazione.
+Hai richiesto un nuovo link di login.
 Il tuo link di login è:
 linklogin
 Attualmente lo stato del servizio è alpha e quindi non è assicurata alcuna sicurezza

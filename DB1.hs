@@ -80,8 +80,7 @@ sendAMail :: String -> Mail -> Mailer -> IO ()
 sendAMail pwd as ty = do
         (t,m,b) <- getTemplateMail as ty
         putStrLn b
-        flip catch (\(e::SomeException) -> putStrLn b) $ 
-                sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 10000
+        sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 10000000
 
 data Event 
         = EvSendMail Mail Mailer
@@ -140,9 +139,9 @@ inviteUser e l m' = checkingLogin e l $ \(CheckLogin i m _) -> etransaction e $ 
 
 -- | change the user login
 logout :: Env -> Login -> ConnectionMonad ()
-logout e l = checkingLogin e l $ \(CheckLogin _ m _) -> do 
+logout e l = checkingLogin e l $ \(CheckLogin ui m _) -> do 
         l' <- mkLogin 
-        eexecute e "update users set login=? where login=?" (l',l) 
+        eexecute e "update users set login=? where id=?" (l',ui) 
         tell . return $ EvSendMail m (LogginOut l')
 
 reminder :: Env -> Mail -> ConnectionMonad ()

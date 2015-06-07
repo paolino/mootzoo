@@ -100,7 +100,7 @@ main = do
                                 case splitOn "/" $ url_path url of
                                         ["Login",sci] -> do
                                                 s <- readFile "login.html"
-                                                return $ sendHTML OK $ replace "userkey=" ("userkey='"++sci++"'") s
+                                                return $ sendHTML OK $  replace "userkey=" ("userkey='"++sci++"'") s
                                                 
                                         ["GetMessages",sci,sn] -> sendResponse g $ do
                                                         ci <- readMaybe sci

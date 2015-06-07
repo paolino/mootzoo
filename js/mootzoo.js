@@ -108,7 +108,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
 
     $scope.conversations=Array();
     $scope.news=Array();
-    $scope.message="";
+    $scope.message=null;
     $scope.setn(0);
     $scope.logged=false;
     $scope.npiu=function(){
@@ -302,24 +302,24 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
 
     // messaging stuff
     $scope.respond=function(){
-        if($scope.message != ""){
+        if($scope.message){
                 $http.post("../api/NewMessage/"+$scope.userkey + "/AttachConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
                         function () {$scope.login()});
-                $scope.message="";
+                $scope.message=null;
                 }
         };
     $scope.comment = function(i){
-        if($scope.message != ""){
+        if($scope.message){
                 $http.post("../api/NewMessage/"+$scope.userkey + "/AttachMessage/" + $scope.conversations[$scope.n].messages[i].mid,$scope.message).success(
                         function () {$scope.login()});
-                $scope.message="";
+                $scope.message=null;
                 }
         };
     $scope.open = function(){
-        if($scope.message != ""){
+        if($scope.message){
                 $http.post("../api/NewMessage/"+$scope.userkey + "/DontAttach",$scope.message).success(
                         function () {$scope.login()});
-                $scope.message="";
+                $scope.message=null;
                 }
         };
     $scope.retract = function (){
@@ -336,20 +336,17 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 function () {$scope.login()});
         }
     $scope.invite=function (){
-        alert("Mail broken");
-        $http.post("../api/Invite/"+$scope.userkey,$scope.message).success(
-                function () {$scope.login()});
+        $http.post("../api/Invite/"+$scope.userkey,$scope.mailremainder).success(
+                function () {$scope.login();$scope.message=null;});
         }
 
     $scope.reminds=function (){
-        alert("Mail broken");
-        $http.post("../api/Reminds",$scope.message).success(
-                function () {$scope.login()});
+        $http.post("api/Reminds",$scope.mailremainder).success(
+                function () {$scope.mailremainder=null});
         }
     $scope.logout=function (){
-        alert("Mail broken");
-        $http.put("../api/Logout"+$scope.userkey).success(
-                function () {$scope.login()});
+        $http.put("../api/Logout/"+$scope.userkey).success(
+                function () {location.reload();});
         }
     $scope.forget= function (){
         $http.put("../api/ForgetConversation/"+$scope.userkey+"/"+$scope.conversations[$scope.n].cid).success(
@@ -363,7 +360,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         if($scope.userkey>0) $scope.hint();
         },10000);
     $interval(function(){
-        if($scope.message=="")location.reload();
+        if($scope.message==null)location.reload();
         },100000);
 });
 }
