@@ -30,7 +30,7 @@ create table store (
         user integer references users(id),
         unique (conversation,user)
         );
-        
+create index conv1 on conversations (rif);        
 create index voting1 on voting (message,user);
 create index voting2 on voting (message);
 create index store1 on store (conversation,user);

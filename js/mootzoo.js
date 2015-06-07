@@ -124,10 +124,10 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         };
 
     $scope.login=function(){
-        $http.get("api/GetStore/"+$scope.userkey).success(function(response) {
+        $http.get("../api/GetStore/"+$scope.userkey).success(function(response) {
                 $scope.conversations=Array();
                 $scope.news=Array();
-                var f = function(i) {$http.get("api/GetMessages/" + response.result[i].mid + "/100").success (
+                var f = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/100").success (
                                 function(messages) {
                                         for(var j=0;j<messages.result.length;j++){
                                                 $scope.conversations[i].messages.push(messages.result[j]);
@@ -143,7 +143,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 $scope.logged=true;
         };
 
-    $scope.showFork=function(i){return !$scope.conversations[$scope.n].messages[i].retr;}
+    $scope.showFork=function(i){return (!$scope.conversations[$scope.n].messages[i].retr) && (!$scope.isLast(i));}
         
     $scope.positionText=function(){
                 switch($scope.conversations[$scope.n].color) {
@@ -276,48 +276,48 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         }
     //voting stuff
     $scope.voteUp=function(i){
-        $http.put("api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/True").success(
+        $http.put("../api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/True").success(
                 function () {$scope.login()});
         };
 
     $scope.voteDown=function(i){
-        $http.put("api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/False").success(
+        $http.put("../api/VoteMessage/"+$scope.userkey + "/" +  $scope.conversations[$scope.n].messages[i].mid + "/False").success(
                 function () {$scope.login()});
         };
 
     // messaging stuff
     $scope.respond=function(){
         if($scope.message != ""){
-                $http.post("api/NewMessage/"+$scope.userkey + "/AttachConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
+                $http.post("../api/NewMessage/"+$scope.userkey + "/AttachConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
                         function () {$scope.login()});
                 $scope.message="";
                 }
         };
     $scope.comment = function(i){
         if($scope.message != ""){
-                $http.post("api/NewMessage/"+$scope.userkey + "/AttachMessage/" + $scope.conversations[$scope.n].messages[i].mid,$scope.message).success(
+                $http.post("../api/NewMessage/"+$scope.userkey + "/AttachMessage/" + $scope.conversations[$scope.n].messages[i].mid,$scope.message).success(
                         function () {$scope.login()});
                 $scope.message="";
                 }
         };
     $scope.open = function(){
         if($scope.message != ""){
-                $http.post("api/NewMessage/"+$scope.userkey + "/DontAttach",$scope.message).success(
+                $http.post("../api/NewMessage/"+$scope.userkey + "/DontAttach",$scope.message).success(
                         function () {$scope.login()});
                 $scope.message="";
                 }
         };
     $scope.retract = function (){
-        $http.put("api/RetractMessage/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
+        $http.put("../api/RetractMessage/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
                 function () {$scope.login()});
         }
         
     $scope.leave = function (){
-        $http.put("api/LeaveConversation/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
+        $http.put("../api/LeaveConversation/"+$scope.userkey + "/" + $scope.conversations[$scope.n].cid).success(
                 function () {$scope.login()});
         }
     $scope.hint = function (){
-        $http.put("api/HintConversation/"+$scope.userkey ).success(
+        $http.put("../api/HintConversation/"+$scope.userkey ).success(
                 function () {$scope.login()});
         }
     $timeout(function(){

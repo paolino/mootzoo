@@ -28,13 +28,13 @@ type MessageId = Integer
 
 data DBError 
 	= UnknownKeyUser
-        | AlreadyBooted
-	| UnknownIdConversation
-	| UnknownIdMessage
+        | AlreadyBooted      
+        | UnknownIdConversation
+        | UnknownIdMessage
         | NotRespondable
         | NotBranchable
-	| UnknownUser
-	| UserInvitedBySomeoneElse
+        | UnknownUser
+        | UserInvitedBySomeoneElse
         | NotRetractable
         | NotOpponent
         | NotProponent
@@ -173,7 +173,11 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                 AttachMessage mi -> do
                         r <- equery e "select retractable from messages where id=?" (Only mi)
                         case  (r ::[Only Bool]) of
-                                [Only False] -> newMessage e ui (Just mi) x $ \mi -> newConv e mi (\ci -> storeAdd' e ui ci  $ return ())
+                                [Only False] -> do
+                                        r <- equery e "select id from conversation where rif=?" (Only mi)
+                                        case r :: [Only ConvId] of
+                                                [] ->  newMessage e ui (Just mi) x $ \mi -> newConv e mi (\ci -> storeAdd' e ui ci  $ return ())
+                                                _ -> throwError NotBranchable
                                 [] -> throwError UnknownIdMessage
                                 _ -> throwError NotBranchable
                 AttachConversation ci -> checkingConv e ci $ \mi ->  do

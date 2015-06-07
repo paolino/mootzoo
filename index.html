@@ -96,33 +96,40 @@
 
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
 											<div  class="vote label">
-												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="How readers judge this message" >{{conversations[n].messages[$index].vote}}
+												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="How readers judge this message" >
+                                {{conversations[n].messages[$index].vote}}
 												</span>
 											</div>
 											<div  class=message style="color:white" style="display:inline">{{x.txt}}
 											</div>
 											<div  class="op label">
 												<span >
-													<button ng-show="testVote($index)" ng-click="voteUp($index)" color="button" class="btn btn-default btn-xs"  data-toggle="tooltip" title="Thumbs down for this message style or opinion" >
+													<button ng-show="testVote($index)" ng-click="voteUp($index)" color="button" class="btn btn-default btn-xs"  
+                                        data-toggle="tooltip" title="Thumbs down for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-up">
 														</span>
 													</button>
 												</span>											
 												<span >
-													<button ng-show="testVote($index)" ng-click="voteDown($index)" color="button" class="btn btn-default btn-xs" data-toggle="tooltip" title="Thumbs up for this message style or opinion" >
+													<button ng-show="testVote($index)" ng-click="voteDown($index)" color="button" class="btn btn-default btn-xs" 
+                                data-toggle="tooltip" title="Thumbs up for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-down"></span> 
 													</button>
 												</span>											
 												<span >
                           <button ng-show="showFork($index)" ng-click="comment($index)" color="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
-                                        title="Start a new conversation with this background" >Comment
+                                        title="Start a new conversation with this background" >Fork
 													</button>
 												</span>											
 												<span >
-                          <button  ng-show="testUndo() && isLast($index)" ng-click="retract()" color="button" class="btn  btn-xs" ng-class="retractColor()" data-toggle="tooltip" 
+                          <button  ng-show="testUndo() && isLast($index)" ng-click="retract()" color="button" class="btn  btn-xs" 
+                                ng-class="retractColor()" data-toggle="tooltip" 
                                 title="{{retractMeaning()}}">Retract</button>
 
-													<button ng-show="isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Respond</button>
+													<button ng-show="isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " 
+                                ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Respond</button>
+													<button ng-show="isLast($index) && ((conversations[n].color == 'Blank')) " 
+                                ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Re-open</button>
 												</span>											
 											</div><!--vote -->
 
@@ -138,7 +145,8 @@
 											<div class="input-group" >
 												<input  color="text" class="form-control" placeholder="Identifier" ng-model=jumper data-toggle="tooltip" title="A valid conversation identifier" >
 													<span class="input-group-btn">
-														<button ng-click="" class="btn btn-success" color="button" data-toggle="tooltip" title="Replace this conversation in your store with the one identified"  >Go</button>
+														<button ng-click="" class="btn btn-success" color="button" 
+                                data-toggle="tooltip" title="Replace this conversation in your store with the one identified"  >Go</button>
 													</span>
 											</div>
 										</div>
