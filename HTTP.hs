@@ -39,11 +39,11 @@ sendResponseP p v = case v of
                         Right x -> return $ sendJSON OK $ jsCompund JSNull w
 
 main :: IO ()
-main = do 
+main = do
+        putStrLn "running" 
         (p,g,_) <- prepare
-        serverWith defaultConfig { srvLog = stdLogger, srvPort = 8888 }
+        serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
-                          print url
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
@@ -96,7 +96,6 @@ main = do
                                                         n <- readMaybe sn
                                                         return $ GetMessages ci n
                                         ["GetStore",sl] ->  do
-                                                        print "get store"
                                                         sendResponse g $Just $ GetStore sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull
 

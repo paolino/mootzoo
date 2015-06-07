@@ -1,0 +1,32 @@
+				<div class="col-md-2" class="advertise">
+					<div class="panel panel-primary" ng-hide=logged >
+							<div class="panel-heading">
+								<span class="label"> Advertisement </span> 
+							</div>
+							<div class="panel-body"> This business is only for anonymous users if mootzoo.com is working renting rooms</div>
+					</div><!-- panel -->
+					<div class="panel panel-primary" ng-show=logged>
+						<div class="panel-heading">
+							<span class="label"> Private </span> 
+						</div>
+						<div class="panel-body"> 
+							<div class="form-group">
+								<div>    
+								<span class="label label-warning" >Room name:</span> <div>
+								<input color="text" class="form-control" ng-model="roomname" data-toggle="tooltip" title="Public room name for your private room" >
+							</div>
+							<div ng-show=roomname>    
+								<span class="label label-warning">Number of partecipants:</span> 
+									<input color="text" class="form-control" ng-model="roomnumber" data-toggle="tooltip" title="The maximum number of partecipants of {{roomname}} ">
+							</div>
+							<div ng-show=roomnumber>    
+								<span class="label label-warning">Price: {{price(roomnumber)}} € a year</span> 
+							</div>
+							<div ng-show=roomnumber>    
+								<button  ng-click="roomname=null;roomnumber=null" class="btn btn-info" data-toggle="tooltip" title="Buy via Paypal and receive a mail with first login of {{roomnumber}}" > Buy </button>
+							</div>
+						</div>
+					</div><!-- panel -->
+
+				</div><!-- col 2  -->
+

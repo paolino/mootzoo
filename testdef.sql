@@ -35,3 +35,4 @@ create index voting1 on voting (message,user);
 create index voting2 on voting (message);
 create index store1 on store (conversation,user);
 create index store2 on store (user);
+create index store3 on store (conversation);

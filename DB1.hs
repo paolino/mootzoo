@@ -174,7 +174,7 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                         r <- equery e "select retractable from messages where id=?" (Only mi)
                         case  (r ::[Only Bool]) of
                                 [Only False] -> do
-                                        r <- equery e "select id from conversation where rif=?" (Only mi)
+                                        r <- equery e "select id from conversations where rif=?" (Only mi)
                                         case r :: [Only ConvId] of
                                                 [] ->  newMessage e ui (Just mi) x $ \mi -> newConv e mi (\ci -> storeAdd' e ui ci  $ return ())
                                                 _ -> throwError NotBranchable
@@ -208,10 +208,10 @@ retractMessage e l ci =  etransaction e $ checkingLogin e l $  \(CheckLogin ui _
                 
                         case r :: [(Bool,Maybe MessageId, UserId)] of
                                 [(True,mp,(==ui) -> True)] -> do
+                                        eexecute e "delete from voting where message=? " (Only mi)
                                         case mp of 
                                                 Nothing -> do 
-                                                        eexecute e "delete from store where conversation=? and user=?" (ci,ui)
-                                                        eexecute e "delete from voting where message=? " (Only mi)
+                                                        eexecute e "delete from store where conversation=? " (Only ci)
                                                         eexecute e "delete from conversations where id=?" (Only ci)
                                                 Just mi' -> eexecute e "update conversations set rif=? where id=?" (mi',ci)
                                         eexecute e "delete from messages where id=?" (Only mi)
@@ -305,11 +305,11 @@ storeAdd' e ui ci  f =   do
 storeAdd e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \_ -> storeAdd' e ui ci $ throwError AlreadyStored
 
 storeDel :: Env -> Login -> ConvId -> ConnectionMonad ()
-storeDel e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \_ ->  do
+storeDel e l ci = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \mi ->  do
         r <- equery e "select user from store where conversation=? and user=?" (ci,ui)
         case r :: [Only UserId] of 
                 [_] -> do 
-                        c <- getColor' e ci ui
+                        c <- getColor' e mi ui
                         case c of
                                 Azur -> throwError Proponent 
                                 Blue -> throwError Proponent 
@@ -352,16 +352,13 @@ copyStore e ui ui' = do
 
 hintStore :: Env -> Login -> ConnectionMonad ()
 hintStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
-        rs <- equery e "select id from conversations order by rif desc limit 1000" () 
+        rs <- equery e "SELECT DISTINCT conversations.id FROM (conversations LEFT OUTER JOIN store on conversations.id=store.conversation and store.user=?) WHERE store.conversation IS NULL  order by rif desc limit 1000" (Only ui)
         case rs :: [(Only ConvId)] of
                 [] -> return ()
                 rs -> do 
                         n <- liftIO $ randomRIO (0,length rs - 1 )
                         let (Only ci) = rs !! n
-                        rs <- equery e "select conversation from store where user=? and conversation=?" (ui,ci)
-                        case rs :: [Only ConvId] of 
-                                [] -> eexecute e "insert or replace into store values (?,?)" (ci,ui)
-                                _ -> return ()
+                        eexecute e "insert or replace into store values (?,?)" (ci,ui)
                 
                         
         

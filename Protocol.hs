@@ -29,8 +29,7 @@ instance JSON MessageRow where
                 ("mid",JSRational False $ fromIntegral mid),
                 ("txt",JSString $ toJSString mtext),  
                 ("vote",JSRational False $ fromIntegral mvote),
-                ("retr",JSBool mretr),
-                ("muser",JSRational False $ fromIntegral muser)
+                ("retr",JSBool mretr)
                 ]
 instance JSON UserConv where
         showJSON (UserConv cid ccol cmsg cvo) = makeObj [

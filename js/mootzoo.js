@@ -125,20 +125,36 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
 
     $scope.login=function(){
         $http.get("../api/GetStore/"+$scope.userkey).success(function(response) {
-                $scope.conversations=Array();
-                $scope.news=Array();
-                var f = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/100").success (
+                var getMessages = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/100").success (
                                 function(messages) {
                                         for(var j=0;j<messages.result.length;j++){
                                                 $scope.conversations[i].messages.push(messages.result[j]);
                                                 }
                                         });}
+                var getVote = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/1").success (
+                                function(messages) {$scope.conversations[i].messages[0].vote = messages.result[0].vote;}
+                                );}
                 for (i=0;i < response.result.length;i ++){
-                        response.result[i].index=i;
-                        $scope.conversations.push(response.result[i]);
-                        $scope.conversations[i].messages=Array();
-                        f (i);
+                        if($scope.conversations.length-1 < i){
+                                $scope.conversations.push(response.result[i]);
+                                $scope.conversations[i].index=i;
+                                $scope.conversations[i].messages=Array();
+                                getMessages (i);
+                                }
+                        else if (($scope.conversations[i].color !== response.result[i].color) 
+                                        || ($scope.conversations[i].mid !== response.result[i].mid)
+                                         || ($scope.conversations[i].voted !== response.result[i].voted)
+                                          || ($scope.conversations[i].cid !== response.result[i].cid)
+                                                ){ 
+                                $scope.conversations[i]=response.result[i];
+                                $scope.conversations[i].index=i;
+                                $scope.conversations[i].messages=Array();
+                                getMessages (i);
+                                }
+                        else getVote(i);
+                                
                         }        
+                for(j=$scope.conversations.length;j>i;j--)$scope.conversations.pop();
                 });
                 $scope.logged=true;
         };
@@ -320,6 +336,24 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         $http.put("../api/HintConversation/"+$scope.userkey ).success(
                 function () {$scope.login()});
         }
+    $scope.invite=function (){
+        $http.post("../api/Invite/"+$scope.userkey,$scope.message).success(
+                function () {$scope.login()});
+        }
+
+    $scope.reminds=function (){
+        $http.post("../api/Reminds",$scope.message).success(
+                function () {$scope.login()});
+        }
+    $scope.logout=function (){
+        $http.put("../api/Logout"+$scope.userkey).success(
+                function () {$scope.login()});
+        }
+    $scope.forget= function (){
+        $http.put("../api/ForgetConversation/"+$scope.userkey+"/"+$scope.conversations[$scope.n].cid).success(
+                function () {$scope.login()});
+        }
+        
     $timeout(function(){
         if($scope.userkey>0) $scope.login();
         });

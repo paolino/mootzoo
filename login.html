@@ -22,22 +22,14 @@
 				<div id="navbar" class="navbar-right navbar-form">
 						<div class="form-group">
 							<div ng-show="logged">
-								<input color="text" placeholder="Email" class="form-control">
-									<button color="submit" class="btn btn-success"
-											data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">
-										Invite
-									</button> 
-									<button ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">Logout</button>
-							</div>
-							<div ng-hide=logged>
-								<button  ng-click="login()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Should jump in from login link">Login</button>
+									<button ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">New Login</button>
 							</div>
 						</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="container" ng-init="proposing=false"> 
+		<div ng-show=logged class="container" ng-init="proposing=false"> 
 			<div class=row>
 				<div ng-hide=true class="col-md-3">
 					<div  class="panel panel-primary">
@@ -80,6 +72,11 @@
 										<div class="col-md-2" >
 								      <button ng-click="hint()" class="btn btn-success btn-xs"  data-toggle="tooltip" title="Hint a conversation" > Hint</button>
 								      <button ng-click="open()" class="btn btn-info btn-xs"  data-toggle="tooltip" title="Start a new conversation" > Open</button>
+								      <button ng-click="forget()" class="btn btn-danger btn-xs"  data-toggle="tooltip" title="Forget this conversation" > Forget</button>
+									<button ng-click="invite()" class="btn btn-xs btn-success"
+											data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">
+										Invite
+									</button> 
                          
 													<button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="btn btn-danger btn-xs" data-toggle="tooltip" 
                                 title="Let one of the readers take your position" >Leave
@@ -167,37 +164,6 @@
 						</div><!-- col -->
 					</div><!-- row -->
 				</div><!-- col -->
-				<div class="col-md-2" class="advertise">
-					<div class="panel panel-primary" ng-hide=logged >
-							<div class="panel-heading">
-								<span class="label"> Advertisement </span> 
-							</div>
-							<div class="panel-body"> This business is only for anonymous users if mootzoo.com is working renting rooms</div>
-					</div><!-- panel -->
-					<div class="panel panel-primary" ng-show=logged>
-						<div class="panel-heading">
-							<span class="label"> Private </span> 
-						</div>
-						<div class="panel-body"> 
-							<div class="form-group">
-								<div>    
-								<span class="label label-warning" >Room name:</span> <div>
-								<input color="text" class="form-control" ng-model="roomname" data-toggle="tooltip" title="Public room name for your private room" >
-							</div>
-							<div ng-show=roomname>    
-								<span class="label label-warning">Number of partecipants:</span> 
-									<input color="text" class="form-control" ng-model="roomnumber" data-toggle="tooltip" title="The maximum number of partecipants of {{roomname}} ">
-							</div>
-							<div ng-show=roomnumber>    
-								<span class="label label-warning">Price: {{price(roomnumber)}} € a year</span> 
-							</div>
-							<div ng-show=roomnumber>    
-								<button  ng-click="roomname=null;roomnumber=null" class="btn btn-info" data-toggle="tooltip" title="Buy via Paypal and receive a mail with first login of {{roomnumber}}" > Buy </button>
-							</div>
-						</div>
-					</div><!-- panel -->
-
-				</div><!-- col 2  -->
 
 			</div><!-- row -->
 		</div><!-- container -->
