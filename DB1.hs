@@ -62,19 +62,19 @@ data Mailer
 getTemplateMail m (Booting l) = do
         x <- readFile "invitation.txt"
         let x' = replace "invitante" "mootzoo service" $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
-        return ("Mootzoo conversational system: booting",S.pack m,x')
+        return ("Booting a new Mootzoo Conversational System",S.pack m,x')
 getTemplateMail m (Invitation m' l) = do
         x <- readFile "invitation.txt"
         let x' = replace "invitante" (pack m') $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
-        return ("Mootzoo conversational system: invitation",S.pack m,x')
+        return ("Invitation to Mootzoo Conversational System",S.pack m,x')
 getTemplateMail m (Reminding l) = do
         x <- readFile "reminder.txt"
         let x' = replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
-        return ("Mootzoo conversational system: reminder",S.pack m,x')
+        return ("Login link reminder from Mootzoo",S.pack m,x')
 getTemplateMail m (LogginOut l) = do
         x <- readFile "newlogin.txt"
         let x' = replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
-        return ("Mootzoo conversational system reminder: new login",S.pack m,x')
+        return ("New login link from Mootzoo conversational system",S.pack m,x')
 
 sendAMail :: String -> Mail -> Mailer -> IO ()
 sendAMail pwd as ty = do
