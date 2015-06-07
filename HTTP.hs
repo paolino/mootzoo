@@ -39,7 +39,8 @@ sendResponseP pwd p v = case v of
                 (x,w) <- runWriterT $ p v
                 forM_ w $ \y ->
                         case y of
-                                EvSendMail s m -> void $ forkIO $ sendAMail pwd s m 
+                                EvSendMail s m -> do 
+                                        void $ forkIO $ sendAMail pwd s m 
                                 _ -> return ()
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x

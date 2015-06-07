@@ -62,6 +62,7 @@ data Mailer
 getTemplateMail m (Booting l) = do
         x <- readFile "invitation.txt"
         let x' = replace "invitante" "mootzoo service" $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
+        print "boot"
         return ("Mootzoo conversational system: booting",S.pack m,x')
 getTemplateMail m (Invitation m' l) = do
         x <- readFile "invitation.txt"
