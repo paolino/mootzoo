@@ -28,7 +28,8 @@ create table voting (
 create table store (
         conversation integer references conversations(id),
         user integer references users(id),
-        unique (conversation,user)
+        unique (conversation,user),
+        date integer not null default now()
         );
 create index conv1 on conversations (rif);        
 create index voting1 on voting (message,user);
