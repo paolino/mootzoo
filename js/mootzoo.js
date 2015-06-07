@@ -337,15 +337,18 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 function () {$scope.login()});
         }
     $scope.invite=function (){
+        alert("Mail broken");
         $http.post("../api/Invite/"+$scope.userkey,$scope.message).success(
                 function () {$scope.login()});
         }
 
     $scope.reminds=function (){
+        alert("Mail broken");
         $http.post("../api/Reminds",$scope.message).success(
                 function () {$scope.login()});
         }
     $scope.logout=function (){
+        alert("Mail broken");
         $http.put("../api/Logout"+$scope.userkey).success(
                 function () {$scope.login()});
         }

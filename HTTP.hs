@@ -40,7 +40,6 @@ sendResponseP pwd p v = case v of
                 forM_ w $ \y ->
                         case y of
                                 EvSendMail s m -> do
-                                        print "mail" 
                                         void $ forkIO $ sendAMail pwd s m 
                                 _ -> return ()
                 case x of 
