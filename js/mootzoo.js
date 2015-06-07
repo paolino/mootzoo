@@ -173,7 +173,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
     $scope.testLeave=function(){return ($scope.conversations[$scope.n].color == 'Yellow')};
     $scope.testVote=function(i){
                 if($scope.conversations[$scope.n].voted)return false;
-                var c = ($scope.conversations[$scope.n].messages[i].mid == $scope.conversations[$scope.n].mid)
+                var c = $scope.isLast(i);
                 switch($scope.conversations[$scope.n].color) {
                         case 'Blank':return false;
                         case 'Azur':return false
@@ -228,7 +228,10 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 case 'Blank':return "panel panel-default";
                 }
         };
-                                
+                        
+    $scope.isLast=function(i){
+        return $scope.conversations[$scope.n].mid==$scope.conversations[$scope.n].messages[i].mid
+        }
     $scope.glyphicon=function(n){
         switch($scope.conversations[n].color){
                 case 'Azur': return "glyphicon glyphicon-question-sign";
@@ -317,6 +320,9 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         $http.put("api/HintConversation/"+$scope.userkey ).success(
                 function () {$scope.login()});
         }
+    $timeout(function(){
+        if($scope.userkey>0) $scope.login();
+        });
     $interval(function(){
         if($scope.userkey>0) $scope.login();
         },10000);

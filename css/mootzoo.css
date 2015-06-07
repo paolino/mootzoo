@@ -1,18 +1,18 @@
 
 .message{
-    padding-right:80px;
-    padding-left:40px;
+    padding-right:150px;
+    padding-left:30px;
 }
 .vote{
     vertical-align: bottom;
-    width:40px;
+    width:30px;
     position:absolute;
     top:0;
     left:0;
 }
 .op{
     vertical-align: bottom;
-    width:80px;
+    width:150px;
     position:absolute;
     right:0;
     bottom:0;
