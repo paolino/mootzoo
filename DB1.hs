@@ -80,7 +80,7 @@ sendAMail :: String -> Mail -> Mailer -> IO ()
 sendAMail pwd as ty = do
         (t,m,b) <- getTemplateMail as ty
         flip catch (\(e::SomeException) -> putStrLn b) $ 
-                sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 100000
+                sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 1000
         putStrLn b
 
 data Event 
