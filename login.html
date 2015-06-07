@@ -80,7 +80,7 @@
 								      <button ng-show=false ng-click="forget()" class="btn btn-danger btn-xs"  data-toggle="tooltip" title="Forget this conversation" > Forget</button>
                          
 													<button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="btn btn-danger btn-xs" data-toggle="tooltip" 
-                                title="Let one of the readers take your position" >Leave conversation
+                                title="Let somebody else take your position" >Leave conversation
                           </button>	
 
 										</div>
@@ -95,7 +95,7 @@
 
 										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
 											<div  class="vote label">
-												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="How readers judge this message" >
+												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="Feedback for this message" >
                                 {{conversations[n].messages[$index].vote}}
 												</span>
 											</div>
