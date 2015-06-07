@@ -1,8 +1,15 @@
 Sei stato invitato da invitante su mootzoo, lo zoo della conversazione.
-Il tuo link di login è:
-linklogin
-Attualmente lo stato del servizio è alpha e quindi non è assicurata alcuna sicurezza
-Grazie 
 
-mootzoo (paolo.veronelli@gmail.com)
+Il tuo link di login è:
+
+linklogin
+
+
+Mootzoo è un servizio di sole conversazioni tra anonimi. Le conversazioni sono pubbliche e la partecipazione è ad invito.
+Le conversazioni tra due persone non sono interrompibili dall'esterno ma ogni messaggio del passato rappresenta un punto di svolta per sviluppare nuove conversazioni.
+
+Attualmente lo stato del servizio è alpha  e quindi non è assicurata alcuna sicurezza sulla stabilità di dati e funzioni.
+Grazie per la partecipazione, utile a far emergere i problemi non pensati.
+
+mootzoo team
 

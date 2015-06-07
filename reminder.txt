@@ -1,8 +1,8 @@
-E' stato richiesta una mail per ricordarti il vecchio link di login.
-Il tuo link di login è:
-linklogin
-Attualmente lo stato del servizio è alpha e quindi non è assicurata alcuna sicurezza
-Grazie 
+E' stato richiesta una mail per ricordarti il link di login.
 
-mootzoo (paolo.veronelli@gmail.com)
+Il tuo link di login è:
+
+linklogin
+
+mootzoo team
 

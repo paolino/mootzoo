@@ -268,7 +268,6 @@ migrate e l m = checkingLogin e l $ \(CheckLogin i m' _) -> do
          eexecute e "update users set email=? where id=?" (m,i)
          tell . return $ EvSendMail m (Migration m' l)
 
-				
 
 vote :: Env -> Login -> MessageId -> Bool -> ConnectionMonad ()
 vote e l mi b = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
@@ -372,6 +371,10 @@ getStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
                         
         return $ zipWith3 (\(Only ci) (co,vo) (Only mi) -> UserConv ci co mi vo) rs cs ms
                 
+
+selectConv :: Env -> Login -> ConvId -> ConnectionMonad ()
+selectConv e l =	etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \mi ->  do
+        eexecute e "update store set date=now() where conversation = ? and user = ?" (ci,ui)
 
 copyStore :: Env -> UserId -> UserId -> ConnectionMonad ()
 copyStore e ui ui' = do
