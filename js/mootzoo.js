@@ -337,7 +337,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         }
     $scope.invite=function (){
         $http.post("../api/Invite/"+$scope.userkey,$scope.mailremainder).success(
-                function () {$scope.login();$scope.message=null;});
+                function () {$scope.login();$scope.mailremainder=null;});
         }
 
     $scope.reminds=function (){
