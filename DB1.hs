@@ -5,7 +5,7 @@
 {-# LANGUAGE GADTs #-}
 module DB1 where 
 
-import Prelude hiding (readFile)
+import Prelude hiding (readFile, putStrLn)
 import System.Console.Haskeline hiding (catch)
 import Control.Applicative
 import Data.String
@@ -19,7 +19,7 @@ import Data.Typeable
 import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
-import Data.Text.Lazy.IO (readFile)
+import Data.Text.Lazy.IO (readFile,putStrLn)
 import Data.Text.Lazy (Text,replace,pack)
 import qualified Data.Text as S (pack)
 import Network.Mail.Client.Gmail
@@ -62,7 +62,6 @@ data Mailer
 getTemplateMail m (Booting l) = do
         x <- readFile "invitation.txt"
         let x' = replace "invitante" "mootzoo service" $ replace "linklogin" (pack $ "http://mootzoo.com/Login/" ++ l) $ x
-        print "boot"
         return ("Mootzoo conversational system: booting",S.pack m,x')
 getTemplateMail m (Invitation m' l) = do
         x <- readFile "invitation.txt"
@@ -80,7 +79,8 @@ getTemplateMail m (LogginOut l) = do
 sendAMail :: String -> Mail -> Mailer -> IO ()
 sendAMail pwd as ty = do
         (t,m,b) <- getTemplateMail as ty
-        sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 10000000
+        flip catch (\(e::SomeException) -> putStrLn b) $ 
+                sendGmail "mootzoo.service" (pack pwd) (Address (Just "mootzoo service") "mootzoo.service@gmail.com") [Address (Just m) m] [] [] t b [] 100000
 
 data Event 
         = EvSendMail Mail Mailer
