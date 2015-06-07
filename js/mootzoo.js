@@ -364,7 +364,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         if($scope.userkey>0) $scope.hint();
         },10000);
     $interval(function(){
-        if($scope.message="")location.reload();
+        if($scope.message=="")location.reload();
         },100000);
 });
 }
