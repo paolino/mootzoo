@@ -22,7 +22,7 @@
 				<div id="navbar" class="navbar-right navbar-form">
 						<div class="form-group">
 							<div ng-show="logged">
-									<button ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">New Login</button>
+									<button ng-show=false ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Drop your browser position">New Login</button>
 							</div>
 						</div>
 				</div>
@@ -73,7 +73,7 @@
 								      <button ng-click="hint()" class="btn btn-success btn-xs"  data-toggle="tooltip" title="Hint a conversation" > Hint</button>
 								      <button ng-click="open()" class="btn btn-info btn-xs"  data-toggle="tooltip" title="Start a new conversation" > Open</button>
 								      <button ng-click="forget()" class="btn btn-danger btn-xs"  data-toggle="tooltip" title="Forget this conversation" > Forget</button>
-									<button ng-click="invite()" class="btn btn-xs btn-success"
+									<button ng-show=false ng-click="invite()" class="btn btn-xs btn-success"
 											data-toggle="tooltip" title="Send an e-mail to this address for a fresh login link">
 										Invite
 									</button> 
