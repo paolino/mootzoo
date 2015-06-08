@@ -49,7 +49,7 @@
 						</div>
 						<div  class="panel-body" >
 							<div class="col-md-12" ng-repeat="x in news.slice(0,15)" data-toggle="tooltip" title="Select the conversation ending with this message" >
-								<button style="color:white" ng-class="convButton(x)" class="btn btn-xs" 
+								<button jqyoui-draggable="{animate:true}" style="color:white" ng-class="convButton(x)" class="btn btn-xs" 
 									ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
 									<span  ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
 									<span  ng-hide="convButtonSelected(x)" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
@@ -66,9 +66,9 @@
 									<div class=row> 
                     <div  class="well well-sm col-md-12" style="display:inline" 
                         data-toggle="tooltip" title="Select the conversation stored under this number"  >
-                      <button ng-repeat="x in conversations" color="submit" ng-class="convButton(x)" class="btn" 
+                      <button  ng-repeat="x in conversations" color="submit" ng-class="convButton(x)" class="btn" 
                           ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
-                        <span ng-show="convButtonSelected(x)" style="font-weight:bold;color:black" >{{x.cid}}</span>
+                        <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
                         <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
                       </button>
                     </div>
