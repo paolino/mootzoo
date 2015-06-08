@@ -104,8 +104,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         //$scope.bottomed=false;  
         if($scope.conversations.length < 1)newc();
         }
-    $scope.logout=function(){ };
-
+    $scope.scrolling=Array(); 
     $scope.conversations=Array();
     $scope.news=Array();
     $scope.message=null;
@@ -123,6 +122,12 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 }
         };
 
+    $scope.getMessages = function(i,mid) {$http.get("../api/GetMessages/" + mid + "/100").success (
+                function(messages) {
+                        for(var j=0;j<messages.result.length;j++){
+                                $scope.conversations[i].messages.push(messages.result[j]);
+                                }
+                        });}
     $scope.login=function(){
         $http.get("../api/GetStore/"+$scope.userkey).success(function(response) {
                 var getMessages = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/100").success (
@@ -164,8 +169,8 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
 
     $scope.showFork=function(i){return (!$scope.conversations[$scope.n].messages[i].retr) && (!$scope.isLast(i));}
         
-    $scope.positionText=function(){
-                switch($scope.conversations[$scope.n].color) {
+    $scope.positionText=function(x){
+                switch(x.color) {
                         case 'Blank':if($scope.conversations[$scope.n].messages.length < 1) 
                                         return "you can start a new conversation";
                                         return "you can restart this conversation";

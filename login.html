@@ -10,6 +10,7 @@
 		<script src= "../js/bootstrap.min.js" color="text/javascript"> </script>
 		<script src= "../js/angular.min.js" color="text/javascript"></script>
 		<script src= "../js/mootzoo.js" color="text/javascript"></script>
+		<script src= "../js/ng-infinite-scroll.min.js" color="text/javascript"></script>
 		<link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
 	</head>
 
@@ -65,9 +66,9 @@
 								<div class="panel-heading" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()"  > 
 									<div class=row> 
                     <div  class="well well-sm col-md-12" style="display:inline" 
-                        data-toggle="tooltip" title="Select the conversation stored under this number"  >
+                         >
                       <button  ng-repeat="x in conversations" color="submit" ng-class="convButton(x)" class="btn" 
-                          ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
+                          ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" data-toggle="tooltip" title="{{positionText(x)}}" >
                         <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
                         <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
                       </button>
@@ -88,8 +89,8 @@
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message" placeholder="Message.."></textarea>
 										</div>
 										<div class="col-md-1" >
-													<button  style="color:black" ng-show="canCopi()" ng-click="copi()" class="btn btn-xs"  data-toggle="tooltip" title="clean text area" >copy</button>
-													<button  style="color:black" ng-show="canPaste()" ng-click="paste()" class="btn btn-xs"  data-toggle="tooltip" title="clean text area" >paste</button>
+													<button  style="color:black" ng-show="canCopi()" ng-click="copi()" class="btn btn-xs"  data-toggle="tooltip" title="copy from text area" >copy</button>
+													<button  style="color:black" ng-show="canPaste()" ng-click="paste()" class="btn btn-xs"  data-toggle="tooltip" title="paste in text area" >paste</button>
 													<button  style="color:black" ng-show="canClean()" ng-click="clean()" class="btn btn-xs"  data-toggle="tooltip" title="clean text area" >clean</button>
 										</div>
 									</div><!-- row -->
@@ -118,7 +119,7 @@
                                 data-toggle="tooltip" title="Thumbs up for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-down"></span> 
 													</button>
-												</span>											
+												</span>											
 												<span >
                           <button ng-show="showFork($index)" ng-click="comment($index)" color="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
                                         title="Start a new conversation with this background" >Fork
