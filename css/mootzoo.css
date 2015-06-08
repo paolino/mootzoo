@@ -2,6 +2,7 @@
 .message{
     padding-right:150px;
     padding-left:30px;
+        cursor:pointer;
 }
 .vote{
     vertical-align: bottom;

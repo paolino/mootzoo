@@ -99,7 +99,7 @@
                                 {{conversations[n].messages[$index].vote}}
 												</span>
 											</div>
-											<div  class=message style="color:white" style="display:inline">{{x.txt}}
+											<div ng-click="setMessage(x.txt)" class=message style="color:white" style="display:inline">{{x.txt}}
 											</div>
 											<div  class="op label">
 												<span >
@@ -125,6 +125,8 @@
                                 ng-class="retractColor()" data-toggle="tooltip" 
                                 title="{{retractMeaning()}}">Retract</button>
 
+													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Azur') ||(conversations[n].color == 'Blue')) " 
+                                ng-click="correct()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Correct</button>
 													<button ng-show="isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " 
                                 ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Respond</button>
 													<button ng-show="isLast($index) && ((conversations[n].color == 'Blank')) " 

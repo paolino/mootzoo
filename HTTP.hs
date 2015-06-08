@@ -69,6 +69,9 @@ main = do
                                         ["NewMessage",sl,"AttachConversation",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ NewMessage sl (AttachConversation ci) msg
+                                        ["NewMessage",sl,"CorrectConversation",sci] ->  responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ NewMessage sl (CorrectConversation ci) msg
                                         ["NewMessage",sl,"AttachMessage",smi] -> responseP $ do
                                                         mi <- readMaybe smi
                                                         return $ NewMessage sl (AttachMessage mi) msg

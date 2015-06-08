@@ -193,6 +193,7 @@ data Attach
         = AttachMessage MessageId
         | AttachConversation ConvId
         | DontAttach
+        | CorrectConversation ConvId
         deriving Read
 
 insertMessage :: Env -> Login -> Attach -> String -> ConnectionMonad ()
@@ -208,6 +209,14 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                                                 _ -> throwError NotBranchable
                                 [] -> throwError UnknownIdMessage
                                 _ -> throwError NotBranchable
+                CorrectConversation ci ->  checkingConv e ci $ \mi ->  do
+                        r <- equery e "select retractable,user from messages where id=?" (Only mi)
+                        case r :: [(Bool,UserId)] of
+                                [(True,(==ui) -> True)] -> eexecute e "update messages set message=? where id=?" (x,mi)
+                                [(False,_)] -> throwError NotRetractable
+                                [(_,_)] -> throwError NotProponent
+                                _ -> throwError $ DatabaseError "missed rif retractable in conversation"
+
                 AttachConversation ci -> checkingConv e ci $ \mi ->  do
                         r <- equery e "select retractable,parent,user from messages where id=?" (Only mi)
                         let update = newMessage e ui (Just mi) x $ \mi' -> do
@@ -372,9 +381,6 @@ getStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
         return $ zipWith3 (\(Only ci) (co,vo) (Only mi) -> UserConv ci co mi vo) rs cs ms
                 
 
-selectConv :: Env -> Login -> ConvId -> ConnectionMonad ()
-selectConv e l =	etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> checkingConv e ci $ \mi ->  do
-        eexecute e "update store set date=now() where conversation = ? and user = ?" (ci,ui)
 
 copyStore :: Env -> UserId -> UserId -> ConnectionMonad ()
 copyStore e ui ui' = do

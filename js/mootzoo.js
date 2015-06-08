@@ -131,7 +131,10 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                                                 }
                                         });}
                 var getVote = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/1").success (
-                                function(messages) {$scope.conversations[i].messages[0].vote = messages.result[0].vote;}
+                                function(messages) {
+                                        $scope.conversations[i].messages[0].vote = messages.result[0].vote;
+                                        $scope.conversations[i].messages[0].txt = messages.result[0].txt;
+                                        }
                                 );}
                 for (i=0;i < response.result.length;i ++){
                         if($scope.conversations.length-1 < i){
@@ -301,6 +304,17 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         };
 
     // messaging stuff
+    $scope.setMessage=function(t){
+        $scope.message=t;
+        }
+    $scope.correct=function(){
+        if($scope.message){
+                $http.post("../api/NewMessage/"+$scope.userkey + "/CorrectConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
+                        function () {$scope.login()});
+                $scope.message=null;
+                }
+        };
+
     $scope.respond=function(){
         if($scope.message){
                 $http.post("../api/NewMessage/"+$scope.userkey + "/AttachConversation/" + $scope.conversations[$scope.n].cid,$scope.message).success(
@@ -376,6 +390,9 @@ window.onload = function() {
     });
  
     t['attachEvent']  && t.attachEvent('onkeyup', function() {
+        resize(t);
+    });
+    t['attachEvent']  && t.attachEvent('onclick', function() {
         resize(t);
     });
 }
