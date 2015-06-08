@@ -37,36 +37,13 @@
 
 		<div ng-show=logged class="container" ng-init="proposing=false"> 
 			<div class=row>
-				<div ng-hide=true class="col-md-3">
-					<div  class="panel panel-primary">
-						<div class="panel-heading" data-toggle="tooltip" title="Most recently updated conversations in your store">
-							<div class=row>
-								<div class="col-md-6"> <span class="label"> News </span></div>
-								<div class="col-md-6" data-toggle="tooltip" title="Use mousewheel instead" >
-									<button ng-click="nmeno()" color="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Previous conversation">prev</button>
-									<button ng-click="npiu()" color="submit" class="btn btn-xs btn-default" data-toggle="tooltip" title="Next convesation">next</button>
-								</div>
-							</div>
-						</div>
-						<div  class="panel-body" >
-							<div class="col-md-12" ng-repeat="x in news.slice(0,15)" data-toggle="tooltip" title="Select the conversation ending with this message" >
-								<button jqyoui-draggable="{animate:true}" style="color:white" ng-class="convButton(x)" class="btn btn-xs" 
-									ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" >
-									<span  ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
-									<span  ng-hide="convButtonSelected(x)" >{{x.messages[x.messages.length -1].slice(0,50)}}</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
 				<div class="col-md-9">
 					<div class="row">
 						<div class="col-md-12">
 							<div class="panel panel-default" >
 								<div class="panel-heading" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()"  > 
 									<div class=row> 
-                    <div  class="well well-sm col-md-12" style="display:inline" 
-                         >
+                    <div  class="well well-sm col-md-12" style="display:inline">
                       <button  ng-repeat="x in conversations" color="submit" ng-class="convButton(x)" class="btn" 
                           ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" data-toggle="tooltip" title="{{positionText(x)}}" >
                         <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
@@ -77,7 +54,7 @@
 									<div class=row> 
 										<div class="col-md-2" >
 								      <button ng-show=false ng-click="hint()" class="btn btn-success btn-xs"  data-toggle="tooltip" title="Hint a conversation" > Hint</button>
-								      <button ng-click="open()" class="btn btn-info btn-xs"  data-toggle="tooltip" title="Start a new conversation" > New conversation</button>
+								      <button ng-show=message ng-click="open()" class="btn btn-info btn-xs"  data-toggle="tooltip" title="Start a new conversation" > New conversation</button>
 								      <button ng-show=false ng-click="forget()" class="btn btn-danger btn-xs"  data-toggle="tooltip" title="Forget this conversation" > Forget</button>
                          
 													<button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="btn btn-danger btn-xs" data-toggle="tooltip" 
@@ -119,10 +96,10 @@
                                 data-toggle="tooltip" title="Thumbs up for this message style or opinion" >
 														<span class="glyphicon glyphicon-thumbs-down"></span> 
 													</button>
-												</span>											
+								        </span>											
 												<span >
-                          <button ng-show="showFork($index)" ng-click="comment($index)" color="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
-                                        title="Start a new conversation with this background" >Fork
+                          <button ng-show="showFork($index) && message" ng-click="comment($index)" color="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
+                                        title="Branch this converation here" >Comment
 													</button>
 												</span>											
 												<span >
@@ -132,9 +109,9 @@
 
 													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Azur') ||(conversations[n].color == 'Blue')) " 
                                 ng-click="correct()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Correct</button>
-													<button ng-show="isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " 
+													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " 
                                 ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Respond</button>
-													<button ng-show="isLast($index) && ((conversations[n].color == 'Blank')) " 
+													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Blank')) " 
                                 ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Respond to your mate" > Re-open</button>
 												</span>											
 											</div><!--vote -->
