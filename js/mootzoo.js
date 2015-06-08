@@ -111,6 +111,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
     $scope.message=null;
     $scope.setn(0);
     $scope.logged=false;
+    $scope.copy=null;
     $scope.npiu=function(){
                 if($scope.n < $scope.conversations.length-1){
                         $scope.setn($scope.n+1);
@@ -268,13 +269,17 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         }
       
     $scope.convButton= function(x){
+             if ($scope.n==x.index)
+                s="btn-md";
+             else s="btn-xs"; 
+                
                 switch(x.color) {
-                        case 'Azur': return "btn-info";
-                        case 'Green': return "btn-success";
-                        case 'Blue': return "btn-primary";
-                        case 'Yellow':return "btn-warning";
-                        case 'Red':return "btn-danger";
-                        case 'Blank':return "btn-default";
+                        case 'Azur': return "btn-info " + s;
+                        case 'Green': return "btn-success "+ s;
+                        case 'Blue': return "btn-primary " +s;
+                        case 'Yellow':return "btn-warning " +s;
+                        case 'Red':return "btn-danger " +s;
+                        case 'Blank':return "btn-default " +s;
              };
              };
     $scope.selected= function(i){
@@ -365,8 +370,31 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
     $scope.forget= function (){
         $http.put("../api/ForgetConversation/"+$scope.userkey+"/"+$scope.conversations[$scope.n].cid).success(
                 function () {$scope.login()});
-        }
+        };
         
+    $scope.clean=function(){
+        $scope.message=null;
+        };
+    $scope.canClean=function(){
+        return $scope.message
+        };
+    $scope.copi=function(){
+        if($scope.message){
+                $scope.copy=$scope.message;
+                $scope.message=null;
+                }
+        };
+    $scope.canCopi=function(){
+        return $scope.message
+        };
+    $scope.paste=function(){
+        if($scope.copy){
+                $scope.message=$scope.copy;
+                }
+        };
+    $scope.canPaste=function(){
+        return $scope.copy;
+        };
     $timeout(function(){
         if($scope.userkey>0) $scope.login();
         });
