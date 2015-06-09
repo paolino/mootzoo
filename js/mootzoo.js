@@ -280,11 +280,11 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                 
                 switch(x.color) {
                         case 'Azur': return "btn-info " + s;
-                        case 'Green': return "btn-success "+ s;
+                        case 'Green': return "posr btn-success "+ s;
                         case 'Blue': return "btn-primary " +s;
                         case 'Yellow':return "btn-warning " +s;
-                        case 'Red':return "btn-danger " +s;
-                        case 'Blank':return "btn-default " +s;
+                        case 'Red':return "posr btn-danger " +s;
+                        case 'Blank':return "posr btn-default " +s;
              };
              };
     $scope.selected= function(i){

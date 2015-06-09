@@ -1,4 +1,6 @@
-
+.posr {
+        float:right;
+        }
 .message{
     padding-right:150px;
     padding-left:30px;
