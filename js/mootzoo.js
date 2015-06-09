@@ -282,7 +282,7 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                         case 'Azur': return "btn-info " + s;
                         case 'Green': return "posr btn-success "+ s;
                         case 'Blue': return "btn-primary " +s;
-                        case 'Yellow':return "btn-warning " +s;
+                        case 'Yellow':return "post btn-warning " +s;
                         case 'Red':return "posr btn-danger " +s;
                         case 'Blank':return "posr btn-default " +s;
              };

@@ -38,7 +38,7 @@
 
 		<div ng-show=logged class="container" ng-init="proposing=false"> 
 			<div class=row>
-				<div class="col-md-9">
+				<div class="col-md-8">
 					<div class="row">
 						<div class="col-md-12">
 							<div class="panel panel-default" >
@@ -119,12 +119,23 @@
 										</li> 
 								  </ul>
 								</div>
-								<div class="panel-footer ">
-									<div class=row ng-show="(conversations[n].color=='Blank') || (conversations[n].color=='Green')||(conversations[n].color=='Red')"> 
-										<div class="col-md-2" >
-											<button ng-click="hint()" class="btn btn-success" color="button" data-toggle="tooltip" title="Prendi un suggerimento dall'algoritmo di mootzoo">Suggerimento</button>
-										</div>
-										<div class="col-md-3" >
+							</div><!-- panel -->
+						</div><!-- col -->
+
+					</div><!-- row -->
+				</div><!-- col -->
+        <div class="col-md-4" ng-show="(conversations[n].color=='Blank') || (conversations[n].color=='Green')||(conversations[n].color=='Red')">
+											<div class=well>
+											<div class="input-group" >
+												<input  color="text" class="form-control" placeholder="Cerca..."></input>
+												<span class="input-group-btn">
+													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il primo risultato" >Vai</button>
+													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il prossimo risultato" >Prox</button>
+													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il risultato precedente" >Prec</button>
+												</span>
+											</div><!-- -->
+											</div><!-- -->
+											<div class=well>
 											<div class="input-group" >
 												<input  color="text" class="form-control" placeholder="Identificativo" ng-model=jumper data-toggle="tooltip" title="Un valido identificativo di conversazione" >
 													<span class="input-group-btn">
@@ -132,23 +143,8 @@
                                 data-toggle="tooltip" title="Rimpiazza questa conversazione con quella indicata"  >Vai</button>
 													</span>
 											</div>
-										</div>
-										<div class="col-md-7" >
-											<div class="input-group" >
-												<input  color="text" class="form-control" placeholder="Cerca..."></input>
-												<span class="input-group-btn">
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il primo risultato" >Vai</button>
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il prossimo risultato" >Prossimo</button>
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il risultato precedente" >Precedente</button>
-												</span>
-											</div><!-- -->
+											</div>
 										</div><!--  -->
-									</div>
-								</div><!-- footer -->
-							</div><!-- panel -->
-						</div><!-- col -->
-					</div><!-- row -->
-				</div><!-- col -->
 
 			</div><!-- row -->
 		</div><!-- container -->
