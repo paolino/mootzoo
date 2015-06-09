@@ -363,7 +363,7 @@ data UserConv = UserConv {
 
 getStore :: Env -> Login -> ConnectionMonad [UserConv]
 getStore e l = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ _) -> do
-        rs <- equery e "select conversation from store where user=?" (Only ui)
+        rs <- equery e "select conversation from store where user=? order by conversation desc" (Only ui)
         ms <- forM rs $ \ci -> do
                 r <-  equery e "select rif from conversations where id=?" (ci :: Only ConvId)
                 case r of
