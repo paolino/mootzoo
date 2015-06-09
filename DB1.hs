@@ -180,12 +180,16 @@ newConv e mi f = do
 
 newMessage :: Env -> UserId -> Maybe MessageId -> String -> (MessageId -> ConnectionMonad ()) -> ConnectionMonad ()
 newMessage e ui mi x f = do
+        -- change on parent presence
         case mi of 
                 Nothing -> eexecute e "insert into messages values (null,?,?,1,null,0)" (x,ui)
                 Just mi -> eexecute e "insert into messages values (null,?,?,1,?,0)" (x,ui,mi)
         r <- equery e "select last_insert_rowid()" ()
         case (r :: [Only MessageId]) of 
-                [Only mi'] -> tell [EvNewMessage mi'] >> f mi'
+                [Only mi'] ->   do
+                        tell [EvNewMessage mi'] 
+                        eexecute e "insert into search values (?,?)" (x,mi') 
+                        f mi'
                 _ -> throwError $ DatabaseError "last rowid lost"
         
                            
@@ -212,7 +216,9 @@ insertMessage e l at x = etransaction e $ checkingLogin e l $ \(CheckLogin ui _ 
                 CorrectConversation ci ->  checkingConv e ci $ \mi ->  do
                         r <- equery e "select retractable,user from messages where id=?" (Only mi)
                         case r :: [(Bool,UserId)] of
-                                [(True,(==ui) -> True)] -> eexecute e "update messages set message=? where id=?" (x,mi)
+                                [(True,(==ui) -> True)] -> do
+                                        eexecute e "update messages set message=? where id=?" (x,mi)
+                                        eexecute e "update search set content=? where id=?" (x,mi)
                                 [(False,_)] -> throwError NotRetractable
                                 [(_,_)] -> throwError NotProponent
                                 _ -> throwError $ DatabaseError "missed rif retractable in conversation"
@@ -252,6 +258,7 @@ retractMessage e l ci =  etransaction e $ checkingLogin e l $  \(CheckLogin ui _
                                                         eexecute e "delete from conversations where id=?" (Only ci)
                                                 Just mi' -> eexecute e "update conversations set rif=? where id=?" (mi',ci)
                                         eexecute e "delete from messages where id=?" (Only mi)
+                                        eexecute e "delete from search where id=?" (Only mi)
                                 [(False,_,_)] -> throwError NotRetractable
                                 [(_,_,_)] -> throwError NotProponent
                                 _ -> throwError $ DatabaseError "retractMessage inconsistence"
