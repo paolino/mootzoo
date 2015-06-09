@@ -51,21 +51,20 @@
                       </button>
                     </div>
 									</div><!-- row -->
-									<div class=row> 
-										<div class="col-md-2" >
-								      <button ng-show=false ng-click="hint()" class="btn btn-success btn-xs"  data-toggle="tooltip" title="Suggerisci una conversazione" > Suggerimento</button>
-								      <button ng-show=message ng-click="open()" class="btn btn-info btn-xs"  data-toggle="tooltip" title="Comincia una nuova conversazione" > Nuova conversazione</button>
-								      <button ng-show=false ng-click="forget()" class="btn btn-danger btn-xs"  data-toggle="tooltip" title="Dimentica questa conversazione" > Dimentica</button>
-                         
-													<button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="btn btn-danger btn-xs" data-toggle="tooltip" 
+								  <div class="row"> 
+								    <div class="well well-sm col-md-12"> 
+								      <button ng-disabled="!message" ng-click="open()" class="btn btn-info btn-xs"  
+                                data-toggle="tooltip" title="Comincia una nuova conversazione" > Nuova conversazione</button>
+								      <button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="posr btn btn-danger btn-xs" data-toggle="tooltip" 
                                 title="Lascia che qualcun altro prenda il tuo posto" >Abbandona la conversazione
-                          </button>	
-
-										</div>
-										<div class="col-md-9" >
+                      </button>	
+                    </div>
+									</div><!-- row -->
+									<div class=row> 
+										<div class="col-md-10" >
 													<textarea  style="overflow:hidden" class="form-control" ng-model="message" placeholder="Messaggio.."></textarea>
 										</div>
-										<div class="col-md-1" >
+										<div class="col-md-2" >
 													<button  style="color:black" ng-show="canCopi()" ng-click="copi()" class="btn btn-xs"  data-toggle="tooltip" title="Copia dall'area di testo" >Copia</button>
 													<button  style="color:black" ng-show="canPaste()" ng-click="paste()" class="btn btn-xs"  data-toggle="tooltip" title="Incolla nell'area di testo" >Incolla</button>
 													<button  style="color:black" ng-show="canClean()" ng-click="clean()" class="btn btn-xs"  data-toggle="tooltip" title="Pulisci l'area di testo" >Pulisci</button>
