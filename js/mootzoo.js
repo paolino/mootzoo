@@ -101,10 +101,10 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
     
     $scope.setn=function(i){
         $scope.n=i;
-        //$scope.bottomed=false;  
-        if($scope.conversations.length < 1)newc();
+        $scope.viewing=$scope.conversations[$scope.n];
         }
     $scope.scrolling=Array(); 
+    $scope.viewing=null;
     $scope.conversations=Array();
     $scope.news=Array();
     $scope.message=null;
@@ -121,33 +121,31 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                         $scope.setn($scope.n-1);
                 }
         };
-
-    $scope.getMessages = function(i,mid) {$http.get("../api/GetMessages/" + mid + "/100").success (
-                function(messages) {
-                        for(var j=0;j<messages.result.length;j++){
-                                $scope.conversations[i].messages.push(messages.result[j]);
-                                }
-                        });}
+    $scope.getMessages = function(conv) {
+                $http.get("../api/GetMessages/" + conv.mid + "/100").success (
+                                function(messages) {
+                                        conv.messages=Array();
+                                        for(var j=0;j<messages.result.length;j++){
+                                                conv.messages.push(messages.result[j]);
+                                                }
+                                        });
+        }
+    $scope.getLast = function(conv) {
+                $http.get("../api/GetMessages/" + conv.mid + "/1").success (
+                                function(messages) {
+                                        conv.messages[0].vote = messages.result[0].vote;
+                                        conv.conversations[i].messages[0].txt = messages.result[0].txt;
+                                        }
+                                );
+        }
     $scope.login=function(){
         $http.get("../api/GetStore/"+$scope.userkey).success(function(response) {
-                var getMessages = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/100").success (
-                                function(messages) {
-                                        for(var j=0;j<messages.result.length;j++){
-                                                $scope.conversations[i].messages.push(messages.result[j]);
-                                                }
-                                        });}
-                var getVote = function(i) {$http.get("../api/GetMessages/" + response.result[i].mid + "/1").success (
-                                function(messages) {
-                                        $scope.conversations[i].messages[0].vote = messages.result[0].vote;
-                                        $scope.conversations[i].messages[0].txt = messages.result[0].txt;
-                                        }
-                                );}
                 for (i=0;i < response.result.length;i ++){
                         if($scope.conversations.length-1 < i){
                                 $scope.conversations.push(response.result[i]);
                                 $scope.conversations[i].index=i;
                                 $scope.conversations[i].messages=Array();
-                                getMessages (i);
+                                $scope.getMessages (i);
                                 }
                         else if (($scope.conversations[i].color !== response.result[i].color) 
                                         || ($scope.conversations[i].mid !== response.result[i].mid)
@@ -157,9 +155,9 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
                                 $scope.conversations[i]=response.result[i];
                                 $scope.conversations[i].index=i;
                                 $scope.conversations[i].messages=Array();
-                                getMessages (i);
+                                $scope.getMessages ($scope.conversations[i]);
                                 }
-                        else getVote(i);
+                        else $scope.getLast($scope.conversations[i]);
                                 
                         }        
                 for(j=$scope.conversations.length;j>i;j--)$scope.conversations.pop();
@@ -372,11 +370,6 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         $http.put("../api/Logout/"+$scope.userkey).success(
                 function () {location.reload();});
         }
-    $scope.forget= function (){
-        $http.put("../api/ForgetConversation/"+$scope.userkey+"/"+$scope.conversations[$scope.n].cid).success(
-                function () {$scope.login()});
-        };
-        
     $scope.clean=function(){
         $scope.message=null;
         };
@@ -399,6 +392,28 @@ app.controller('conversations', function($scope, $http,$timeout,$interval) {
         };
     $scope.canPaste=function(){
         return $scope.copy;
+        };
+    $scope.search=function(){
+        $http.post("../api/GetSearch",$scope.searchValue).success(
+                function (rs) {
+                        $scope.searched=rs.result;
+                        for(var i=0;i<rs.result.length;i++)
+                                rs.result[i].index=i;
+                        });
+        };
+    $scope.viewSearch=function(i){
+        $scope.getMessages($scope.searched[i]);
+        $scope.viewing = $scope.searched[i];
+        }
+    $scope.forget= function (){
+        $http.put("../api/ForgetConversation/"+$scope.userkey+"/"+$scope.conversations[$scope.n].cid).success(
+                function () {$scope.login()});
+        };
+        
+
+    $scope.store = function (ci){
+        $http.put("../api/StoreConversation/"+$scope.userkey+"/"+ci).success(
+                function () {$scope.login()});
         };
     $timeout(function(){
         if($scope.userkey>0) $scope.login();

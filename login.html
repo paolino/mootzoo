@@ -75,7 +75,7 @@
 								<div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
 									<ul class=list-group >
 
-										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in conversations[n].messages">
+										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in viewing.messages">
 											<div  class="vote label">
 												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="Feedback per questo messaggio" >
                                 {{conversations[n].messages[$index].vote}}
@@ -124,16 +124,24 @@
 
 					</div><!-- row -->
 				</div><!-- col -->
-        <div class="col-md-4" ng-show="(conversations[n].color=='Blank') || (conversations[n].color=='Green')||(conversations[n].color=='Red')">
+        <div class="col-md-4">
 											<div class=well>
 											<div class="input-group" >
-												<input  color="text" class="form-control" placeholder="Cerca..."></input>
+												<input  color="text" class="form-control" placeholder="Cerca..." ng-model="searchValue"></input>
 												<span class="input-group-btn">
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il primo risultato" >Vai</button>
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il prossimo risultato" >Prox</button>
-													<button  class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il risultato precedente" >Prec</button>
+													<button  ng-click="search()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il primo risultato" >Vai</button>
+													<button  ng-click="next()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il prossimo risultato" >Prox</button>
+													<button  ng-click="prev()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il risultato precedente" >Prec</button>
+                        
 												</span>
-											</div><!-- -->
+											</div><!-- -->                      
+                      <button  ng-repeat="x in searched" color="submit" ng-class="convButton(x)" class="btn" 
+                          ng-click="$parent.viewSearch($index)"  ng-right="npiu()" ng-left="nmeno()" data-toggle="tooltip" title="{{textPosition(x,'it')}}" >
+                        <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
+                        <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
+                      </button>
+
+                        {{searched}}
 											</div><!-- -->
 											<div class=well>
 											<div class="input-group" >

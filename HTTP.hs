@@ -6,6 +6,7 @@ import Network
 import Data.Time.LocalTime
 import Protocol
 import DB1
+import DB0
 import Text.Read 
 import Network.HTTP.Server
 import Network.HTTP.Server.Logger
@@ -75,6 +76,8 @@ main = do
                                         ["NewMessage",sl,"AttachMessage",smi] -> responseP $ do
                                                         mi <- readMaybe smi
                                                         return $ NewMessage sl (AttachMessage mi) msg
+                                        ["GetSearch"] ->  do
+                                                        sendResponse g $Just $ GetSearch msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of

@@ -23,6 +23,7 @@ import Text.JSON
 import System.Directory
 
 import DB1
+import DB0
 
 instance JSON MessageRow where
         showJSON (MessageRow mid mtext mvote mretr muser) = makeObj [
@@ -38,12 +39,6 @@ instance JSON UserConv where
                 ("mid",JSRational False $ fromIntegral cmsg),
                 ("voted",JSBool cvo)
                 ] 
-catchDBException :: IO a -> ConnectionMonad a
-catchDBException f = do
-        	r <- liftIO $ catch (Right <$> f) (\(e :: SomeException) -> return (Left e)) 
-                case r of 
-                        Left e -> throwError $ DatabaseError (show e)
-                        Right x -> return x
 data Put
         = Boot Mail			
         | Invite Login Mail
@@ -80,30 +75,17 @@ put e l = runErrorT (put' e l)
 data Get 
         = GetMessages MessageId Integer
         | GetStore Login
+        | GetSearch String
         -- | GetHints
         deriving Read
 get'  :: Env -> Get -> ConnectionMonad JSValue
 get' e (GetMessages mi n) = showJSON <$> retrieveMessages e mi n
 get' e (GetStore l) = showJSON <$> getStore e l 
+get' e (GetSearch s) = showJSON <$> searchMessages e s
 
 get :: Env -> Get -> WriterT [Event] IO (Either DBError JSValue)
 get e l = runErrorT (get' e l)
 
-mkEnv :: Connection -> Env
-mkEnv conn = Env 
-        (\q r -> catchDBException $ query conn q r) 
-        (\q r -> catchDBException $ execute conn q r) (\q -> catchDBException $ execute_ conn q) 
-        $ 
-        \c -> do
-                liftIO $ execute_ conn "begin transaction"
-                r <- lift $ runErrorT c
-                case r of 
-                        Left e -> do
-                                liftIO $ execute_ conn "rollback"
-                                throwError e
-                        Right x -> do
-                                liftIO $ execute_ conn "commit transaction"
-                                return  x
 clean = callCommand "cat testdef.sql | sqlite3 test.db"
 prepare = do         
         b <- doesFileExist "test.db"
