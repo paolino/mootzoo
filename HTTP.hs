@@ -108,10 +108,14 @@ main = do
                                                 s <- readFile "login.html"
                                                 return $ sendHTML OK $  replace "userkey=" ("userkey='"++sci++"'") s
                                                 
-                                        ["GetMessages",sci,sn] -> sendResponse g $ do
+                                        ["PastMessages",sci,sn] -> sendResponse g $ do
                                                         ci <- readMaybe sci
                                                         n <- readMaybe sn
-                                                        return $ GetMessages ci n
+                                                        return $ PastMessages ci n
+                                        ["FutureMessages",sci,sn] -> sendResponse g $ do
+                                                        ci <- readMaybe sci
+                                                        n <- readMaybe sn
+                                                        return $ FutureMessages ci n
                                         ["GetStore",sl] ->  do
                                                         sendResponse g $Just $ GetStore sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull

@@ -19,78 +19,63 @@ import Data.Typeable
 import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
-import Text.JSON
 import System.Directory
 
-import DB1
 import DB0
+import DB.Users
+import DB.Put
+import DB.Get
+import DB.Votes
 
-instance JSON MessageRow where
-        showJSON (MessageRow mid mtext mvote mretr muser) = makeObj [
-                ("mid",JSRational False $ fromIntegral mid),
-                ("txt",JSString $ toJSString mtext),  
-                ("vote",JSRational False $ fromIntegral mvote),
-                ("retr",JSBool mretr)
-                ]
-instance JSON UserConv where
-        showJSON (UserConv cid ccol cmsg cvo) = makeObj [
-                ("cid",JSRational False $ fromIntegral cid), 
-                ("color",JSString $ toJSString $ show ccol),
-                ("mid",JSRational False $ fromIntegral cmsg),
-                ("voted",JSBool cvo)
-                ] 
 data Put
         = Boot Mail			
         | Invite Login Mail
         | Logout Login
         | Reminds Mail
         | Migrate Login Mail
-        | NewMessage Login Attach String
-        | RetractMessage Login ConvId
-        | LeaveConversation Login ConvId
-        | VoteMessage Login MessageId Bool
-        | StoreConversation Login ConvId
-        | ForgetConversation Login ConvId
-        | HintConversation Login
+        | New Login Attach String
+        | Retract Login MessageId
+        | Leave Login Dispose MessageId
+        | Vote Login MessageId Bool
         deriving Read
 
 put' :: Env -> Put -> ConnectionMonad ()
 put' e (Boot m) = boot e m
-put' e (Invite l m) = inviteUser e l m
+put' e (Invite l m) = inviteUser e l m (\_ _ -> return ())
 put' e (Logout l) = logout e l
 put' e (Reminds m) = reminder e m
 put' e (Migrate l m) = migrate e l m
-put' e (NewMessage l at x) = insertMessage e l at x
-put' e (RetractMessage l ci) = retractMessage e l ci
-put' e (LeaveConversation l ci) = leaveConversation e l ci 
-put' e (VoteMessage l mi v) = vote e l mi v
-put' e (StoreConversation l ci ) = storeAdd e l ci
-put' e (ForgetConversation l ci ) = storeDel e l ci
-put' e (HintConversation l ) = hintStore e l 
-
+put' e (New l at x) = insertMessage e l at x
+put' e (Retract l mi) = retractMessage e l mi
+put' e (Leave l d mi) = disposeMessage e l d mi 
+put' e (Vote l mi v) = vote e l mi v
       
 put :: Env -> Put -> WriterT [Event] IO (Either DBError ())
 put e l = runErrorT (put' e l)
    
 data Get 
-        = GetMessages MessageId Integer
-        | GetStore Login
-        | GetSearch String
-        -- | GetHints
+        = Past Login MessageId Integer
+        | Future Login MessageId
+        | ForMe Login
+        | FromMe Login
+        | ForAll Login
         deriving Read
-get'  :: Env -> Get -> ConnectionMonad JSValue
-get' e (GetMessages mi n) = showJSON <$> retrieveMessages e mi n
-get' e (GetStore l) = showJSON <$> getStore e l 
-get' e (GetSearch s) = showJSON <$> searchMessages e s
 
-get :: Env -> Get -> WriterT [Event] IO (Either DBError JSValue)
+get'  :: Env -> Get -> ConnectionMonad [Exposed]
+get' e (Past l mi n) = getPast e l mi n
+get' e (Future l mi) = getFuture e l mi
+get' e (ForMe mi) = getClosed e mi
+get' e (FromMe mi) = getEnvelopes e mi
+get' e (ForAll mi) = getOpens e mi
+
+get :: Env -> Get -> WriterT [Event] IO (Either DBError [Exposed])
 get e l = runErrorT (get' e l)
 
-clean = callCommand "cat testdef.sql | sqlite3 test.db"
+clean = callCommand "cat schema.sql | sqlite3 mootzoo.db"
 prepare = do         
-        b <- doesFileExist "test.db"
+        b <- doesFileExist "mootzoo.db"
         when (not b) clean
-        conn <- open "test.db"
+        conn <- open "mootzoo.db"
         execute_ conn "PRAGMA foreign_keys = ON"
         let     p = put (mkEnv conn)
                 g = get (mkEnv conn)
@@ -105,7 +90,7 @@ console = do
                         Nothing -> outputStrLn "should stop here"
                         Just (Just x) -> liftIO $ do 
                                 (e,w) <- runWriterT (p x)
-                                print w
+                                print (e,w)
                         Just Nothing -> case fmap readMaybe l of 
                                 Nothing -> outputStrLn "should stop here"
                                 Just Nothing -> outputStrLn "no parse"

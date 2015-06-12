@@ -45,8 +45,8 @@
 								<div class="panel-heading" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()"  > 
 									<div class=row> 
                     <div  class="well well-sm col-md-12" style="display:inline">
-                      <button  ng-repeat="x in conversations" color="submit" ng-class="convButton(x)" class="btn" 
-                          ng-click="$parent.setn(x.index)"  ng-right="npiu()" ng-left="nmeno()" data-toggle="tooltip" title="{{textPosition(x,'it')}}" >
+                      <button  ng-repeat="x in melast" color="submit" ng-class="convButton(x)" class="btn" 
+                          ng-click="$parent.view(x)"  data-toggle="tooltip" title="messaggi tuoi" >
                         <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
                         <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
                       </button>
