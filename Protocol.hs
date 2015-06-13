@@ -59,14 +59,16 @@ data Get
         | ForMe Login
         | FromMe Login
         | ForAll Login
+        | Conversation Login MessageId
         deriving Read
 
 get'  :: Env -> Get -> ConnectionMonad [Exposed]
 get' e (Past l mi n) = getPast e l mi n
 get' e (Future l mi) = getFuture e l mi
-get' e (ForMe mi) = getClosed e mi
-get' e (FromMe mi) = getEnvelopes e mi
-get' e (ForAll mi) = getOpens e mi
+get' e (ForMe l) = getClosed e l
+get' e (FromMe l) = getEnvelopes e l
+get' e (ForAll l) = getOpens e l
+get' e (Conversation l mi) = getConversation e l mi 
 
 get :: Env -> Get -> WriterT [Event] IO (Either DBError [Exposed])
 get e l = runErrorT (get' e l)
