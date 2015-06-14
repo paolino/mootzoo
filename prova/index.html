@@ -13,7 +13,7 @@
   <div ng-controller="ModalDemoCtrl">
     <script type="text/ng-template" id="myModalContent.html">
       <div class="modal-body">
-        <textarea ng-model="testo" placeholder="Messaggio.."></textarea>
+        <textarea style="overflow:hidden" class="form-control" ng-model="testo" placeholder="Messaggio.."></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" ng-click="ok()">Spedisci</button>
