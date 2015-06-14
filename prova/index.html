@@ -12,9 +12,6 @@
 
   <div ng-controller="ModalDemoCtrl">
     <script type="text/ng-template" id="myModalContent.html">
-      <div class="modal-header">
-        <h3 class="modal-title">Scrivi il tuo messaggio</h3>
-      </div>
       <div class="modal-body">
         <textarea ng-model="testo" placeholder="Messaggio.."></textarea>
       </div>
@@ -24,10 +21,10 @@
       </div>
     </script>
 
-    <button class="btn btn-default" ng-click="open('sm',messages.length +1)">Rispondi</button>
+    <button class="btn btn-default" ng-click="open('md',messages.length +1)">Rispondi</button>
     <div ng-repeat="x in messaggi">
       Messaggio {{$index}}: {{x}}
-      <button class="btn btn-default" ng-click="open('sm',$index + 1)">Rispondi</button>
+      <button class="btn btn-default" ng-click="open('md',$index + 1)">Rispondi</button>
     </div>
   </div>
 </body>
