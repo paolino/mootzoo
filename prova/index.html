@@ -1,0 +1,35 @@
+<!doctype html>
+<html ng-app="ui.bootstrap.demo">
+
+<head>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.js"></script>
+  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.0.js"></script>
+  <script src="example.js"></script>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div ng-controller="ModalDemoCtrl">
+    <script type="text/ng-template" id="myModalContent.html">
+      <div class="modal-header">
+        <h3 class="modal-title">Scrivi il tuo messaggio</h3>
+      </div>
+      <div class="modal-body">
+        <textarea ng-model="testo" placeholder="Messaggio.."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">Spedisci</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancella</button>
+      </div>
+    </script>
+
+    <button class="btn btn-default" ng-click="open('sm',messages.length +1)">Rispondi</button>
+    <div ng-repeat="x in messaggi">
+      Messaggio {{$index}}: {{x}}
+      <button class="btn btn-default" ng-click="open('sm',$index + 1)">Rispondi</button>
+    </div>
+  </div>
+</body>
+
+</html>
