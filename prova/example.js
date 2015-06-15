@@ -28,9 +28,7 @@ angular.module('ui.bootstrap.demo').controller('ModalDemoCtrl', function ($scope
     });
   };
 
-  $scope.toggleAnimation = function () {
-    $scope.animationsEnabled = !$scope.animationsEnabled;
-  };
+
 
 });
 

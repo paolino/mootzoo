@@ -5,7 +5,11 @@ import System.IO
 import Network
 import Data.Time.LocalTime
 import Protocol
-import DB1
+import DB.Users
+import DB.Get
+import Mailer
+import JSON
+import DB.Put
 import DB0
 import Text.Read 
 import Network.HTTP.Server
@@ -25,7 +29,7 @@ import System.Environment
 
 jsError x = makeObj [("error",JSString $ toJSString x)]
 jsDBError x  = makeObj [("dberror",JSString $ toJSString $ show x)]
-jsCompund x y = makeObj [("result",x),("events", JSArray $ map (JSString . toJSString . show) y)]
+jsCompund x y = makeObj [("result",showJSON x),("events", JSArray $ map (JSString . toJSString . show) y)]
 
 sendResponse g v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
@@ -56,6 +60,7 @@ main = do
         when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
+                          print url
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
@@ -66,58 +71,49 @@ main = do
                                                         return $ Migrate sl msg
                                         ["Reminds"] -> responseP $ do
                                                         return $ Reminds msg
-                                        ["NewMessage",sl,"DontAttach"] ->  responseP $  Just $ NewMessage sl DontAttach msg
-                                        ["NewMessage",sl,"AttachConversation",sci] ->  responseP $ do
+                                        ["New",sl,"DontAttach"] ->  responseP $  Just $ New sl DontAttach msg
+                                        ["New",sl,"OpenAttach",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
-                                                        return $ NewMessage sl (AttachConversation ci) msg
-                                        ["NewMessage",sl,"CorrectConversation",sci] ->  responseP $ do
+                                                        return $ New sl (Attach ci) msg
+                                        ["New",sl,"ClosedAttach",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
-                                                        return $ NewMessage sl (CorrectConversation ci) msg
-                                        ["NewMessage",sl,"AttachMessage",smi] -> responseP $ do
-                                                        mi <- readMaybe smi
-                                                        return $ NewMessage sl (AttachMessage mi) msg
-                                        ["GetSearch"] ->  do
-                                                        sendResponse g $Just $ GetSearch msg
+                                                        return $ New sl (Attach ci) msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of
-                                        ["VoteMessage",sl,smi,sb] -> responseP $ do
+                                        ["Vote",sl,smi,sb] -> responseP $ do
                                                         mi <- readMaybe smi
                                                         b <- readMaybe sb
-                                                        return $ VoteMessage sl mi b
-                                        ["StoreConversation",sl,sci] -> responseP $ do
-                                                        ci <- readMaybe sci
-                                                        return $ StoreConversation sl ci
-                                        ["ForgetConversation",sl,sci] -> responseP $ do
-                                                        ci <- readMaybe sci
-                                                        return $ ForgetConversation sl ci
-                                        ["HintConversation",sl] -> responseP $ do
-                                                        return $ HintConversation sl 
+                                                        return $ Vote sl mi b
                                         ["Logout",sl] -> responseP $ do
                                                         return $ Logout sl
-                                        ["RetractMessage",sl,sci] -> responseP $ do
+                                        ["Retract",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
-                                                        return $ RetractMessage sl ci
-                                        ["LeaveConversation",sl,sci] -> responseP $ do
+                                                        return $ Retract sl ci
+                                        ["Leave",sl,"Diffuse",sci] -> responseP $ do
                                                         ci <- readMaybe sci
-                                                        return $ LeaveConversation sl ci
+                                                        return $ Leave sl Diffuse ci
+                                        ["Leave",sl,"Accept",sci] -> responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ Leave sl Accept ci
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             GET -> do 
                                 case splitOn "/" $ url_path url of
-                                        ["Login",sci] -> do
+                                        ["Login",sl] -> do
                                                 s <- readFile "login.html"
-                                                return $ sendHTML OK $  replace "userkey=" ("userkey='"++sci++"'") s
+                                                print $ "ciao " ++ sl
+                                                return $ sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") s
                                                 
-                                        ["PastMessages",sci,sn] -> sendResponse g $ do
+                                        ["Past",sl,sci,sn] -> sendResponse g $ do
                                                         ci <- readMaybe sci
                                                         n <- readMaybe sn
-                                                        return $ PastMessages ci n
-                                        ["FutureMessages",sci,sn] -> sendResponse g $ do
-                                                        ci <- readMaybe sci
+                                                        return $ Past sl ci n 
+                                        ["Conversation",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
-                                                        return $ FutureMessages ci n
-                                        ["GetStore",sl] ->  do
-                                                        sendResponse g $Just $ GetStore sl 
+                                                        return $ Conversation sl n
+                                        ["Future",sl,sn] -> sendResponse g $ do
+                                                        n <- readMaybe sn
+                                                        return $ Future sl n
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

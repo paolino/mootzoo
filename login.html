@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" ng-app="mootzoo" ng-controller="conversations" ng-init="userkey=">
+<html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=">
 	<head>
 		<title>Mootzoo conversations</title>
 		<meta charset="utf-8">
@@ -9,6 +9,7 @@
 		<script src= "../js/jquery.min.js" color="text/javascript"></script>
 		<script src= "../js/bootstrap.min.js" color="text/javascript"> </script>
 		<script src= "../js/angular.min.js" color="text/javascript"></script>
+		<script src= "../js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
 		<script src= "../js/mootzoo.js" color="text/javascript"></script>
 		<script src= "../js/ng-infinite-scroll.min.js" color="text/javascript"></script>
 		<link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
@@ -30,58 +31,44 @@
 										Invita
 									</button> 
 							</div>
-									<button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
+									<button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
+                        title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
 						</div>
 				</div>
 			</div>
 		</div>
 
-		<div ng-show=logged class="container" ng-init="proposing=false"> 
+		<div class="container" ng-init="proposing=false"> 
+									<div  class=row> 
+
+
+
+
+                        <button class="btn btn-default" ng-click="open()">Nuova conversazione</button>
+                        {{mailremainder}}
+									</div><!-- row -->
 			<div class=row>
-				<div class="col-md-8">
+				<div class="col-md-6" ng-repeat="y in [1,2]">
 					<div class="row">
 						<div class="col-md-12">
 							<div class="panel panel-default" >
 								<div class="panel-heading" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()"  > 
-									<div class=row> 
-                    <div  class="well well-sm col-md-12" style="display:inline">
-                      <button  ng-repeat="x in melast" color="submit" ng-class="convButton(x)" class="btn" 
-                          ng-click="$parent.view(x)"  data-toggle="tooltip" title="messaggi tuoi" >
-                        <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
-                        <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
-                      </button>
-                    </div>
-									</div><!-- row -->
 								  <div class="row"> 
-								    <div class="well well-sm col-md-12"> 
-								      <button ng-disabled="!message" ng-click="open()" class="btn btn-info btn-xs"  
-                                data-toggle="tooltip" title="Comincia una nuova conversazione" > Nuova conversazione</button>
-								      <button ng-show="conversations[n].color == 'Yellow'" ng-click="leave()" class="posr btn btn-danger btn-xs" data-toggle="tooltip" 
-                                title="Lascia che qualcun altro prenda il tuo posto" >Abbandona la conversazione
-                      </button>	
-                    </div>
+                        <div ng-show="y ==1"> Presente </div>      
+                        <div ng-show="y ==2"> Futuro </div>      
 									</div><!-- row -->
-									<div class=row> 
-										<div class="col-md-10" >
-													<textarea  style="overflow:hidden" class="form-control" ng-model="message" placeholder="Scrivi.."></textarea>
-										</div>
-										<div class="col-md-2" >
-													<button  style="color:black" ng-show="canCopi()" ng-click="copi()" class="btn btn-xs"  data-toggle="tooltip" title="Copia dall'area di testo" >Copia</button>
-													<button  style="color:black" ng-show="canPaste()" ng-click="paste()" class="btn btn-xs"  data-toggle="tooltip" title="Incolla nell'area di testo" >Incolla</button>
-													<button  style="color:black" ng-show="canClean()" ng-click="clean()" class="btn btn-xs"  data-toggle="tooltip" title="Pulisci l'area di testo" >Pulisci</button>
-										</div>
-									</div><!-- row -->
-								</div><!-- heading -->
+								</div>
 								<div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
 									<ul class=list-group >
 
-										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in viewing.messages">
+										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in messaggi">
 											<div  class="vote label">
 												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="Feedback per questo messaggio" >
-                                {{conversations[n].messages[$index].vote}}
+                                {{x.vote}}
 												</span>
 											</div>
-											<div ng-click="setMessage(x.txt)" class=message style="color:white" style="display:inline">{{x.txt}}
+											<div ng-click="setMessage(x.txt)" class=message style="color:white" style="display:inline">
+                                {{x.text}}
 											</div>
 											<div  class="op label">
 												<span >
@@ -125,34 +112,7 @@
 					</div><!-- row -->
 				</div><!-- col -->
         <div class="col-md-4">
-											<div class=well>
-											<div class="input-group" >
-												<input  color="text" class="form-control" placeholder="Cerca..." ng-model="searchValue"></input>
-												<span class="input-group-btn">
-													<button  ng-click="search()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il primo risultato" >Vai</button>
-													<button  ng-click="next()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il prossimo risultato" >Prox</button>
-													<button  ng-click="prev()" class="btn btn-success" color="button" data-toggle="tooltip" title="Rimpiazza questa conversazione con il risultato precedente" >Prec</button>
-                        
-												</span>
-											</div><!-- -->                      
-                      <button  ng-repeat="x in searched" color="submit" ng-class="convButton(x)" class="btn" 
-                          ng-click="$parent.viewSearch($index)"  ng-right="npiu()" ng-left="nmeno()" data-toggle="tooltip" title="{{textPosition(x,'it')}}" >
-                        <span ng-show="convButtonSelected(x)" style="font-weight:bold" >{{x.cid}}</span>
-                        <span ng-hide="convButtonSelected(x)" style="opacity:0.6">{{x.cid}}</span>
-                      </button>
-
-                        {{searched}}
-											</div><!-- -->
-											<div class=well>
-											<div class="input-group" >
-												<input  color="text" class="form-control" placeholder="Identificativo" ng-model=jumper data-toggle="tooltip" title="Un valido identificativo di conversazione" >
-													<span class="input-group-btn">
-														<button ng-click="" class="btn btn-success" color="button" 
-                                data-toggle="tooltip" title="Rimpiazza questa conversazione con quella indicata"  >Vai</button>
-													</span>
-											</div>
-											</div>
-										</div><!--  -->
+				</div><!--  -->
 
 			</div><!-- row -->
 		</div><!-- container -->
