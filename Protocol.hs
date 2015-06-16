@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Protocol where
 
@@ -53,35 +54,36 @@ put' e (Vote l mi v) = vote e l mi v
 put :: Env -> Put -> WriterT [Event] IO (Either DBError ())
 put e l = runErrorT (put' e l)
    
-data Get 
-        = Past Login MessageId Integer
-        | Future Login MessageId
-        | ForMe Login
-        | FromMe Login
-        | ForAll Login
-        | Conversation Login MessageId
-        deriving Read
+data Get a where
+        Past :: Login -> MessageId -> Integer -> Get [Exposed]
+        Future :: Login -> MessageId -> Get [Exposed]
+        Conversation :: Login -> MessageId -> Get [Exposed]
+        Logins :: Get [Login]
+        
 
-get'  :: Env -> Get -> ConnectionMonad [Exposed]
+
+get'  :: Env -> Get a -> ConnectionMonad a
 get' e (Past l mi n) = getPast e l mi n
 get' e (Future l mi) = getFuture e l mi
-get' e (ForMe l) = getClosed e l
-get' e (FromMe l) = getEnvelopes e l
-get' e (ForAll l) = getOpens e l
 get' e (Conversation l mi) = getConversation e l mi 
+get' e Logins = getLogins e
 
-get :: Env -> Get -> WriterT [Event] IO (Either DBError [Exposed])
+get :: Env -> Get a -> WriterT [Event] IO (Either DBError a)
 get e l = runErrorT (get' e l)
 
 clean = callCommand "cat schema.sql | sqlite3 mootzoo.db"
+
+data WGet  = WGet (forall a. Get a ->  WriterT [Event] IO (Either DBError a))
+prepare :: IO (Bool,Put -> WriterT [Event] IO (Either DBError ()),WGet)
 prepare = do         
         b <- doesFileExist "mootzoo.db"
         when (not b) clean
         conn <- open "mootzoo.db"
         execute_ conn "PRAGMA foreign_keys = ON"
         let     p = put (mkEnv conn)
-                g = get (mkEnv conn)
+                g = WGet (get (mkEnv conn))
         return (not b,p,g)
+{-
 
 console :: IO ()
 console = do
@@ -102,4 +104,4 @@ console = do
                                                 Left y -> print y
                                                 Right y  -> print y
                                         print w
-
+-}

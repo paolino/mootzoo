@@ -20,6 +20,8 @@ cycled xs = xs ++ cycled xs
 
 type User = String
 
+
+
 data Message = Message User String deriving Show
 
 -- | a conversation builded right accepting new messages only if they are correct.

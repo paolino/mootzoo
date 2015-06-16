@@ -2,7 +2,7 @@
 var app = angular.module("app",['ui.bootstrap']);
 app.controller('Input', function ($scope, $modalInstance) {
 
-          $scope.testo= "";
+          $scope.testo= null;
 
           $scope.gotMessage = function () {
             $modalInstance.close($scope.testo);
@@ -15,29 +15,26 @@ app.controller('Input', function ($scope, $modalInstance) {
 
 app.controller('conversations', function($scope,$modal,$log,$http,$timeout) {
         $scope.message="ciao";        
-        $scope.open = function () {
-
+        $http.get("../api/Logins").success(function(xs){
+          $scope.logins=xs.result;
+          });
+        $scope.open = function (next) {
                 var modalInstance = $modal.open({
                         animation: false,
                         templateUrl: '../input.html',
                         controller: 'Input',
                         size: 'md',
                         });
-
                 modalInstance.result.then(
-                        function (testo) {
-                                $scope.message=testo;
-                                }, 
-                        function () {
-                                $log.info('Modal dismissed at: ' + new Date());
-                                });
+                        function (testo) {next(testo)}, 
+                        function () {}
+                        );
                 };
 
         $scope.getConversation = function(mid) {
-                $http.get("../api/Conversation/" + $scope.userkey + "/" + mid).success (
-                                function(messages) {$scope.messaggi=messages.result;});
+                $http.get("../api/Conversation/" + $scope.userkey + "/" + mid).success (function(messages) {$scope.conversation=messages.result;});
                 }
-        $timeout(function (){$scope.getConversation(9);});
+        $timeout(function (){$scope.getConversation(0);});
         });
 
 }

@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 import Control.Monad
 import Control.Monad.Writer
 import Data.Char
@@ -31,13 +33,17 @@ jsError x = makeObj [("error",JSString $ toJSString x)]
 jsDBError x  = makeObj [("dberror",JSString $ toJSString $ show x)]
 jsCompund x y = makeObj [("result",showJSON x),("events", JSArray $ map (JSString . toJSString . show) y)]
 
+sendResponse
+  :: JSON a => WGet -> Maybe (Get a) -> IO (Response String)
 sendResponse g v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
-                (x,w) <- runWriterT $ g v
+                let (WGet g') = g
+                (x,w) <- runWriterT $ g' v
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
                         Right x -> return $ sendJSON OK $ jsCompund x w
+
 sendResponseP pwd p v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
@@ -111,6 +117,8 @@ main = do
                                         ["Conversation",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Conversation sl n
+                                        ["Logins"] -> sendResponse g $ do
+                                                      return $ Logins
                                         ["Future",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Future sl n

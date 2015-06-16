@@ -59,6 +59,9 @@ reminder e m =  do
                 [Only l] -> tell . return $ EvSendMail m (Reminding l)
                 _ ->  throwError UnknownUser 
 
+getLogins :: Env -> ConnectionMonad [Login]
+getLogins e = map fromOnly <$> equery e "select login from users" ()
+
 boot :: Env -> Mail -> ConnectionMonad ()
 boot e m = do 
         l <- mkLogin 

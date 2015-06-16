@@ -1,119 +1,59 @@
 
 <!DOCTYPE html>
 <html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=">
-	<head>
-		<title>Mootzoo conversations</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="../css/bootstrap.min.css" color="text/css">
-		<script src= "../js/jquery.min.js" color="text/javascript"></script>
-		<script src= "../js/bootstrap.min.js" color="text/javascript"> </script>
-		<script src= "../js/angular.min.js" color="text/javascript"></script>
-		<script src= "../js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
-		<script src= "../js/mootzoo.js" color="text/javascript"></script>
-		<script src= "../js/ng-infinite-scroll.min.js" color="text/javascript"></script>
-		<link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
-	</head>
+  <head>
+    <title>Mootzoo conversations</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css" color="text/css">
+    <script src= "../js/jquery.min.js" color="text/javascript"></script>
+    <script src= "../js/bootstrap.min.js" color="text/javascript"> </script>
+    <script src= "../js/angular.min.js" color="text/javascript"></script>
+    <script src= "../js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
+    <script src= "../js/mootzoo.js" color="text/javascript"></script>
+    <script src= "../js/ng-infinite-scroll.min.js" color="text/javascript"></script>
+    <link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
+  </head>
 
-	<body >
-		<div class="navbar navbar-inverse">
-			<div class="container">
-				<div class="navbar-header">
-					<a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>							
-				</div>
-				<div id="navbar" class="navbar-right navbar-form">
-						<div class="form-group">
-							<div style="position:absolute;left:50%">
-								<input  ng-model="mailremainder" placeholder="Invita via mail" class="form-control"
-                   data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
-									<button  ng-show=mailremainder ng-click="invite()" class="btn btn-success"
-											data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
-										Invita
-									</button> 
-							</div>
-									<button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
-                        title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
-						</div>
-				</div>
-			</div>
-		</div>
+  <body >
+    <div class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>              
+        </div>
+        <div id="navbar" class="navbar-right navbar-form">
+          <div class="input-group">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">User<span class="caret"></span></button>
+              <ul class="dropdown-menu" role="menu">
+                <li ng-click="userkey=u" ng-repeat="u in logins">{{u}}</li>
+              </ul>
+            </div><!-- /btn-group -->
+            <input type="text" class="form-control" aria-label="..." ng-model=userkey>
+          </div><!-- /input-group -->
+        </div>
+      </div>
+    </div>
 
-		<div class="container" ng-init="proposing=false"> 
-									<div  class=row> 
+    <div class="container" ng-init="proposing=false"> 
+      <div  class=row> 
+        <button class="btn btn-default" ng-click="open()">Nuova conversazione</button>
+      </div><!-- row -->
+      <div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
+        <ul class=list-group >
+          <li class="list-group-item" ng-repeat="x in conversation">
+             <div class=message style="color:white" style="display:inline">
+                      {{x.text}}
+            </div>
+            <div  class="action"  style="display:inline">
+                <button ng-repeat = "a in actions(x)" ng-show="a.can" ng-click="a.do(x)" class="btn btn-default btn-xs"  
+                              data-toggle="tooltip" title=a.tooltip >
+                  <span ng-class="a.glyph">{{a.text}}</span>
+                </button>
+            </div><!--action -->
 
-
-
-
-                        <button class="btn btn-default" ng-click="open()">Nuova conversazione</button>
-                        {{mailremainder}}
-									</div><!-- row -->
-			<div class=row>
-				<div class="col-md-6" ng-repeat="y in [1,2]">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="panel panel-default" >
-								<div class="panel-heading" ng-mouse-wheel-up="npiu()" ng-mouse-wheel-down="nmeno()"  > 
-								  <div class="row"> 
-                        <div ng-show="y ==1"> Presente </div>      
-                        <div ng-show="y ==2"> Futuro </div>      
-									</div><!-- row -->
-								</div>
-								<div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
-									<ul class=list-group >
-
-										<li class="list-group-item" ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="x in messaggi">
-											<div  class="vote label">
-												<span style="background-color:#aaa" class="badge" data-toggle="tooltip" title="Feedback per questo messaggio" >
-                                {{x.vote}}
-												</span>
-											</div>
-											<div ng-click="setMessage(x.txt)" class=message style="color:white" style="display:inline">
-                                {{x.text}}
-											</div>
-											<div  class="op label">
-												<span >
-													<button ng-show="testVote($index)" ng-click="voteUp($index)" color="button" class="btn btn-default btn-xs"  
-                                        data-toggle="tooltip" title="Feedback negativo per questo messaggio" >
-														<span class="glyphicon glyphicon-thumbs-up">
-														</span>
-													</button>
-												</span>											
-												<span >
-													<button ng-show="testVote($index)" ng-click="voteDown($index)" color="button" class="btn btn-default btn-xs" 
-                                data-toggle="tooltip" title="Feedback positivo per questo messaggio" >
-														<span class="glyphicon glyphicon-thumbs-down"></span> 
-													</button>
-								        </span>											
-												<span >
-                          <button ng-show="showFork($index) && message" ng-click="comment($index)" color="button" class="btn btn-info btn-xs"  data-toggle="tooltip" 
-                                        title="Ramifica la conversazione da questo punto" >Aggancia
-													</button>
-												</span>											
-												<span >
-                          <button  ng-show="testUndo() && isLast($index)" ng-click="retract()" color="button" class="btn  btn-xs" 
-                                ng-class="retractColor()" data-toggle="tooltip" 
-                                title="{{retractMeaning()}}">Ritira</button>
-
-													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Azur') ||(conversations[n].color == 'Blue')) " 
-                                ng-click="correct()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Correggi il tuo messaggio" > Correggi</button>
-													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Yellow') ||(conversations[n].color == 'Red')) " 
-                                ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Rispondi al tuo interlocutore" > Rispondi</button>
-													<button ng-show="message && isLast($index) && ((conversations[n].color == 'Blank')) " 
-                                ng-click="respond()" class="btn btn-primary btn-xs"  data-toggle="tooltip" title="Riapri la conversazione" > Riprendi</button>
-												</span>											
-											</div><!--vote -->
-
-										</li> 
-								  </ul>
-								</div>
-							</div><!-- panel -->
-						</div><!-- col -->
-
-					</div><!-- row -->
-				</div><!-- col -->
-        <div class="col-md-4">
-				</div><!--  -->
-
-			</div><!-- row -->
-		</div><!-- container -->
-	</body</html>
+          </li> 
+        </ul>
+      </div>
+    </div><!-- container -->
+  </body</html>
