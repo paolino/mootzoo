@@ -58,10 +58,8 @@ data Get a where
         Past :: Login -> MessageId -> Integer -> Get [Exposed]
         Future :: Login -> MessageId -> Get [Exposed]
         Conversation :: Login -> MessageId -> Get [Exposed]
-        Logins :: Get [Login]
+        Logins :: Get [Login] -- debugging
         
-
-
 get'  :: Env -> Get a -> ConnectionMonad a
 get' e (Past l mi n) = getPast e l mi n
 get' e (Future l mi) = getFuture e l mi
@@ -74,6 +72,7 @@ get e l = runErrorT (get' e l)
 clean = callCommand "cat schema.sql | sqlite3 mootzoo.db"
 
 data WGet  = WGet (forall a. Get a ->  WriterT [Event] IO (Either DBError a))
+
 prepare :: IO (Bool,Put -> WriterT [Event] IO (Either DBError ()),WGet)
 prepare = do         
         b <- doesFileExist "mootzoo.db"

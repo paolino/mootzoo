@@ -22,11 +22,23 @@
           <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>              
         </div>
         <div id="navbar" class="navbar-right navbar-form">
+          <div class="form-group">
+            <div style="position:absolute;left:50%">
+              <input  ng-model="mailremainder" placeholder="Invita via mail" class="form-control"
+                  data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
+              <button  ng-show=mailremainder ng-click="invite()" class="btn btn-success"
+                                                          data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">               
+                Invita
+              </button> 
+            </div>
+            <button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
+                title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
+          </div>
           <div class="input-group">
             <div class="input-group-btn">
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">User<span class="caret"></span></button>
               <ul class="dropdown-menu" role="menu">
-                <li ng-click="userkey=u" ng-repeat="u in logins">{{u}}</li>
+                <li ng-click="setUserkey(u)" ng-repeat="u in logins">{{u}}</li>
               </ul>
             </div><!-- /btn-group -->
             <input type="text" class="form-control" aria-label="..." ng-model=userkey>
@@ -37,21 +49,33 @@
 
     <div class="container" ng-init="proposing=false"> 
       <div  class=row> 
-        <button class="btn btn-default" ng-click="open()">Nuova conversazione</button>
+        <div class="form-inline">
+                  <button class="btn btn-default" ng-click="gotox()">Vai alla conversazione</button>
+                  <input type="text" class="form-control" aria-label="..." ng-model="gotoConversation">
+        </div><!-- row -->
+        <div class="btn-group">
+          <button class="btn btn-default" ng-click="moot()">Nuova conversazione</button>
+          <button class="btn btn-default" ng-click="past()">Conversazione precedente</button>
+        </div><!-- row -->
       </div><!-- row -->
-      <div   id=conversation class="panel-body" style="overflow-y:auto; height:350px;">
+      <div   id=conversation style="overflow-y:auto; height:350px;">
         <ul class=list-group >
           <li class="list-group-item" ng-repeat="x in conversation">
-             <div class=message style="color:white" style="display:inline">
-                      {{x.text}}
+             <div class=message  style="display:inline">
+                 {{x.id}} {{x.parent}}       {{x.text}}  
             </div>
+
             <div  class="action"  style="display:inline">
-                <button ng-repeat = "a in actions(x)" ng-show="a.can" ng-click="a.do(x)" class="btn btn-default btn-xs"  
-                              data-toggle="tooltip" title=a.tooltip >
-                  <span ng-class="a.glyph">{{a.text}}</span>
+                <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
+                              data-toggle="tooltip" title="{{a.tooltip}}" >
+                  {{a.text}}
                 </button>
             </div><!--action -->
-
+            <div   style="display:inline">
+                <button  ng-repeat="y in x.future" color="submit" class="btn btn-xs" ng-click="getConversation(y)">
+                {{y}}
+                </button>
+            </div><!--action -->
           </li> 
         </ul>
       </div>

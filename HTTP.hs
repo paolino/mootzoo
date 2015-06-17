@@ -60,13 +60,11 @@ sendResponseP pwd p v = case v of
 main :: IO ()
 main = do
         [pwd,mailbooter] <- getArgs
-        putStrLn "running" 
         (t,p,g) <- prepare
         let responseP = sendResponseP pwd p
         when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
-                          print url
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
@@ -78,10 +76,7 @@ main = do
                                         ["Reminds"] -> responseP $ do
                                                         return $ Reminds msg
                                         ["New",sl,"DontAttach"] ->  responseP $  Just $ New sl DontAttach msg
-                                        ["New",sl,"OpenAttach",sci] ->  responseP $ do
-                                                        ci <- readMaybe sci
-                                                        return $ New sl (Attach ci) msg
-                                        ["New",sl,"ClosedAttach",sci] ->  responseP $ do
+                                        ["New",sl,"Attach",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ New sl (Attach ci) msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
@@ -96,10 +91,10 @@ main = do
                                         ["Retract",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ Retract sl ci
-                                        ["Leave",sl,"Diffuse",sci] -> responseP $ do
+                                        ["Open",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ Leave sl Diffuse ci
-                                        ["Leave",sl,"Accept",sci] -> responseP $ do
+                                        ["Close",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ Leave sl Accept ci
                                         _ -> return $ sendJSON BadRequest $ JSNull
@@ -107,7 +102,6 @@ main = do
                                 case splitOn "/" $ url_path url of
                                         ["Login",sl] -> do
                                                 s <- readFile "login.html"
-                                                print $ "ciao " ++ sl
                                                 return $ sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") s
                                                 
                                         ["Past",sl,sci,sn] -> sendResponse g $ do

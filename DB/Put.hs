@@ -31,7 +31,7 @@ newMessage ::  Env -> UserId  -> Attach -> String -> ConnectionMonad ()
 newMessage e ui DontAttach x = do
         eexecute e "insert into messages values (null,?,?,?,null,null,0)" (x,ui,Open) -- public message
         mi <- lastRow e
-        ci <- newConversation e mi mi 1 
+        ci <- newConversation e mi 
         eexecute e "update messages set conversation = ? where id=?" (ci,mi)
 
 newMessage e ui (Attach mi) x = do
@@ -53,7 +53,7 @@ newMessage e ui (Attach mi) x = do
                 [(Passage,_,_,_)] -> do
                         eexecute e "insert into messages values (null,?,?,?,?,null,0)" (x,ui,Closed,mi)
                         mi' <- lastRow e
-                        ci <- newConversation e mi mi' 2
+                        ci <- newConversation e mi'
                         eexecute e "update messages set conversation = ? where id=?" (ci,mi')
                         -- check conversation
                 [_] -> throwError NotAttachable
@@ -104,21 +104,13 @@ disposeMessage e l Accept mi = transactOnLogin e l $ \ui -> checkingMessage e mi
                                 [_] -> throwError $ NotDisposable
                                 [] -> throwError $ UnknownIdMessage
 disposeMessage e l Diffuse mi = transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> do
-                        r <- equery e "select type,parent,conversation from messages where id=?" (Only mi)
+                        r <- equery e "select type,parent,conversation,user from messages where id=?" (Only mi)
                         case r :: [(MessageType,Maybe MessageId,ConvId,UserId)] of
                                 [(Closed,Just mi',ci,(==) ui -> True)] ->  do
                                         eexecute e "update messages set type=? where id=?" (Open,mi)
-                                        ci' <- newConversation e mi mi 1
+                                        ci' <- newConversation e mi
                                         eexecute e "update messages set conversation = ? where id=?" (ci',mi)
-                                        r' <- equery e 
-                                                "select tail from messages join conversations on conversations.id = messages.conversation where messages.id=?" 
-                                                (Only mi')
-                                        case r' of
-                                                [Only ((==mi') -> True )] -> do
-                                                        eexecute e "delete conversations where id=?" (Only ci) 
-                                                [Only ((==mi') -> False)] -> do
-                                                        eexecute e "update conversations set head = ?, count = count -1 where id = ?" (mi',ci)
-                                                _ -> throwError $ DatabaseError "parent relation failed"
+                                        eexecute e "update conversations set head = ?, count = count -1 where id = ?" (mi',ci)
                                 [(_,_,_,(==) ui -> false)] -> throwError $ NotProponent
                                 [_] -> throwError $ NotClosed
                                 [] -> throwError $ UnknownIdMessage

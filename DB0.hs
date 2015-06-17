@@ -171,7 +171,7 @@ pastMessages e mi n = do
 
 
 futureMessages :: Env -> MessageId  -> ConnectionMonad [MessageRow]
-futureMessages e mi = equery e "select id,message,user,type,parent,vote from messages where parent=?" (Only mi)
+futureMessages e mi = equery e "select id,message,user,type,parent,conversation,vote from messages where parent=?" (Only mi)
 
 -- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
 run f = do        
@@ -192,7 +192,7 @@ lastRow e = do
                 [Only x] -> return x
                 _ -> throwError $ DatabaseError "last rowid lost"
 
-newConversation :: Env -> MessageId -> MessageId -> Integer -> ConnectionMonad ConvId
-newConversation e t h n = do
-        eexecute e "insert into conversations values (null,?,?,?)" (t,h,n)
+newConversation :: Env -> MessageId -> ConnectionMonad ConvId
+newConversation e t = do
+        eexecute e "insert into conversations values (null,?,?,?)" (t,t,1::Integer)
         lastRow e

@@ -5,16 +5,19 @@ import DB0
 
 import DB.Get
 
-instance JSON MessageType where
-        showJSON Closed = JSString $ toJSString "Closed"
-        showJSON Open = JSString $ toJSString "Open"
-        showJSON Passage = JSString $ toJSString "Passage"
-
 instance JSON Exposed where
-        showJSON (Exposed mid mvotable mtext mvote) = makeObj [
+        showJSON (Exposed mid mmp fs mtext mvote (Interface cv cp ci cr cc co cx)) = makeObj [
                 ("id",JSRational False $ fromIntegral mid),
-                ("votable",JSBool $ mvotable),
+                ("parent",maybe JSNull (JSRational False . fromIntegral) mmp),
+                ("future", JSArray $ map (JSRational False . fromIntegral) fs),
                 ("text",JSString $ toJSString mtext),  
-                ("vote",JSRational False $ fromIntegral mvote)
+                ("vote",JSRational False $ fromIntegral mvote),
+                ("canVote",JSBool cv),
+                ("canPropose",JSBool cp),
+                ("canIntervein",JSBool ci),
+                ("canRespond",JSBool cr),
+                ("canClose",JSBool cc),
+                ("canOpen",JSBool co), 
+                ("canRetract",JSBool cx) 
                 ]
 
