@@ -51,11 +51,11 @@ newMessage e ui (Attach mi) x = do
                                 [_] -> throwError NotOpponent
                 [(Open,_,_,ci)] ->  insert ci 
                 [(Passage,_,_,_)] -> do
-                        eexecute e "insert into messages values (null,?,?,?,?,null,0)" (x,ui,Closed,mi)
-                        mi' <- lastRow e
-                        ci <- newConversation e mi'
-                        eexecute e "update messages set conversation = ? where id=?" (ci,mi')
-                        -- check conversation
+                                eexecute e "insert into messages values (null,?,?,?,?,null,0)" (x,ui,Closed,mi)
+                                mi' <- lastRow e
+                                ci <- newConversation e mi'
+                                eexecute e "update messages set conversation = ? where id=?" (ci,mi')
+                                -- check conversation
                 [_] -> throwError NotAttachable
                 [] -> throwError UnknownIdMessage
 

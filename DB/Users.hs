@@ -32,7 +32,7 @@ inviteUser e l m' f = checkingLogin e l $ \(CheckLogin i m _) -> etransaction e 
         r <- equery e "select inviter from users where email=?" (Only m')
         l' <- mkLogin
         let newuser = do 
-                        eexecute e "insert into users values (null,?,?,?)" (m',l',i) 
+                        eexecute e "insert into users values (null,?,?,?,0)" (m',l',i) 
                         r <- equery e "select last_insert_rowid()" ()
                         case (r :: [Only UserId]) of 
                                 [Only ui'] -> f i ui'
@@ -68,7 +68,7 @@ boot e m = do
         r <- equery e "select id from users" ()
         case (r :: [Only UserId]) of
                 [] -> do 
-                        eexecute e "insert into users values (null,?,?,null)" (m,l) 
+                        eexecute e "insert into users values (null,?,?,null,0)" (m,l) 
                         tell . return $ EvSendMail m (Booting l) 
                 _ -> throwError AlreadyBooted
 

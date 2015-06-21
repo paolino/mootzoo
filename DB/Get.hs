@@ -74,7 +74,7 @@ mkInterface e ui mr@(MessageRow mi mtx mu mt mmp mc mv) = do
       
         
   
-data Exposed = Exposed MessageId (Maybe MessageId) [MessageId] String Integer Interface  deriving Show
+data Exposed = Exposed MessageId (Maybe MessageId) [Exposed] String Integer Interface  deriving Show
 
 
 -- messages for me
@@ -88,34 +88,34 @@ getEnvelopes e l = transactOnLogin e l $ \ui -> equery e
         "select id,0,message,vote from messages as m1 where type <> ? and user = ?" (Passage,ui)
 -}
 
-mkExposed e ui mr@(MessageRow mi tx mu mt mmp _ v) = do
-        fs <- map (\(MessageRow mi tx mu mt mmp _ v) -> mi) <$> futureMessages e mi
+mkExposed 0 e ui mr@(MessageRow mi tx mu mt mmp _ v) = Exposed mi mmp [] tx v <$>  mkInterface e ui mr
+mkExposed k e ui mr@(MessageRow mi tx mu mt mmp _ v) = do
+        fs <-futureMessages e (Just mi) >>=  mapM (mkExposed (k - 1) e ui) 
         Exposed mi mmp fs tx v <$>  mkInterface e ui mr
 
-getPast' :: Env -> UserId -> MessageId -> Integer -> ConnectionMonad [Exposed]
-getPast' e ui mi n =  pastMessages e mi n >>= (mapM (mkExposed e ui) . reverse)
+getPast' :: Env -> UserId -> MessageId -> Integer -> Integer -> ConnectionMonad [Exposed]
+getPast' e ui mi n k =  pastMessages e mi n >>= (mapM (mkExposed k e ui) . reverse)
 
 getPast :: Env -> Login -> MessageId -> Integer -> ConnectionMonad [Exposed]
-getPast e l mi n = transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> getPast' e ui mi  n 
+getPast e l mi n = transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> getPast' e ui mi  n 1
 
 getFuture :: Env -> Login -> MessageId -> ConnectionMonad [Exposed] 
-getFuture e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \mr ->  futureMessages e mi >>= mapM (mkExposed e ui) 
-                   
-getConversation :: Env -> Login -> MessageId -> ConnectionMonad [Exposed]
-getConversation e l 0 = transactOnLogin e l $ \ui -> do
+getFuture e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \mr ->  futureMessages e (Just mi) >>= mapM (mkExposed 0 e ui) 
+
+getConversation :: Env -> Login -> MessageId -> Integer -> ConnectionMonad [Exposed]
+getConversation e l 0 k = transactOnLogin e l $ \ui -> do
         r <- equery e "select head,count from conversations limit 1" ()
         case r of 
-            [(last,n)]  -> checkingMessage e last $ \_ -> getPast' e ui last n
+            [(last,n)]  -> checkingMessage e last $ \_ -> getPast' e ui last n k
             [] -> throwError UnknownIdMessage
-getConversation e l mi = transactOnLogin e l $ \ui -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _) -> do
+getConversation e l mi k = transactOnLogin e l $ \ui -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _) -> do
         [(last,n)] <- equery e "select head,count from conversations where id=?" (Only ci)
-        checkingMessage e last $ \_ -> getPast' e ui last  n
+        checkingMessage e last $ \_ -> getPast' e ui last  n k
         
         
         
 
 
--- getOpens :: Env -> Login -> ConnectionMonad [Exposed]
---getOpens e l = transactOnLogin e l $ \ui -> do 
---        equery e "select m.id,v.user isnull,m.message,m.vote from messages as m left outer join voting as v on v.message = id where type = ? and m.user <> ? and v.user = ?" (Open,ui,ui)
+getRoots :: Env -> Login -> Integer -> ConnectionMonad [Exposed]
+getRoots e l k = transactOnLogin e l $ \ui -> futureMessages e Nothing >>= mapM (mkExposed k e ui) 
 

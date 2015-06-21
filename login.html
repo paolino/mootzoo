@@ -47,37 +47,89 @@
       </div>
     </div>
 
-    <div class="container" ng-init="proposing=false"> 
-      <div  class=row> 
-        <div class="form-inline">
-                  <button class="btn btn-default" ng-click="gotox()">Vai alla conversazione</button>
-                  <input type="text" class="form-control" aria-label="..." ng-model="gotoConversation">
-        </div><!-- row -->
-        <div class="btn-group">
-          <button class="btn btn-default" ng-click="moot()">Nuova conversazione</button>
-          <button class="btn btn-default" ng-click="past()">Conversazione precedente</button>
-        </div><!-- row -->
-      </div><!-- row -->
-      <div   id=conversation style="overflow-y:auto; height:350px;">
-        <ul class=list-group >
-          <li class="list-group-item" ng-repeat="x in conversation">
-             <div class=message  style="display:inline">
-                 {{x.id}} {{x.parent}}       {{x.text}}  
+    <div class=container> 
+      <div class=row>
+        <div class=col-md-4>
+          <div class="panel panel-primary">
+            <div  class="panel-heading"> 
+            Aperture
             </div>
-
-            <div  class="action"  style="display:inline">
-                <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
-                              data-toggle="tooltip" title="{{a.tooltip}}" >
-                  {{a.text}}
-                </button>
-            </div><!--action -->
-            <div   style="display:inline">
-                <button  ng-repeat="y in x.future" color="submit" class="btn btn-xs" ng-click="getConversation(y)">
-                {{y}}
-                </button>
-            </div><!--action -->
-          </li> 
-        </ul>
+            
+            <div  class="panel-body"> 
+              <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
+                <ul class=list-group >
+                  <li class="list-group-item" ng-repeat="x in roots">
+                    <div  class=row> 
+                      <div ng-click="getConversation(x.id)" class="message col-md-6">
+                        {{x.text}}
+                      </div>
+                    </div><!--action -->
+                  </li> 
+                  <li class="list-group-item" >  
+                    <div  class=row> 
+                      <div class=col-md-6>
+                        <button class="btn btn-default btn-xs" ng-click="moot()">Nuova</button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class=col-md-8>
+          <div class="panel panel-primary">
+            <div  class="panel-heading"> 
+            Conversazione
+            </div>
+            <div  class="panel-body"> 
+              <div  style="overflow-y:auto;overflow-x:hidden; height:350px;">
+                <ul class=list-group >
+                  <li class="list-group-item" > 
+                    <div  class=row> 
+                      <div class=col-md-6>
+                        <button class="btn btn-default btn-xs" ng-click="past()">Contesto</button> 
+                      </div>
+                    </div>
+                  
+                  </li>
+                  <li class="list-group-item" ng-repeat="x in conversation">
+                    <div  class=row> 
+                      <div class=col-md-4>
+                        {{x.text}}
+                      </div>
+                      <div class=col-md-2>
+                          <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
+                                          data-toggle="tooltip" title="{{a.tooltip}}" >
+                              {{a.text}}
+                          </button>
+                      </div>
+                      <div class=col-md-6>
+                        <ul class="list-group">
+                            <li ng-click="getConversation(y.id)" style="overflow-x:hidden" class="list-group-item" ng-repeat=
+                                  "y in filnodes(x,$index)" > 
+                                <div  class=row> 
+                                  <div class=col-md-8>
+                                    {{y.text}}
+                                  </div>
+                                  <div class=col-md-4>
+                                      <button ng-repeat = "a in y.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
+                                                      data-toggle="tooltip" title="{{a.tooltip}}" >
+                                          {{a.text}}
+                                      </button>
+                                  </div>
+                          
+                              </div>
+                            </li>
+                        </ul><!--action -->
+                      </div><!--action -->
+                    </div><!--action -->
+                  </li> 
+                </ul>
+              </div>
+            </div>
+          </div>
       </div>
     </div><!-- container -->
-  </body</html>
+  </body>
+</html>

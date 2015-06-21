@@ -57,13 +57,15 @@ put e l = runErrorT (put' e l)
 data Get a where
         Past :: Login -> MessageId -> Integer -> Get [Exposed]
         Future :: Login -> MessageId -> Get [Exposed]
-        Conversation :: Login -> MessageId -> Get [Exposed]
+        Conversation :: Login -> MessageId -> Integer -> Get [Exposed]
+        Roots :: Login -> Integer -> Get [Exposed]
         Logins :: Get [Login] -- debugging
         
 get'  :: Env -> Get a -> ConnectionMonad a
-get' e (Past l mi n) = getPast e l mi n
+get' e (Past l mi n) = getPast e l mi n 
 get' e (Future l mi) = getFuture e l mi
-get' e (Conversation l mi) = getConversation e l mi 
+get' e (Conversation l mi k) = getConversation e l mi k
+get' e (Roots l k) = getRoots e l k
 get' e Logins = getLogins e
 
 get :: Env -> Get a -> WriterT [Event] IO (Either DBError a)

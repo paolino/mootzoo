@@ -2,7 +2,8 @@ CREATE TABLE users (
         id integer primary key autoincrement not null,
         email text not null,
         login text unique,
-        inviter integer references users
+        inviter integer references users,
+        vote integer
         );
 CREATE TABLE messages (
         id integer primary key autoincrement not null,
@@ -11,7 +12,8 @@ CREATE TABLE messages (
         type integer not null,
         parent integer references messages(id),
         conversation integer,
-        vote integer not null default 0
+        vote integer not null default 0,
+        unique (user,parent)
         );
 create table conversations (
         id integer primary key autoincrement not null,

@@ -62,6 +62,7 @@ main = do
         [pwd,mailbooter] <- getArgs
         (t,p,g) <- prepare
         let responseP = sendResponseP pwd p
+        putStrLn "running"
         when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
@@ -108,14 +109,18 @@ main = do
                                                         ci <- readMaybe sci
                                                         n <- readMaybe sn
                                                         return $ Past sl ci n 
-                                        ["Conversation",sl,sn] -> sendResponse g $ do
+                                        ["Conversation",sl,sn,sk] -> sendResponse g $ do
                                                         n <- readMaybe sn
-                                                        return $ Conversation sl n
+                                                        k <- readMaybe sk
+                                                        return $ Conversation sl n k
                                         ["Logins"] -> sendResponse g $ do
                                                       return $ Logins
                                         ["Future",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Future sl n
+                                        ["Roots",sl,sk] -> sendResponse g $ do
+                                                        k <- readMaybe sk
+                                                        return $ Roots sl k
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

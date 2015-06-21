@@ -1,9 +1,28 @@
+
+/* Margini e padding inferiore */
+.list-group {
+  padding-left: 0;
+  margin-bottom: 2px;
+}
+ 
+ 
+/* Formattazione dell'item di lista */
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 2px 2px;
+  margin-bottom: -1px;
+  background-color: #ffffff;
+  border-right: 0px solid #dddddd;
+  border-left: 0px solid #dddddd;
+}
+ 
+
+
 .posr {
         float:right;
         }
 .message{
-    padding-right:150px;
-    padding-left:30px;
         cursor:pointer;
 }
 .vote{

@@ -170,8 +170,10 @@ pastMessages e mi n = do
         equery e "with recursive ex(id,parent,message,vote,type,user,conversation) as (select id,parent,message,vote,type,user,conversation from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation from messages,ex where messages.id=ex.parent limit ?) select id,message,user,type,parent,conversation,vote from ex" (mi,n)
 
 
-futureMessages :: Env -> MessageId  -> ConnectionMonad [MessageRow]
-futureMessages e mi = equery e "select id,message,user,type,parent,conversation,vote from messages where parent=?" (Only mi)
+futureMessages :: Env -> Maybe MessageId  -> ConnectionMonad [MessageRow]
+futureMessages e (Just mi) = equery e "select id,message,user,type,parent,conversation,vote from messages where parent=?" (Only mi)
+futureMessages e Nothing = equery e "select id,message,user,type,parent,conversation,vote from messages where parent isnull"  ()
+
 
 -- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
 run f = do        

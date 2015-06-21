@@ -9,7 +9,7 @@ instance JSON Exposed where
         showJSON (Exposed mid mmp fs mtext mvote (Interface cv cp ci cr cc co cx)) = makeObj [
                 ("id",JSRational False $ fromIntegral mid),
                 ("parent",maybe JSNull (JSRational False . fromIntegral) mmp),
-                ("future", JSArray $ map (JSRational False . fromIntegral) fs),
+                ("nodes", JSArray $ map showJSON  fs),
                 ("text",JSString $ toJSString mtext),  
                 ("vote",JSRational False $ fromIntegral mvote),
                 ("canVote",JSBool cv),
