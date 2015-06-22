@@ -153,9 +153,12 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.moot=function(){
                 $scope.open(function (){
                         $http.post("../api/New/"+$scope.userkey + "/DontAttach",$scope.input.message).success(
-                                function () {
-                                        $scope.getConversation(0);
-                                        $scope.input.message=null;
+                                function (rs) {
+                                        if(rs.events[0].newmessage)
+                                            $scope.getConversation(rs.events[0].newmessage);
+                                        else $scope.getConversation(0);
+                                            $scope.input.message=null;
+                                          
                                 });
                         })
                 };

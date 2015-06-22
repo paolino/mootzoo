@@ -70,15 +70,6 @@
                       </div>
                     </div><!--action -->
                   </li> 
-                  <li class="list-group-item" >  
-                    <div  class=row> 
-                      <div class=col-md-6>
-                        <button class="btn btn-default btn-xs" ng-click="moot()">
-                        <span class="glyphicon glyphicon-plus"/>
-                        </button>
-                      </div>
-                    </div>
-                  </li>
                 </ul>
                 <ul ng-show="notifiche == 'personali'" class=list-group >
                   <li class="list-group-item" ng-repeat="x in personali">
@@ -98,7 +89,16 @@
         <div class=col-md-8>
           <div class="panel panel-primary">
             <div class="panel-heading">
-              conversazioni
+              <div  class=row> 
+                <div class=col-md-2>
+                  conversazioni
+                </div>
+                <div class=col-md-10>
+                  <button class="btn btn-success btn-xs" ng-click="moot()" data-toggle="tooltip" title="proponi conversazione">
+                  <span class="glyphicon glyphicon-plus"/>
+                  </button>
+                </div>
+              </div>
             </div>
             <div  class="panel-body"> 
               <div  style="overflow-y:auto;overflow-x:hidden; height:350px;">
