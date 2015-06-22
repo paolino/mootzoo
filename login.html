@@ -52,13 +52,13 @@
         <div class=col-md-4>
           <div class="panel panel-primary">
             <div class="panel-heading">
-              messaggi sfusi
+              navigazione
             </div>
             <div  class="panel-body" ng-init="notifiche='aperture'">
               <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
                 <ul class="nav nav-pills">
-                    <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> iniziali </a> </li> 
-                    <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> corrisposti </a> </li> 
+                    <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> radici </a> </li> 
+                    <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
                 </ul>
                 <ul ng-show="notifiche == 'aperture'" class=list-group >
                   <li class="list-group-item" ng-repeat="x in roots">
