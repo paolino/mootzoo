@@ -22,8 +22,8 @@
           <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>              
         </div>
         <div id="navbar" class="navbar-right navbar-form">
-          <div class="form-group">
-            <div style="position:absolute;left:50%">
+          <div class="form-group" ng-hide=true>
+            <div  style="position:absolute;left:50%">
               <input  ng-model="mailremainder" placeholder="Invita via mail" class="form-control"
                   data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
               <button  ng-show=mailremainder ng-click="invite()" class="btn btn-success"
@@ -41,7 +41,7 @@
                 <li ng-click="setUserkey(u)" ng-repeat="u in logins">{{u}}</li>
               </ul>
             </div><!-- /btn-group -->
-            <input type="text" class="form-control" aria-label="..." ng-model=userkey>
+            <input type="text" class="form-control" ng-model=userkey>
           </div><!-- /input-group -->
         </div>
       </div>
@@ -60,7 +60,7 @@
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in roots">
                     <div  class=row> 
-                      <div ng-click="getConversation(x.id)" class="message col-md-6">
+                      <div ng-click="getConversation(x.id)" class="message col-md-12">
                         {{x.text}}
                       </div>
                     </div><!--action -->
@@ -68,7 +68,9 @@
                   <li class="list-group-item" >  
                     <div  class=row> 
                       <div class=col-md-6>
-                        <button class="btn btn-default btn-xs" ng-click="moot()">Nuova</button>
+                        <button class="btn btn-default btn-xs" ng-click="moot()">
+                        <span class="glyphicon glyphicon-plus"/>
+                        </button>
                       </div>
                     </div>
                   </li>
@@ -85,44 +87,49 @@
             <div  class="panel-body"> 
               <div  style="overflow-y:auto;overflow-x:hidden; height:350px;">
                 <ul class=list-group >
-                  <li class="list-group-item" > 
-                    <div  class=row> 
-                      <div class=col-md-6>
-                        <button class="btn btn-default btn-xs" ng-click="past()">Contesto</button> 
+                  <li>
+                    <div  class=row > 
+                      <div class=col-md-3 >
+                        <div class="label label-default"> interventi</div>
+                      </div><!--action -->
+                      <div class=col-md-7 >
+                        <div class="label label-default"> messaggi </div>
                       </div>
-                    </div>
-                  
-                  </li>
+                      <div class=col-md-2 >
+                        <div class="label label-default"> azioni </div>
+                      </div>
+                    </div><!--action -->
+ 
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
-                      <div class=col-md-4>
+                      <div class=col-md-2 style="background-color:#aff">
+                        <div  class=row> 
+                          <div class=col-md-4>
+                            <button ng-show="canRollLeft(x)" ng-click="rollLeft(x)" class="btn btn-default btn-xs"  
+                                            data-toggle="tooltip" title="alternativa precedente" > 
+                                <span class="glyphicon glyphicon-step-backward"/>
+                              </button>
+                          </div>
+                          <div class=col-md-4>
+                          <div class="label label-default">{{x.roll + 1}}/{{x.alter.length}}</div>
+                          </div>
+                          <div class=col-md-4>
+                          <button ng-show="canRollRight(x)" ng-click="rollRight(x)" class="btn btn-default btn-xs"  
+                                          data-toggle="tooltip" title="alternativa successiva" > 
+                              <span class="glyphicon glyphicon-step-forward"/>
+                             </button>
+                          </div>
+                        </div>
+                      </div><!--action -->
+                      <div class=col-md-7>
                         {{x.text}}
                       </div>
-                      <div class=col-md-2>
+                      <div class=col-md-3 style="background-color:#aff">
                           <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
                                           data-toggle="tooltip" title="{{a.tooltip}}" >
-                              {{a.text}}
+                        <span ng-class="a.glyphicon"/>
                           </button>
                       </div>
-                      <div class=col-md-6>
-                        <ul class="list-group">
-                            <li ng-click="getConversation(y.id)" style="overflow-x:hidden" class="list-group-item" ng-repeat=
-                                  "y in filnodes(x,$index)" > 
-                                <div  class=row> 
-                                  <div class=col-md-8>
-                                    {{y.text}}
-                                  </div>
-                                  <div class=col-md-4>
-                                      <button ng-repeat = "a in y.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
-                                                      data-toggle="tooltip" title="{{a.tooltip}}" >
-                                          {{a.text}}
-                                      </button>
-                                  </div>
-                          
-                              </div>
-                            </li>
-                        </ul><!--action -->
-                      </div><!--action -->
                     </div><!--action -->
                   </li> 
                 </ul>

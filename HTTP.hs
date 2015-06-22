@@ -31,7 +31,7 @@ import System.Environment
 
 jsError x = makeObj [("error",JSString $ toJSString x)]
 jsDBError x  = makeObj [("dberror",JSString $ toJSString $ show x)]
-jsCompund x y = makeObj [("result",showJSON x),("events", JSArray $ map (JSString . toJSString . show) y)]
+jsCompund x y = makeObj [("result",showJSON x),("events", JSArray $ map showJSON y)]
 
 sendResponse
   :: JSON a => WGet -> Maybe (Get a) -> IO (Response String)
@@ -66,6 +66,7 @@ main = do
         when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
+                          print url
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
@@ -105,22 +106,19 @@ main = do
                                                 s <- readFile "login.html"
                                                 return $ sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") s
                                                 
-                                        ["Past",sl,sci,sn] -> sendResponse g $ do
+                                        ["Past",sl,sci] -> sendResponse g $ do
                                                         ci <- readMaybe sci
+                                                        return $ Past sl ci 
+                                        ["Conversation",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
-                                                        return $ Past sl ci n 
-                                        ["Conversation",sl,sn,sk] -> sendResponse g $ do
-                                                        n <- readMaybe sn
-                                                        k <- readMaybe sk
-                                                        return $ Conversation sl n k
+                                                        return $ Conversation sl n 
                                         ["Logins"] -> sendResponse g $ do
                                                       return $ Logins
                                         ["Future",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Future sl n
-                                        ["Roots",sl,sk] -> sendResponse g $ do
-                                                        k <- readMaybe sk
-                                                        return $ Roots sl k
+                                        ["Roots",sl]-> sendResponse g $ do
+                                                        return $ Roots sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

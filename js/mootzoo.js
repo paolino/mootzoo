@@ -23,7 +23,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
                         });
                 }
         $scope.getLogins();
-        $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey + "/0").success(function(xs){
+        $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey).success(function(xs){
                         $scope.roots=xs.result;
                         for(var i=0;i< $scope.roots.length;i++)
                                 $scope.roots[i].actions=$scope.actions($scope.roots[i]);
@@ -54,41 +54,60 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.actions= function(x) {
                 var as=Array()
                 if(x.canVote)
-                        as.push({action:function (){$scope.voteUp(x.id)},text:":>",tooltip:"Bel messaggio"});
+                        as.push({action:function (){$scope.voteUp(x.id)},
+                            glyphicon:"glyphicon glyphicon-thumbs-up",tooltip:"Bene"});
                 if(x.canVote)
-                        as.push({action:function (){$scope.voteDown(x.id)},text:":<",tooltip:"Pessimo messaggio"});
+                        as.push({action:function (){$scope.voteDown(x.id)},
+                            glyphicon:"glyphicon glyphicon-thumbs-down",tooltip:"Male"});
                 if(x.canIntervein)
-                        as.push({action:function(){$scope.respond(x.id)},text:"P",tooltip:"Richiesta di apertura all'autore"});
+                        as.push({action:function(){$scope.respond(x.id)},
+                        glyphicon:"glyphicon glyphicon-comment",tooltip:"Intervento"});
                 if(x.canRespond)
-                        as.push({action:function(){$scope.respond(x.id)},text:"R",tooltip:"Messaggio di risposta"});
+                        as.push({action:function(){$scope.respond(x.id)},
+                        glyphicon:"glyphicon glyphicon-envelope",tooltip:"Risposta"});
                 if(x.canClose)
-                        as.push({action:function(){$scope.closeConv(x.id)},text:"T",tooltip:"Chiudi la conversazione"});
+                        as.push({action:function(){$scope.closeConv(x.id)},
+                                glyphicon:"glyphicon glyphicon-share",tooltip:"Chiusura"});
                 if(x.canOpen)
-                        as.push({action:function(){$scope.openMessage(x.id)},text:"A",tooltip:"Apri la risposta a chiunque"});
+                        as.push({action:function(){$scope.openMessage(x.id)},
+                            glyphicon:"glyphicon glyphicon-share",tooltip:"Apertura"});
                 if(x.canRetract)
-                        as.push({action:function(){$scope.retractMessage(x)},text:"Z",tooltip:"Ritira il tuo messaggio"});
+                        as.push({action:function(){$scope.retractMessage(x)},
+                          glyphicon:"glyphicon glyphicon-trash",tooltip:"Rinuncia"});
                 return as;
                 }
-                $scope.getConversation = function(id) {
+            $scope.getConversation = function(id) {
                 $scope.getRoots();
                 $scope.lastConversation.push(id);
-                $http.get("../api/Conversation/" + $scope.userkey + "/" + id + "/1").success (function(messages) {
+                $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
                         $scope.conversation=messages.result;
                         for(var i=0;i< $scope.conversation.length;i++){
                                 $scope.conversation[i].actions=$scope.actions($scope.conversation[i]);
-                                for(var j=0;j< $scope.conversation[i].nodes.length;j++)
-                                        $scope.conversation[i].nodes[j].actions=$scope.actions($scope.conversation[i].nodes[j]);
+                                $scope.conversation[i].roll=$scope.conversation[i].alter.indexOf($scope.conversation[i].id);
                                 }
-                        $scope.messageid=messages.result[0].id;
+                        
+                        $scope.messageid=id;
                         
                         });
                 }
-        $scope.filnodes= function(x,i) {return x.nodes.filter(function(z){
-              if($scope.conversation[i + 1])
-            
-                return (z.id != $scope.conversation[i + 1].id);
-              return true;
-              })}
+        $scope.rollLeft=function(x){
+            if(x.roll>0){
+              x.roll -= 1;
+              $scope.getConversation(x.alter[x.roll]);
+              }
+            }
+        $scope.canRollLeft=function(x){
+            return(x.roll > 0);
+            }
+        $scope.rollRight=function(x){
+            if(x.roll<x.alter.length-1){
+              x.roll += 1;
+              $scope.getConversation(x.alter[x.roll]);
+              }
+            }
+        $scope.canRollRight=function(x){
+            return(x.roll < x.alter.length - 1);
+            }
         $scope.invite=function (){
                 $http.post("../api/Invite/"+$scope.userkey,$scope.mailremainder).success(
                         function () {$scope.getConversation(0);$scope.mailremainder=null;$scope.getLogins();});
@@ -107,9 +126,12 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.respond=function(id){
                 $scope.open(function (){
                         $http.post("../api/New/"+$scope.userkey + "/Attach/" + id,$scope.input.message).success(
-                                function () {
-                                        $scope.getConversation(id);
-                                        $scope.input.message=null;
+                                function (rs) {
+                                        if(rs.events[0].newmessage)
+                                            $scope.getConversation(rs.events[0].newmessage);
+                                        else $scope.getConversation(0);
+                                            $scope.input.message=null;
+                                          
                                 });
                         })
                 };
@@ -124,15 +146,14 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
                 };
 
         $scope.retractMessage = function (x){
+                alert(x.parent);
                 $http.put("../api/Retract/"+$scope.userkey + "/" + x.id).success(
                 function () {
                     if(x.parent) {
                         $scope.getConversation(x.parent);
-                        $scope.lastConversation.pop(); 
-                        $scope.lastConversation.push(x.parent);
                         }
                     else 
-                        $scope.getConversation($scope.lastConversation.pop());
+                        $scope.getConversation(0);
                         
                     });
                 }

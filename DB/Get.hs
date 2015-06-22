@@ -17,6 +17,7 @@ import Data.Typeable
 import Control.Exception
 import Control.Monad.Error
 import DB0
+import Data.List (delete)
 
                 
 data Interface = Interface {
@@ -73,8 +74,17 @@ mkInterface e ui mr@(MessageRow mi mtx mu mt mmp mc mv) = do
   return $ Interface cv cp ci cr cc co cx
       
         
+
   
-data Exposed = Exposed MessageId (Maybe MessageId) [Exposed] String Integer Interface  deriving Show
+data Exposed = Exposed {
+    eid :: MessageId,
+    empid :: Maybe MessageId,
+    etext :: String,
+    evote ::  Integer,
+    ealternative :: [MessageId],
+    einterface :: Interface
+    }
+  deriving Show
 
 
 -- messages for me
@@ -88,34 +98,38 @@ getEnvelopes e l = transactOnLogin e l $ \ui -> equery e
         "select id,0,message,vote from messages as m1 where type <> ? and user = ?" (Passage,ui)
 -}
 
-mkExposed 0 e ui mr@(MessageRow mi tx mu mt mmp _ v) = Exposed mi mmp [] tx v <$>  mkInterface e ui mr
-mkExposed k e ui mr@(MessageRow mi tx mu mt mmp _ v) = do
-        fs <-futureMessages e (Just mi) >>=  mapM (mkExposed (k - 1) e ui) 
-        Exposed mi mmp fs tx v <$>  mkInterface e ui mr
 
-getPast' :: Env -> UserId -> MessageId -> Integer -> Integer -> ConnectionMonad [Exposed]
-getPast' e ui mi n k =  pastMessages e mi n >>= (mapM (mkExposed k e ui) . reverse)
 
-getPast :: Env -> Login -> MessageId -> Integer -> ConnectionMonad [Exposed]
-getPast e l mi n = transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> getPast' e ui mi  n 1
+mkExposed  e ui mr@(MessageRow mi tx mu mt mmp co v) = do
+        
+        fs <- case mmp of
+            Nothing -> return []
+            Just mi' -> map (\(MessageRow mi'' _ _ _ _ co'' _) -> mi'') <$> futureMessages e (Just mi') 
+        Exposed mi mmp tx v  fs <$> mkInterface e ui mr
+
+getPast' :: Env -> UserId -> MessageId -> ConnectionMonad [Exposed]
+getPast' e ui mi =  pastMessages e mi >>= (mapM (mkExposed e ui) . reverse)
+
+getPast :: Env -> Login -> MessageId -> ConnectionMonad [Exposed]
+getPast e l mi = transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> getPast' e ui mi  
 
 getFuture :: Env -> Login -> MessageId -> ConnectionMonad [Exposed] 
-getFuture e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \mr ->  futureMessages e (Just mi) >>= mapM (mkExposed 0 e ui) 
+getFuture e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \mr ->  futureMessages e (Just mi) >>= mapM (mkExposed e ui) 
 
-getConversation :: Env -> Login -> MessageId -> Integer -> ConnectionMonad [Exposed]
-getConversation e l 0 k = transactOnLogin e l $ \ui -> do
+getConversation :: Env -> Login -> MessageId ->  ConnectionMonad [Exposed]
+getConversation e l 0 = transactOnLogin e l $ \ui -> do
         r <- equery e "select head,count from conversations limit 1" ()
         case r of 
-            [(last,n)]  -> checkingMessage e last $ \_ -> getPast' e ui last n k
+            [(last,n::Integer)]  -> checkingMessage e last $ \_ -> getPast' e ui last
             [] -> throwError UnknownIdMessage
-getConversation e l mi k = transactOnLogin e l $ \ui -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _) -> do
-        [(last,n)] <- equery e "select head,count from conversations where id=?" (Only ci)
-        checkingMessage e last $ \_ -> getPast' e ui last  n k
+getConversation e l mi = transactOnLogin e l $ \ui -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _) -> do
+        [(last,n::Integer)] <- equery e "select head,count from conversations where id=?" (Only ci)
+        checkingMessage e last $ \_ -> getPast' e ui last 
         
         
         
 
 
-getRoots :: Env -> Login -> Integer -> ConnectionMonad [Exposed]
-getRoots e l k = transactOnLogin e l $ \ui -> futureMessages e Nothing >>= mapM (mkExposed k e ui) 
+getRoots :: Env -> Login -> ConnectionMonad [Exposed]
+getRoots e l = transactOnLogin e l $ \ui -> futureMessages e Nothing >>= mapM (mkExposed e ui) 
 

@@ -12,8 +12,7 @@ CREATE TABLE messages (
         type integer not null,
         parent integer references messages(id),
         conversation integer,
-        vote integer not null default 0,
-        unique (user,parent)
+        vote integer not null default 0
         );
 create table conversations (
         id integer primary key autoincrement not null,

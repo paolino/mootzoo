@@ -40,6 +40,7 @@ newMessage e ui (Attach mi) x = do
                 eexecute e "update messages set type=? where id=?" (Passage,mi) 
                 eexecute e "insert into messages values (null,?,?,?,?,?,0)" (x,ui,Closed,mi,ci)
                 mi'' <- lastRow e
+                tell [EvNewMessage mi'']
                 eexecute e "update conversations set head=? , count = count + 1 where id=?" (mi'',ci)
 
         case r :: [(MessageType,Maybe UserId,UserId,ConvId)] of
@@ -53,6 +54,7 @@ newMessage e ui (Attach mi) x = do
                 [(Passage,_,_,_)] -> do
                                 eexecute e "insert into messages values (null,?,?,?,?,null,0)" (x,ui,Closed,mi)
                                 mi' <- lastRow e
+                                tell [EvNewMessage mi']
                                 ci <- newConversation e mi'
                                 eexecute e "update messages set conversation = ? where id=?" (ci,mi')
                                 -- check conversation

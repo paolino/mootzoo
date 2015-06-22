@@ -164,10 +164,10 @@ checkingMessage e mi f = do
                                 [x] -> f x
                                 _ -> throwError $ DatabaseError "multiple message id inconsistence"
 
-pastMessages :: Env -> MessageId -> Integer -> ConnectionMonad [MessageRow]
-pastMessages e mi n = do
+pastMessages :: Env -> MessageId -> ConnectionMonad [MessageRow]
+pastMessages e mi = do
         checkingMessage e mi $ \_ -> return () 
-        equery e "with recursive ex(id,parent,message,vote,type,user,conversation) as (select id,parent,message,vote,type,user,conversation from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation from messages,ex where messages.id=ex.parent limit ?) select id,message,user,type,parent,conversation,vote from ex" (mi,n)
+        equery e "with recursive ex(id,parent,message,vote,type,user,conversation) as (select id,parent,message,vote,type,user,conversation from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation from messages,ex where messages.id=ex.parent) select id,message,user,type,parent,conversation,vote from ex" (Only mi)
 
 
 futureMessages :: Env -> Maybe MessageId  -> ConnectionMonad [MessageRow]
