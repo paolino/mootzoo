@@ -14,12 +14,14 @@ app.controller('Input', function ($scope, $modalInstance) {
 app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.message="ciao";        
         $scope.input= {};
+        $scope.messageid=0;
         $scope.setUserkey=function(u) {
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
                 }
         $scope.getLogins=function(){$http.get("../api/Logins").success(function(xs){
                         $scope.logins=xs.result;
+                        $scope.setUserkey($scope.logins[0]);
                         });
                 }
         $scope.getLogins();
@@ -181,7 +183,6 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.voteDown=function(id){
                 $http.put("../api/Vote/"+$scope.userkey + "/" + id + "/False").success(function () {$scope.getConversation(id)});};
 
-        $timeout(function (){$scope.getConversation(0);});
         });
 }
 
