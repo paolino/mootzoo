@@ -66,7 +66,6 @@ main = do
         when t $ void $ responseP $ Just $ Boot mailbooter 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
-                          print url
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
@@ -81,6 +80,9 @@ main = do
                                         ["New",sl,"Attach",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ New sl (Attach ci) msg
+                                        ["New",sl,"Correct",sci] ->  responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ New sl (Correct ci) msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of
@@ -119,6 +121,8 @@ main = do
                                                         return $ Future sl n
                                         ["Roots",sl]-> sendResponse g $ do
                                                         return $ Roots sl 
+                                        ["Personal",sl]-> sendResponse g $ do
+                                                        return $ Personal sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

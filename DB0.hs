@@ -149,12 +149,13 @@ data MessageRow = MessageRow {
         mtype :: MessageType,
         mparent :: Maybe MessageId,
         mconversation ::ConvId,
-        mvote :: Integer
+        mvote :: Integer,
+        mdata :: String
         }
         deriving Show
 
 instance FromRow MessageRow where
-        fromRow = MessageRow <$> field <*> field <*> field <*> field <*> field <*> field <*> field
+        fromRow = MessageRow <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
 
 checkingMessage :: Env -> MessageId -> (MessageRow -> ConnectionMonad a) -> ConnectionMonad a
 checkingMessage e mi f = do
@@ -167,13 +168,15 @@ checkingMessage e mi f = do
 pastMessages :: Env -> MessageId -> ConnectionMonad [MessageRow]
 pastMessages e mi = do
         checkingMessage e mi $ \_ -> return () 
-        equery e "with recursive ex(id,parent,message,vote,type,user,conversation) as (select id,parent,message,vote,type,user,conversation from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation from messages,ex where messages.id=ex.parent) select id,message,user,type,parent,conversation,vote from ex" (Only mi)
+        equery e "with recursive ex(id,parent,message,vote,type,user,conversation,data) as (select id,parent,message,vote,type,user,conversation,data from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation,messages.data from messages,ex where messages.id=ex.parent) select id,message,user,type,parent,conversation,vote,data from ex" (Only mi)
 
 
 futureMessages :: Env -> Maybe MessageId  -> ConnectionMonad [MessageRow]
-futureMessages e (Just mi) = equery e "select id,message,user,type,parent,conversation,vote from messages where parent=?" (Only mi)
-futureMessages e Nothing = equery e "select id,message,user,type,parent,conversation,vote from messages where parent isnull"  ()
+futureMessages e (Just mi) = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent=?" (Only mi)
+futureMessages e Nothing = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent isnull"  ()
 
+personalMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
+personalMessages e ui = equery e ("select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 join messages as m2 on  m1.parent = m2.id where m1.type=? and m2.user=?")  (Closed,ui)
 
 -- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
 run f = do        

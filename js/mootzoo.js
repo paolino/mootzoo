@@ -25,11 +25,14 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
         $scope.getLogins();
         $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey).success(function(xs){
                         $scope.roots=xs.result;
-                        for(var i=0;i< $scope.roots.length;i++)
-                                $scope.roots[i].actions=$scope.actions($scope.roots[i]);
                         });
                 }
         $timeout($scope.getRoots);
+        $scope.getPersonal=function(){$http.get("../api/Personal/" + $scope.userkey).success(function(xs){
+                        $scope.personali=xs.result;
+                        });
+                }
+        $timeout($scope.getPersonal);
         $scope.lastConversation=Array();
         $scope.past=function(){
                 if($scope.conversation[0].parent)
@@ -55,29 +58,33 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
                 var as=Array()
                 if(x.canVote)
                         as.push({action:function (){$scope.voteUp(x.id)},
-                            glyphicon:"glyphicon glyphicon-thumbs-up",tooltip:"Bene"});
+                            glyphicon:"glyphicon glyphicon-thumbs-up",tooltip:"Apprezza"});
                 if(x.canVote)
                         as.push({action:function (){$scope.voteDown(x.id)},
-                            glyphicon:"glyphicon glyphicon-thumbs-down",tooltip:"Male"});
+                            glyphicon:"glyphicon glyphicon-thumbs-down",tooltip:"Disprezza"});
                 if(x.canIntervein)
                         as.push({action:function(){$scope.respond(x.id)},
-                        glyphicon:"glyphicon glyphicon-comment",tooltip:"Intervento"});
+                        glyphicon:"glyphicon glyphicon-comment",tooltip:"Intervieni"});
                 if(x.canRespond)
                         as.push({action:function(){$scope.respond(x.id)},
-                        glyphicon:"glyphicon glyphicon-envelope",tooltip:"Risposta"});
+                        glyphicon:"glyphicon glyphicon-envelope",tooltip:"Rispondi"});
                 if(x.canClose)
                         as.push({action:function(){$scope.closeConv(x.id)},
-                                glyphicon:"glyphicon glyphicon-share",tooltip:"Chiusura"});
+                                glyphicon:"glyphicon glyphicon-check",tooltip:"Chiudi"});
                 if(x.canOpen)
                         as.push({action:function(){$scope.openMessage(x.id)},
-                            glyphicon:"glyphicon glyphicon-share",tooltip:"Apertura"});
-                if(x.canRetract)
+                            glyphicon:"glyphicon glyphicon-share",tooltip:"Apri"});
+                if(x.canRetract){
                         as.push({action:function(){$scope.retractMessage(x)},
                           glyphicon:"glyphicon glyphicon-trash",tooltip:"Rinuncia"});
+                        as.push({action:function(){$scope.correctMessage(x)},
+                          glyphicon:"glyphicon glyphicon-pencil",tooltip:"Correggi"});
+                        }
                 return as;
                 }
             $scope.getConversation = function(id) {
                 $scope.getRoots();
+                $scope.getPersonal();
                 $scope.lastConversation.push(id);
                 $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
                         $scope.conversation=messages.result;
@@ -144,9 +151,18 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
                                 });
                         })
                 };
+       $scope.correctMessage=function(x){
+                $scope.input.message=x.text;
+                $scope.open(function (){
+                        $http.post("../api/New/"+$scope.userkey + "/Correct/" + x.id,$scope.input.message).success(
+                                function () {
+                                        $scope.getConversation(x.id);
+                                        $scope.input.message=null;
+                                });
+                        })
+                };
 
         $scope.retractMessage = function (x){
-                alert(x.parent);
                 $http.put("../api/Retract/"+$scope.userkey + "/" + x.id).success(
                 function () {
                     if(x.parent) {
