@@ -105,6 +105,12 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
               $scope.getConversation(x.alter[x.roll]);
               }
             }
+        $scope.rollLeft0=function(x){
+            if(x.roll>0){
+              x.roll = 0;
+              $scope.getConversation(x.alter[x.roll]);
+              }
+            }
         $scope.canRollLeft=function(x){
             return(x.roll > 0);
             }
