@@ -112,7 +112,7 @@
                         <div class="label label-default"> messaggi </div>
                       </div>
                       <div class=col-md-2 >
-                        <div class="label label-default"> azioni </div>
+                        <div clas="label label-default"> azioni </div>
                       </div>
                     </div><!--action -->
  
@@ -120,18 +120,24 @@
                     <div  class=row> 
                       <div class=col-md-2 style="background-color:#aff">
                         <div  class=row> 
-                          <div class=col-md-4>
+                          <div class=col-md-3>
+                            <button ng-show="canRollLeft(x)" ng-click="rollLeft0(x)" class="btn btn-default btn-xs"  
+                                            data-toggle="tooltip" title="risposta originale" > 
+                                <span class="glyphicon glyphicon-fast-backward"/>
+                              </button>
+                          </div>
+                          <div class=col-md-3>
                             <button ng-show="canRollLeft(x)" ng-click="rollLeft(x)" class="btn btn-default btn-xs"  
-                                            data-toggle="tooltip" title="alternativa precedente" > 
+                                            data-toggle="tooltip" title="intervento precedente" > 
                                 <span class="glyphicon glyphicon-step-backward"/>
                               </button>
                           </div>
-                          <div class=col-md-4>
+                          <div class=col-md-3>
                           <div class="label label-default">{{x.roll + 1}}/{{x.alter.length}}</div>
                           </div>
-                          <div class=col-md-4>
+                          <div class=col-md-3>
                           <button ng-show="canRollRight(x)" ng-click="rollRight(x)" class="btn btn-default btn-xs"  
-                                          data-toggle="tooltip" title="alternativa successiva" > 
+                                          data-toggle="tooltip" title="intervento successivo" > 
                               <span class="glyphicon glyphicon-step-forward"/>
                              </button>
                           </div>
