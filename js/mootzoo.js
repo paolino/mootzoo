@@ -11,7 +11,7 @@ app.controller('Input', function ($scope, $modalInstance) {
           };
         });
 
-app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
+app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$interval) {
         $scope.message="ciao";        
         $scope.input= {};
         $scope.messageid=0;
@@ -191,7 +191,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http) {
 
         $scope.voteDown=function(id){
                 $http.put("../api/Vote/"+$scope.userkey + "/" + id + "/False").success(function () {$scope.getConversation(id)});};
-
+        $interval(function (){$scope.getConversation($scope.messageid)},3000);
         });
 }
 
