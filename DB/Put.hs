@@ -31,6 +31,7 @@ newMessage ::  Env -> UserId  -> Attach -> String -> ConnectionMonad ()
 newMessage e ui DontAttach x = do
         eexecute e "insert into messages (id,message,user,type,parent,conversation) values (null,?,?,?,null,null)" (x,ui,Open) -- public message
         mi <- lastRow e
+        tell [EvNewMessage mi]
         ci <- newConversation e mi 
         eexecute e "update messages set conversation = ? where id=?" (ci,mi)
 
