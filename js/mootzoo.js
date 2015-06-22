@@ -88,6 +88,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 $scope.getRoots();
                 $scope.getPersonal();
                 $scope.lastConversation.push(id);
+                $scope.notgetting=false;
                 $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
                         $scope.conversation=messages.result;
                         for(var i=0;i< $scope.conversation.length;i++){
@@ -95,6 +96,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                                 $scope.conversation[i].roll=$scope.conversation[i].alter.indexOf($scope.conversation[i].id);
                                 }
                         
+                        $scope.notgetting=true;
                         $scope.messageid=id;
                         
                         });
@@ -191,7 +193,10 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 
         $scope.voteDown=function(id){
                 $http.put("../api/Vote/"+$scope.userkey + "/" + id + "/False").success(function () {$scope.getConversation(id)});};
-        $interval(function (){$scope.getConversation($scope.messageid)},3000);
+        $interval(function (){
+            if($scope.notgetting)
+                $scope.getConversation($scope.messageid)}
+            ,5000);
         });
 }
 
