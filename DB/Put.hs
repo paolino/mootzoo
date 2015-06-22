@@ -29,7 +29,7 @@ data Attach
 
 newMessage ::  Env -> UserId  -> Attach -> String -> ConnectionMonad ()
 newMessage e ui DontAttach x = do
-        eexecute e "insert into messages values (null,?,?,?,null,null,0)" (x,ui,Open) -- public message
+        eexecute e "insert into messages (id,message,user,type,parent,conversation) values (null,?,?,?,null,null)" (x,ui,Open) -- public message
         mi <- lastRow e
         ci <- newConversation e mi 
         eexecute e "update messages set conversation = ? where id=?" (ci,mi)
@@ -38,7 +38,7 @@ newMessage e ui (Attach mi) x = do
         r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
         let insert  ci = do 
                 eexecute e "update messages set type=? where id=?" (Passage,mi) 
-                eexecute e "insert into messages values (null,?,?,?,?,?,0)" (x,ui,Closed,mi,ci)
+                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,?)" (x,ui,Closed,mi,ci)
                 mi'' <- lastRow e
                 tell [EvNewMessage mi'']
                 eexecute e "update conversations set head=? , count = count + 1 where id=?" (mi'',ci)
@@ -52,7 +52,7 @@ newMessage e ui (Attach mi) x = do
                                 [_] -> throwError NotOpponent
                 [(Open,_,_,ci)] ->  insert ci 
                 [(Passage,_,_,_)] -> do
-                                eexecute e "insert into messages values (null,?,?,?,?,null,0)" (x,ui,Closed,mi)
+                                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,null)" (x,ui,Closed,mi)
                                 mi' <- lastRow e
                                 tell [EvNewMessage mi']
                                 ci <- newConversation e mi'
@@ -64,10 +64,10 @@ newMessage e ui (Attach mi) x = do
 newMessage e ui (Correct mi) x = do
         r <- equery e "select type,user from messages where id=?" (Only mi)
         case r :: [(MessageType,UserId)] of
-                [(Closed, (==ui) -> True)] -> do
+                [(Passage,_)] -> throwError IsPassage
+                [(_, (==ui) -> True)] -> do
                         eexecute e "update messages set message = ? where id=?" (x,mi)
-                [(Closed,_)] -> throwError NotProponent
-                [_] -> throwError NotClosed
+                [_] -> throwError NotProponent
                 [] -> throwError UnknownIdMessage
 
 insertMessage :: Env -> Login -> Attach -> String -> ConnectionMonad ()

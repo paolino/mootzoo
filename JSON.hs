@@ -11,8 +11,9 @@ instance JSON Event where
   showJSON _ = JSNull
 
 instance JSON Exposed where
-        showJSON (Exposed mid mpid mtext mvote fs (Interface cv cp ci cr cc co cx)) = makeObj $ [
+        showJSON (Exposed mid mdate mpid mtext mvote fs (Interface cv cp ci cr cc co cx)) = makeObj $ [
                 ("id",JSRational False . fromIntegral $ mid),
+                ("date",JSString $ toJSString $ mdate),
                 ("parent",maybe JSNull (JSRational False . fromIntegral) mpid),
                 ("text",JSString $ toJSString mtext),  
                 ("vote",JSRational False $ fromIntegral mvote),
