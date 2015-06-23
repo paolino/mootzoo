@@ -114,8 +114,6 @@ main = do
                                         ["Conversation",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Conversation sl n 
-                                        ["Logins"] -> sendResponse g $ do
-                                                      return $ Logins
                                         ["Future",sl,sn] -> sendResponse g $ do
                                                         n <- readMaybe sn
                                                         return $ Future sl n

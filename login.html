@@ -22,7 +22,7 @@
           <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>              
         </div>
         <div id="navbar" class="navbar-right navbar-form">
-          <div class="form-group" ng-hide=true>
+          <div class="form-group" ng-hide=false>
             <div  style="position:absolute;left:50%">
               <input  ng-model="mailremainder" placeholder="Invita via mail" class="form-control"
                   data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
@@ -34,15 +34,6 @@
             <button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
                 title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
           </div>
-          <div class="input-group">
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Utente <span class="caret"></span></button>
-              <ul class="dropdown-menu" role="menu">
-                <li ng-click="setUserkey(u)" ng-repeat="u in logins">{{u}}</li>
-              </ul>
-            </div><!-- /btn-group -->
-            <input type="text" class="form-control" ng-model=userkey>
-          </div><!-- /input-group -->
         </div>
       </div>
     </div>

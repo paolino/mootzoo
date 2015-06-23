@@ -19,12 +19,6 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
                 }
-        $scope.getLogins=function(){$http.get("../api/Logins").success(function(xs){
-                        $scope.logins=xs.result;
-                        $scope.setUserkey($scope.logins[0]);
-                        });
-                }
-        $scope.getLogins();
         $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey).success(function(xs){
                         $scope.roots=xs.result;
                         });
