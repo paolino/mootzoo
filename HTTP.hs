@@ -123,6 +123,8 @@ main = do
                                                         return $ Roots sl 
                                         ["Personal",sl]-> sendResponse g $ do
                                                         return $ Personal sl 
+                                        ["Owned",sl]-> sendResponse g $ do
+                                                        return $ Owned sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

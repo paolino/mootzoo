@@ -178,6 +178,11 @@ futureMessages e Nothing = equery e "select id,message,user,type,parent,conversa
 personalMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
 personalMessages e ui = equery e ("select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 join messages as m2 on  m1.parent = m2.id where m1.type=? and m2.user=?")  (Closed,ui)
 
+
+ownedMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
+ownedMessages e ui = equery e "select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 where m1.type<>? and m1.user=?"  (Passage,ui)
+
+
 -- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
 run f = do        
         conn <- open "mootzoo.db"

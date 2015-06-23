@@ -59,14 +59,15 @@
                 <ul class="nav nav-pills">
                     <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> radici </a> </li> 
                     <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
+                    <li ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> hai detto </a> </li> 
                 </ul>
                 <ul ng-show="notifiche == 'aperture'" class=list-group >
                   <li class="list-group-item" ng-repeat="x in roots">
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div style="font-size:60%; color:#888; display:inline"> -- </div> 
+                       <div class=mex> -- </div> 
                        {{x.text}} 
-                       <div style="font-size:60%; color:#888; display:inline"> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
@@ -75,13 +76,25 @@
                   <li class="list-group-item" ng-repeat="x in personali">
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div style="font-size:60%; color:#888; display:inline"> -- </div> 
+                       <div class=mex> -- </div> 
                        {{x.text}} 
-                       <div style="font-size:60%; color:#888; display:inline"> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
                 </ul>
+                <ul ng-show="notifiche == 'detti'" class=list-group >
+                  <li class="list-group-item" ng-repeat="x in detti">
+                    <div  class=row> 
+                      <div ng-click="getConversation(x.id)" class="message col-md-12">
+                       <div class=mex> -- </div> 
+                       {{x.text}} 
+                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                      </div>
+                    </div><!--action -->
+                  </li> 
+                </ul>
+
               </div>
             </div>
           </div>
@@ -131,9 +144,9 @@
                         </div>
                       </div><!--action -->
                       <div class=col-md-7>
-                       <div style="font-size:60%; color:#888; display:inline"> -- </div> 
+                       <div class=mex> -- </div> 
                        {{x.text}} 
-                       <div style="font-size:60%; color:#888; display:inline"> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                       <div class=col-md-3 style="background-color:#aff">
                           <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  

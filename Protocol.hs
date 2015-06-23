@@ -60,6 +60,7 @@ data Get a where
         Conversation :: Login -> MessageId -> Get [Exposed]
         Roots :: Login -> Get [Exposed]
         Personal :: Login -> Get [Exposed]
+        Owned :: Login -> Get [Exposed]
         Logins :: Get [Login] -- debugging
         
 get'  :: Env -> Get a -> ConnectionMonad a
@@ -68,6 +69,7 @@ get' e (Future l mi) = getFuture e l mi
 get' e (Conversation l mi ) = getConversation e l mi 
 get' e (Roots l ) = getRoots e l 
 get' e (Personal l ) = getPersonal e l 
+get' e (Owned l ) = getOwned e l 
 get' e Logins = getLogins e
 
 get :: Env -> Get a -> WriterT [Event] IO (Either DBError a)
