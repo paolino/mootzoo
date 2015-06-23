@@ -15,7 +15,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.message="ciao";        
         $scope.input= {};
         $scope.messageid=0;
-        $scope.notgetting=0;
+        $scope.notgetting=1;
         $scope.setUserkey=function(u) {
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
