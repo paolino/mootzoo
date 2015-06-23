@@ -73,3 +73,5 @@ boot e m = do
                 _ -> throwError AlreadyBooted
 
 
+getLogin :: Env -> Login -> ConnectionMonad String
+getLogin e l = checkingLogin e l $ \(CheckLogin i m _) -> return m

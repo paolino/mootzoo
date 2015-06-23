@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=">
+<html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=;username=;">
   <head>
     <title>Mootzoo conversations</title>
     <meta charset="utf-8">
@@ -19,20 +19,21 @@
     <div class="navbar navbar-inverse">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, lo zoo delle conversazioni</a>              
+          <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, una foresta di discussioni</a>              
         </div>
         <div id="navbar" class="navbar-right navbar-form">
           <div class="form-group" ng-hide=false>
-            <div  style="position:absolute;left:50%">
-              <input  ng-model="mailremainder" placeholder="Invita via mail" class="form-control"
-                  data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">
-              <button  ng-show=mailremainder ng-click="invite()" class="btn btn-success"
-                                                          data-toggle="tooltip" title="Invia una e-mail a questo indirizzo con un nuovo link di login">               
+              <button  ng-click="logout()" class="btn btn-danger"
+                data-toggle="tooltip" title="Invia un nuovo login a te stesso">               
+                Rinnovo
+              </button> 
+              <button  ng-click="invite()" class="btn btn-success"
+                data-toggle="tooltip" title="Invia una e-mail di invito a mootzoo">               
                 Invita
               </button> 
-            </div>
-            <button  ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
+            <button  ng-show=false ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
                 title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
+            <div class="label label-default"> {{username}} </div>
           </div>
         </div>
       </div>

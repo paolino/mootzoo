@@ -43,7 +43,12 @@ sendResponse g v = case v of
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
                         Right x -> return $ sendJSON OK $ jsCompund x w
-
+checkUserId g sl s = do
+                let (WGet g') = g
+                (c,_) <- runWriterT $ g' (Check sl)
+                return $ case c of Left x -> sendHTML BadRequest $ "<h1> Unknown login </h1>"
+                                   Right e -> sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
+                                                        $ replace "username=" ("username='"++e++"'") $  s
 sendResponseP pwd p v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
@@ -106,7 +111,7 @@ main = do
                                 case splitOn "/" $ url_path url of
                                         ["Login",sl] -> do
                                                 s <- readFile "login.html"
-                                                return $ sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") s
+                                                checkUserId g sl s
                                                 
                                         ["Past",sl,sci] -> sendResponse g $ do
                                                         ci <- readMaybe sci

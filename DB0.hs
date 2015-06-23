@@ -208,3 +208,6 @@ newConversation :: Env -> MessageId -> ConnectionMonad ConvId
 newConversation e t = do
         eexecute e "insert into conversations values (null,?,?,?)" (t,t,1::Integer)
         lastRow e
+
+
+

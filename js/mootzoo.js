@@ -56,6 +56,32 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         function () {}
                         );
                 };
+        $scope.inviting = function (next) {
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../invite.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ($scope.input.mailremainder);}, 
+                        function () {}
+                        );
+                };
+        $scope.loggingout = function (next) {
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../logout.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ();}, 
+                        function () {}
+                        );
+                };
         $scope.actions= function(x) {
                 var as=Array()
                 if(x.canVote)
@@ -127,10 +153,19 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
             return(x.roll < x.alter.length - 1);
             }
         $scope.invite=function (){
-                $http.post("../api/Invite/"+$scope.userkey,$scope.mailremainder).success(
-                        function () {$scope.getConversation(0);$scope.mailremainder=null;$scope.getLogins();});
+                $scope.inviting(function(){
+                  $http.post("../api/Invite/"+$scope.userkey,$scope.input.mailremainder).success(
+                        function () {$scope.input.mailremainder=null;});
+                });
+
                 }
 
+        $scope.logout=function (){
+                $scope.loggingout(function(){
+        $http.put("../api/Logout/"+$scope.userkey).success(
+                function () {location.reload();});
+                });
+        }
 
         $scope.closeConv=function(id){
                 $http.put("../api/Close/"+$scope.userkey +"/" + id).success(
@@ -229,10 +264,6 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.reminds=function (){
         $http.post("api/Reminds",$scope.mailremainder).success(
                 function () {$scope.mailremainder=null});
-        }
-        $scope.logout=function (){
-        $http.put("../api/Logout/"+$scope.userkey).success(
-                function () {location.reload();});
         }
         $scope.clean=function(){
         $scope.message=null;

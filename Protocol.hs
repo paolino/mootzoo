@@ -62,6 +62,7 @@ data Get a where
         Personal :: Login -> Get [Exposed]
         Owned :: Login -> Get [Exposed]
         Opens :: Login -> Get [Exposed]
+        Check :: Login -> Get String
         Logins :: Get [Login] -- debugging
         
 get'  :: Env -> Get a -> ConnectionMonad a
@@ -73,6 +74,7 @@ get' e (Personal l ) = getPersonal e l
 get' e (Owned l ) = getOwned e l 
 get' e (Opens l ) = getOpen e l 
 get' e Logins = getLogins e
+get' e (Check l) = getLogin e l
 
 get :: Env -> Get a -> WriterT [Event] IO (Either DBError a)
 get e l = runErrorT (get' e l)
