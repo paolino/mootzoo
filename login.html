@@ -45,10 +45,10 @@
             <div class="panel-heading">
               navigazione
             </div>
-            <div  class="panel-body" ng-init="notifiche='aperture'">
+            <div  class="panel-body" ng-init="notifiche='personali'">
               <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
                 <ul class="nav nav-pills">
-                    <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> radici </a> </li> 
+                    <li ng-hide=true ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> radici </a> </li> 
                     <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
                     <li ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> hai detto </a> </li> 
                 </ul>
