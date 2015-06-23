@@ -15,15 +15,11 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.message="ciao";        
         $scope.input= {};
         $scope.messageid=0;
+        $scope.notgetting=0;
         $scope.setUserkey=function(u) {
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
                 }
-        $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey).success(function(xs){
-                        $scope.roots=xs.result;
-                        });
-                }
-        $timeout($scope.getRoots);
         $scope.getDetti=function(){$http.get("../api/Owned/" + $scope.userkey).success(function(xs){
                         $scope.detti=xs.result;
                         });
