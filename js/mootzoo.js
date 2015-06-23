@@ -82,6 +82,46 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         function () {}
                         );
                 };
+        $scope.closing = function (next) {
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../close.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ();}, 
+                        function () {}
+                        );
+                };
+        $scope.opening = function (next) {
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../open.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ();}, 
+                        function () {}
+                        );
+                };
+
+        $scope.deleting = function (next) {
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../delete.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ();}, 
+                        function () {}
+                        );
+                };
         $scope.actions= function(x) {
                 var as=Array()
                 if(x.canVote)
@@ -168,13 +208,17 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         }
 
         $scope.closeConv=function(id){
-                $http.put("../api/Close/"+$scope.userkey +"/" + id).success(
+                $scope.closing(function(){
+                  $http.put("../api/Close/"+$scope.userkey +"/" + id).success(
                         function () {$scope.getConversation(id)});
+                });
                 }
 
         $scope.openMessage=function(id){
-                $http.put("../api/Open/"+$scope.userkey +"/" + id).success(
-                        function () {$scope.getConversation(id)});
+                $scope.opening(function(){
+                  $http.put("../api/Open/"+$scope.userkey +"/" + id).success(
+                          function () {$scope.getConversation(id)});
+                  });
                 }
         $scope.respond=function(id){
                 $scope.open(function (){
@@ -212,14 +256,16 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 };
 
         $scope.retractMessage = function (x){
-                $http.put("../api/Retract/"+$scope.userkey + "/" + x.id).success(
-                function () {
-                    if(x.parent) {
-                        $scope.getConversation(x.parent);
-                        }
-                    else 
-                        $scope.getConversation(0);
-                        
+                $scope.deleting(function (){
+                    $http.put("../api/Retract/"+$scope.userkey + "/" + x.id).success(
+                    function () {
+                        if(x.parent) {
+                            $scope.getConversation(x.parent);
+                            }
+                        else 
+                            $scope.getConversation(0);
+                            
+                        });
                     });
                 }
              
