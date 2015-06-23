@@ -281,6 +281,9 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 
         $scope.voteDown=function(id){
                 $http.put("../api/Vote/"+$scope.userkey + "/" + id + "/False").success(function () {$scope.getConversation(id)});};
+        $timeout(function (){
+                $scope.getConversation($scope.messageid)
+            });
         $interval(function (){
             if($scope.notgetting)
                 $scope.getConversation($scope.messageid)}
