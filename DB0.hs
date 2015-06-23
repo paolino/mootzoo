@@ -182,6 +182,8 @@ personalMessages e ui = equery e ("select m1.id,m1.message,m1.user,m1.type,m1.pa
 ownedMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
 ownedMessages e ui = equery e "select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 where m1.type<>? and m1.user=?"  (Passage,ui)
 
+openConversations ::  Env -> UserId  -> ConnectionMonad [MessageRow]
+openConversations e ui = equery e "select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 where m1.type=? and m1.user<>?"  (Open,ui)
 
 -- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
 run f = do        

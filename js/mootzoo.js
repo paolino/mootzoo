@@ -20,6 +20,11 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
                 }
+        $scope.getOpens=function(){$http.get("../api/Opens/" + $scope.userkey).success(function(xs){
+                        $scope.opens=xs.result;
+                        });
+                }
+        $timeout($scope.getOpens);
         $scope.getDetti=function(){$http.get("../api/Owned/" + $scope.userkey).success(function(xs){
                         $scope.detti=xs.result;
                         });
@@ -82,6 +87,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
             $scope.getConversation = function(id) {
                 $scope.getPersonal();
                 $scope.getDetti();
+                $scope.getOpens();
                 $scope.lastConversation.push(id);
                 $scope.notgetting=false;
                 $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {

@@ -48,12 +48,12 @@
             <div  class="panel-body" ng-init="notifiche='personali'">
               <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
                 <ul class="nav nav-pills">
-                    <li ng-hide=true ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> radici </a> </li> 
+                    <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> proposte </a> </li> 
                     <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
                     <li ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> hai detto </a> </li> 
                 </ul>
                 <ul ng-show="notifiche == 'aperture'" class=list-group >
-                  <li class="list-group-item" ng-repeat="x in roots">
+                  <li class="list-group-item" ng-repeat="x in opens">
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
                        <div class=mex> -- </div> 

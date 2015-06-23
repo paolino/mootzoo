@@ -123,6 +123,8 @@ main = do
                                                         return $ Personal sl 
                                         ["Owned",sl]-> sendResponse g $ do
                                                         return $ Owned sl 
+                                        ["Opens",sl]-> sendResponse g $ do
+                                                        return $ Opens sl 
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

@@ -134,6 +134,8 @@ getPersonal e l =   transactOnLogin e l $ \ui -> personalMessages e ui >>= mapM 
 getOwned ::  Env -> Login -> ConnectionMonad [Exposed]
 getOwned e l =   transactOnLogin e l $ \ui -> ownedMessages e ui >>= mapM (mkExposed e ui)      
 
+getOpen ::  Env -> Login -> ConnectionMonad [Exposed]
+getOpen e l =   transactOnLogin e l $ \ui -> openConversations e ui >>= mapM (mkExposed e ui)      
 
 getRoots :: Env -> Login -> ConnectionMonad [Exposed]
 getRoots e l = transactOnLogin e l $ \ui -> futureMessages e Nothing >>= mapM (mkExposed e ui) 
