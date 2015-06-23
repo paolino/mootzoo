@@ -25,6 +25,11 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         });
                 }
         $timeout($scope.getOpens);
+        $scope.getRoots=function(){$http.get("../api/Roots/" + $scope.userkey).success(function(xs){
+                        $scope.roots=xs.result;
+                        });
+                }
+        $timeout($scope.getRoots);
         $scope.getDetti=function(){$http.get("../api/Owned/" + $scope.userkey).success(function(xs){
                         $scope.detti=xs.result;
                         });
@@ -154,6 +159,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 $scope.getPersonal();
                 $scope.getDetti();
                 $scope.getOpens();
+                $scope.getRoots();
                 $scope.lastConversation.push(id);
                 $scope.notgetting=false;
                 $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
