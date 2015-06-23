@@ -80,7 +80,6 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 return as;
                 }
             $scope.getConversation = function(id) {
-                $scope.getRoots();
                 $scope.getPersonal();
                 $scope.getDetti();
                 $scope.lastConversation.push(id);
