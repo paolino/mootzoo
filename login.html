@@ -48,9 +48,12 @@
             <div  class="panel-body" ng-init="notifiche='personali'">
               <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
                 <ul class="nav nav-pills">
-                    <li ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> proposte </a> </li> 
-                    <li ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
-                    <li ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> hai detto </a> </li> 
+                    <li data-toggle="tooltip" title="conversazioni proposte" 
+                        ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> proposte </a> </li> 
+                    <li data-toggle="tooltip" title="messaggi dove solo tu puoi rispondere" 
+                        ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> tocca a te </a> </li> 
+                    <li data-toggle="tooltip" title="messaggi spediti e non risposti" 
+                        ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> hai detto </a> </li> 
                 </ul>
                 <ul ng-show="notifiche == 'aperture'" class=list-group >
                   <li class="list-group-item" ng-repeat="x in opens">
