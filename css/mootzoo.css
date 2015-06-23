@@ -7,7 +7,7 @@
 .nav > li > a {
   position: relative;
   display: block;
-  padding: 10px 5px;
+  padding: 5px 5px;
 }
 /* Margini e padding inferiore */
 .list-group {
