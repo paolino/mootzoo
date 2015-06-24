@@ -73,7 +73,7 @@ main = do
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
                           let   URI a (Just (URIAuth _ b _)) _ _ _  = rqURI request
-                                href = a ++ "//" ++ b ++ "/" ++ reloc
+                                href = reloc
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
