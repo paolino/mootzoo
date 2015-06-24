@@ -44,10 +44,10 @@ sendResponse g v = case v of
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
                         Right x -> return $ sendJSON OK $ jsCompund x w
-checkUserId g sl s = do
+checkUserId g sl s loc = do
                 let (WGet g') = g
                 (c,_) <- runWriterT $ g' (Check sl)
-                return $ case c of Left x -> sendHTML OK s
+                return $ case c of Left x -> insertHeaders [Header HdrLocation loc] $  sendHTML Found $ "<h1>Unidentified</h1>"
                                    Right e -> sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
                                                         $ replace "username=" ("username='"++e++"'") $  s
 sendResponseP pwd p v = case v of 
@@ -114,7 +114,7 @@ main = do
                                 case splitOn "/" $ url_path url of
                                         ["Login",sl] -> do
                                                 s <- readFile "login.html"
-                                                checkUserId g sl s
+                                                checkUserId g sl s href
                                                 
                                         ["Past",sl,sci] -> sendResponse g $ do
                                                         ci <- readMaybe sci

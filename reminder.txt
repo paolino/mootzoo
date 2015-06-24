@@ -1,8 +1,8 @@
-E' stato richiesta una mail per ricordarti il link di login.
+E' stata richiesta una e-mail per ricordarti il link di login.
 
 Il tuo link di login è:
 
 linklogin
 
-mootzoo team
+MootZoo team
 
