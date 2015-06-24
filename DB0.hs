@@ -69,7 +69,7 @@ data Mailer
         | Booting Login
         deriving Show
 data Event 
-        = EvSendMail Mail Mailer
+        = EvSendMail Mail Mailer String
         | EvNewMessage MessageId
         deriving Show
 
@@ -125,7 +125,9 @@ transactOnLogin e l f = etransaction e $ checkingLogin e l $  \(CheckLogin ui _ 
 data MessageType 
         = Passage
         | Open
-        | Closed deriving (Eq,Show)
+        | Closed 
+        | Passed 
+        deriving (Eq,Show)
 
 data ParseException = ParseException deriving Show
 
@@ -135,12 +137,14 @@ instance FromField MessageType where
         fromField (fieldData -> SQLInteger 0) = Ok Passage
         fromField (fieldData -> SQLInteger 1) = Ok Open
         fromField (fieldData -> SQLInteger 2) = Ok Closed
+        fromField (fieldData -> SQLInteger 3) = Ok Passed
         fromField _ = Errors [SomeException ParseException]
 
 instance ToField MessageType where
         toField Passage = SQLInteger 0
         toField Open = SQLInteger 1
         toField Closed = SQLInteger 2
+        toField Passed = SQLInteger 3
 
 data MessageRow = MessageRow {
         mid :: MessageId,

@@ -25,6 +25,7 @@ data Attach
         = Attach MessageId
         | DontAttach
         | Correct MessageId
+        | Pass MessageId
         deriving Read
 
 newMessage ::  Env -> UserId  -> Attach -> String -> ConnectionMonad ()
@@ -34,7 +35,34 @@ newMessage e ui DontAttach x = do
         tell [EvNewMessage mi]
         ci <- newConversation e mi 
         eexecute e "update messages set conversation = ? where id=?" (ci,mi)
+{-
+newMessage e ui (Pass mi) _ = do
+        r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
+        let insert  ci = do 
+                eexecute e "update messages set type=? where id=?" (Passage,mi) 
+                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,?)" (x,ui,Closed,mi,ci)
+                mi'' <- lastRow e
+                tell [EvNewMessage mi'']
+                eexecute e "update conversations set head=? , count = count + 1 where id=?" (mi'',ci)
 
+        case r :: [(MessageType,Maybe UserId,UserId,ConvId)] of
+                [(_,_,eq ui -> True,_)] -> throwError Proponent
+                [(Closed,Just mi',_,ci)] -> do
+                        r' <- equery e "select user from messages where id=?" (Only mi')
+                        case r' of
+                                [Only (eq ui -> True)] -> insert ci 
+                                [_] -> throwError NotOpponent
+                [(Open,_,_,ci)] ->  insert ci 
+                [(Passage,_,_,_)] -> do
+                                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,null)" (x,ui,Closed,mi)
+                                mi' <- lastRow e
+                                tell [EvNewMessage mi']
+                                ci <- newConversation e mi'
+                                eexecute e "update messages set conversation = ? where id=?" (ci,mi')
+                                -- check conversation
+                [_] -> throwError NotAttachable
+                [] -> throwError UnknownIdMessage
+-}
 newMessage e ui (Attach mi) x = do
         r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
         let insert  ci = do 

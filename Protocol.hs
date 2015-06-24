@@ -29,11 +29,11 @@ import DB.Get
 import DB.Votes
 
 data Put
-        = Boot Mail			
-        | Invite Login Mail
-        | Logout Login
-        | Reminds Mail
-        | Migrate Login Mail
+        = Boot Mail	String	
+        | Invite Login Mail String
+        | Logout Login String
+        | Reminds Mail String
+        | Migrate Login Mail String
         | New Login Attach String
         | Retract Login MessageId
         | Leave Login Dispose MessageId
@@ -41,11 +41,11 @@ data Put
         deriving Read
 
 put' :: Env -> Put -> ConnectionMonad ()
-put' e (Boot m) = boot e m
-put' e (Invite l m) = inviteUser e l m (\_ _ -> return ())
-put' e (Logout l) = logout e l
-put' e (Reminds m) = reminder e m
-put' e (Migrate l m) = migrate e l m
+put' e (Boot s m) = boot e m s
+put' e (Invite l m s) = inviteUser e l m s (\_ _ -> return ())
+put' e (Logout l s) = logout e l s
+put' e (Reminds m s) = reminder e m s
+put' e (Migrate l m s) = migrate e l m s
 put' e (New l at x) = insertMessage e l at x
 put' e (Retract l mi) = retractMessage e l mi
 put' e (Leave l d mi) = disposeMessage e l d mi 

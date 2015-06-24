@@ -208,11 +208,15 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 
         $scope.logout=function (){
                 $scope.loggingout(function(){
-        $http.put("../api/Logout/"+$scope.userkey).success(
-                function () {location.reload();});
-                });
+                  $http.put("../api/Logout/"+$scope.userkey).success(
+                          function () {location.reload();});
+                          });
         }
 
+        $scope.reminds=function (){
+                  $http.post("api/Reminds",$scope.input.mailremainder).success(
+                          function () {location.reload();});
+        }
         $scope.closeConv=function(id){
                 $scope.closing(function(){
                   $http.put("../api/Close/"+$scope.userkey +"/" + id).success(

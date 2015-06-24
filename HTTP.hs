@@ -17,6 +17,7 @@ import Text.Read
 import Network.HTTP.Server
 import Network.HTTP.Server.Logger
 import Network.URL as URL
+import Network.URI (URI (..), URIAuth (..))
 import Text.JSON
 import Text.JSON.String(runGetJSON)
 import Codec.Binary.UTF8.String
@@ -46,7 +47,7 @@ sendResponse g v = case v of
 checkUserId g sl s = do
                 let (WGet g') = g
                 (c,_) <- runWriterT $ g' (Check sl)
-                return $ case c of Left x -> sendHTML BadRequest $ "<h1> Unknown login </h1>"
+                return $ case c of Left x -> sendHTML OK s
                                    Right e -> sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
                                                         $ replace "username=" ("username='"++e++"'") $  s
 sendResponseP pwd p v = case v of 
@@ -55,8 +56,8 @@ sendResponseP pwd p v = case v of
                 (x,w) <- runWriterT $ p v
                 forM_ w $ \y ->
                         case y of
-                                EvSendMail s m -> do
-                                        void $ forkIO $ sendAMail pwd s m 
+                                EvSendMail s m h -> do
+                                        void $ forkIO $ sendAMail pwd s h m
                                 _ -> return ()
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
@@ -64,23 +65,25 @@ sendResponseP pwd p v = case v of
 
 main :: IO ()
 main = do
-        [pwd,mailbooter] <- getArgs
+        [pwd,mailbooter,reloc] <- getArgs
         (t,p,g) <- prepare
         let responseP = sendResponseP pwd p
         putStrLn "running"
-        when t $ void $ responseP $ Just $ Boot mailbooter 
+        when t $ void $ responseP $ Just $ Boot mailbooter "reloc" 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
+                          let   URI a (Just (URIAuth _ b _)) _ _ _  = rqURI request
+                                href = a ++ "//" ++ b ++ "/" ++ reloc
                           case rqMethod request of
                             POST -> do 
                                 let msg = decodeString (rqBody request)
                                 case splitOn "/" $ url_path url of
                                         ["Invite",sl] -> responseP $ do
-                                                        return $ Invite sl msg
+                                                        return $ Invite sl msg href 
                                         ["Migrate",sl] -> responseP $ do
-                                                        return $ Migrate sl msg
+                                                        return $ Migrate sl msg href
                                         ["Reminds"] -> responseP $ do
-                                                        return $ Reminds msg
+                                                        return $ Reminds msg href
                                         ["New",sl,"DontAttach"] ->  responseP $  Just $ New sl DontAttach msg
                                         ["New",sl,"Attach",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
@@ -96,7 +99,7 @@ main = do
                                                         b <- readMaybe sb
                                                         return $ Vote sl mi b
                                         ["Logout",sl] -> responseP $ do
-                                                        return $ Logout sl
+                                                        return $ Logout sl href
                                         ["Retract",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ Retract sl ci
