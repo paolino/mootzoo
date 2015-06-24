@@ -50,14 +50,14 @@ checkUserId g sl s loc = do
                 return $ case c of Left x -> insertHeaders [Header HdrLocation loc] $  sendHTML Found $ "<h1>Unidentified</h1>"
                                    Right e -> sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
                                                         $ replace "username=" ("username='"++e++"'") $  s
-sendResponseP pwd p v = case v of 
+sendResponseP mail pwd p v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
                 (x,w) <- runWriterT $ p v
                 forM_ w $ \y ->
                         case y of
                                 EvSendMail s m h -> do
-                                        void $ forkIO $ sendAMail pwd s h m
+                                        void $ forkIO $ sendAMail mail pwd s h m
                                 _ -> return ()
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
@@ -65,11 +65,11 @@ sendResponseP pwd p v = case v of
 
 main :: IO ()
 main = do
-        [pwd,mailbooter,reloc] <- getArgs
+        [mail,pwd,mailbooter,reloc] <- getArgs
         (t,p,g) <- prepare
-        let responseP = sendResponseP pwd p
+        let responseP = sendResponseP mail pwd p
         putStrLn "running"
-        when t $ void $ responseP $ Just $ Boot mailbooter "reloc" 
+        when t $ void $ responseP $ Just $ Boot mailbooter reloc 
         serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
                 $ \_ url request -> do
                           let   URI a (Just (URIAuth _ b _)) _ _ _  = rqURI request
