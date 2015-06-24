@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=;username=;">
   <head>
-    <title>Mootzoo forest</title>
+    <title>MootZoo Forest</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../css/bootstrap.min.css" color="text/css">
@@ -20,20 +20,18 @@
     <div class="navbar navbar-inverse">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, una foresta di discussioni</a>              
+          <a class="navbar-brand navbar-collapse collapse" href="/">MootZoo, la foresta delle discussioni</a>              
         </div>
         <div id="navbar" class="navbar-right navbar-form">
           <div class="form-group" ng-hide=false>
               <button  ng-click="logout()" class="btn btn-danger"
-                data-toggle="tooltip" title="Invia un nuovo login a te stesso">               
+                data-toggle="tooltip" title="Invia un nuovo link di login alla tua mail (se pensi che questo sia compromesso)">               
                 Rinnovo
               </button> 
               <button  ng-click="invite()" class="btn btn-success"
-                data-toggle="tooltip" title="Invia una e-mail di invito a mootzoo">               
+                data-toggle="tooltip" title="Invia una e-mail di invito ad un'altro indirizzo">               
                 Invita
               </button> 
-            <button  ng-show=false ng-click="logout()" color="submit" class="btn btn-danger" data-toggle="tooltip" 
-                title="Invia un e-mail con un nuovo link di login a te stesso">Nuovo login</button>
             <div class="label label-default"> {{username}} </div>
           </div>
         </div>
@@ -44,9 +42,6 @@
       <div class=row>
         <div class=col-md-4>
           <div class="panel panel-primary">
-            <div class="panel-heading">
-              navigazione
-            </div>
             <div  class="panel-body" ng-init="notifiche='personali'">
               <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
                 <ul class="nav nav-pills">
@@ -71,8 +66,8 @@
                   <li class="list-group-item" ng-repeat="x in roots">
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div class=mex> -- </div> 
-                       {{x.text}} 
+                       <p><div class=mex> -- </div> 
+                       {{x.text}}</p>
                        <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
@@ -120,9 +115,6 @@
           <div class="panel panel-primary">
             <div class="panel-heading">
               <div  class=row> 
-                <div class=col-md-2>
-                  conversazioni
-                </div>
                 <div class=col-md-10>
                   <button class="btn btn-success btn-xs" ng-click="moot()" data-toggle="tooltip" title="proponi conversazione">
                   <span class="glyphicon glyphicon-plus"/>
@@ -131,41 +123,28 @@
               </div>
             </div>
             <div  class="panel-body"> 
-              <div  style="overflow-y:auto;overflow-x:hidden; height:350px;">
+              <div  style="overflow-y:auto;overflow-x:hidden; height:370px;">
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
-                      <div class=col-md-2 style="background-color:#aff">
-                        <div  class=row> 
-                          <div class=col-md-3>
-                            <button ng-show="canRollLeft(x)" ng-click="rollLeft0(x)" class="btn btn-default btn-xs"  
-                                            data-toggle="tooltip" title="risposta originale" > 
-                                <span class="glyphicon glyphicon-fast-backward"/>
-                              </button>
-                          </div>
-                          <div class=col-md-3>
-                            <button ng-show="canRollLeft(x)" ng-click="rollLeft(x)" class="btn btn-default btn-xs"  
+                      <div class=col-md-2 >
+                            <button ng-click="rollLeft(x)" class="btn btn-default btn-xs"  
                                             data-toggle="tooltip" title="intervento precedente" > 
                                 <span class="glyphicon glyphicon-step-backward"/>
                               </button>
-                          </div>
-                          <div class=col-md-3>
-                          <div class="label label-default">{{x.roll + 1}}/{{x.alter.length}}</div>
-                          </div>
-                          <div class=col-md-3>
-                          <button ng-show="canRollRight(x)" ng-click="rollRight(x)" class="btn btn-default btn-xs"  
+                          <button data-toggle="tooltip" title="intervento selezionato / numero interventi" class="btn btn-default btn-xs btn-off">{{x.roll + 1}}/{{x.alter.length}}
+                          </button>
+                          <button  ng-click="rollRight(x)" class="btn btn-default btn-xs"  
                                           data-toggle="tooltip" title="intervento successivo" > 
                               <span class="glyphicon glyphicon-step-forward"/>
                              </button>
-                          </div>
                         </div>
-                      </div><!--action -->
                       <div class=col-md-7>
                        <div class=mex> -- </div> 
                        {{x.text}} 
                        <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
-                      <div class=col-md-3 style="background-color:#aff">
+                      <div class=col-md-3>
                           <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
                                           data-toggle="tooltip" title="{{a.tooltip}}" >
                         <span ng-class="a.glyphicon"/>

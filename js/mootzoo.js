@@ -175,28 +175,17 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         });
                 }
         $scope.rollLeft=function(x){
-            if(x.roll>0){
+            if(x.roll>0)
               x.roll -= 1;
-              $scope.getConversation(x.alter[x.roll]);
-              }
-            }
-        $scope.rollLeft0=function(x){
-            if(x.roll>0){
-              x.roll = 0;
-              $scope.getConversation(x.alter[x.roll]);
-              }
-            }
-        $scope.canRollLeft=function(x){
-            return(x.roll > 0);
+	    else x.roll=x.alter.length - 1;
+            $scope.getConversation(x.alter[x.roll]);
             }
         $scope.rollRight=function(x){
-            if(x.roll<x.alter.length-1){
+            if(x.roll<x.alter.length-1)
               x.roll += 1;
-              $scope.getConversation(x.alter[x.roll]);
-              }
-            }
-        $scope.canRollRight=function(x){
-            return(x.roll < x.alter.length - 1);
+	    else x.roll=0;
+            $scope.getConversation(x.alter[x.roll]);
+             
             }
         $scope.invite=function (){
                 $scope.inviting(function(){

@@ -2,8 +2,8 @@
   font-size:60%; 
   color:#888; 
   display:inline;
+  padding-left:5px
   }
-
 .nav > li > a {
   position: relative;
   display: block;
@@ -12,7 +12,7 @@
 /* Margini e padding inferiore */
 .list-group {
   padding-left: 0;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
  
  
@@ -20,11 +20,12 @@
 .list-group-item {
   position: relative;
   display: block;
-  padding: 2px 2px;
+  padding: 0px 0px;
   margin-bottom: -1px;
-  background-color: #ffffff;
-  border-right: 0px solid #dddddd;
-  border-left: 0px solid #dddddd;
+  padding-left:1px;
+  background-color: #fefafa;
+  border-right: 1px solid #dddddd;
+  border-left: 1px solid #dddddd;
 }
  
 
@@ -87,7 +88,7 @@
         }
 textarea {
   margin:0px 0px;
-  padding:5px;
+  padding:5px ;
   height:16px;
   line-height:16px;
   width:96%;
@@ -95,3 +96,11 @@ textarea {
   margin:0px auto;    
 }
 
+.label-default {
+  margin:3px;
+  background-color:#aaa;
+}
+.btn-off:hover {
+  background-color:#aaa;
+  color:white;
+}
