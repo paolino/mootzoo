@@ -14,7 +14,8 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.message="ciao";        
         $scope.input= {};
         $scope.messageid=0;
-        $scope.notgetting=1;
+        $scope.notgetting=1;	
+	$scope.stopRefresh=false;
         $scope.setUserkey=function(u) {
                 $scope.userkey=u;
                 $scope.getConversation($scope.messageid);
@@ -154,7 +155,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         }
                 return as;
                 }
-            $scope.getConversation = function(id) {
+         $scope.getConversation = function(id) {
                 $scope.getPersonal();
                 $scope.getDetti();
                 $scope.getOpens();
@@ -162,15 +163,24 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 $scope.lastConversation.push(id);
                 $scope.notgetting=false;
                 $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
-                        $scope.conversation=messages.result;
-                        for(var i=0;i< $scope.conversation.length;i++){
-                                $scope.conversation[i].actions=$scope.actions($scope.conversation[i]);
-                                $scope.conversation[i].roll=$scope.conversation[i].alter.indexOf($scope.conversation[i].id);
-                                }
-                        
+			if(!$scope.stopRefresh){
+				$scope.conversation=messages.result;
+				for(var i=0;i< $scope.conversation.length;i++){
+					$scope.conversation[i].actions=$scope.actions($scope.conversation[i]);
+					$scope.conversation[i].roll=$scope.conversation[i].alter.indexOf($scope.conversation[i].id);
+					}
+				$scope.messageid=id;
+				$log.log("refreshed" + id);
+				}
                         $scope.notgetting=true;
-                        $scope.messageid=id;
-                        
+                        $timeout(function (){ 
+				$('.dropper').on('show.bs.dropdown', function () {
+					$scope.stopRefresh=true;
+					});
+				$('.dropper').on('hidden.bs.dropdown', function () {
+					$scope.stopRefresh=false;
+					});
+				});
                         });
                 }
         $scope.rollLeft=function(x){
@@ -280,7 +290,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $interval(function (){
             if($scope.notgetting)
                 $scope.getConversation($scope.messageid)}
-            ,5000);
+            ,10000);
         });
 }
 
