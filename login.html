@@ -19,7 +19,7 @@
   <body background="../background.jpg" style="background-size:cover">
     <div class="navbar">
       <div class="container">
-        <a style="color:white" class="navbar-brand navbar-collapse collapse" href="/">MootZoo, una foresta di discussioni</a>              
+        <a style="color:white" class="navbar-brand navbar-collapse collapse" href="/">MootZoo, prove di pensiero collettivo</a>              
         <div id="navbar" class="navbar-right navbar-form">
           <div class="form-group" ng-hide=false>
                   <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
@@ -126,12 +126,12 @@
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
-                      <div class=col-md-9>
+                      <div class=col-md-8>
                        <div class=mex> -- </div> 
                        {{x.text}} <br>
                        <div class=mexr> {{redate(x.date) |date :'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
-                      <div class=col-md-3>
+                      <div class=col-md-4>
                       <span class="dropdown dropper" ng-show="x.actions.length > 0">
 			<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-cog"/></button>
 			<ul class="dropdown-menu dropdown-menu-right">
@@ -140,13 +140,17 @@
                           </li>
 			</ul>
                       </span>
+                            <button ng-hide="x.alter.length<=1" ng-click="rollHome(x)" class="btn btn-default "  
+                                            data-toggle="tooltip" title="intervento precedente" > 
+                                <span class="glyphicon glyphicon-fast-backward"/>
+                              </button>
                             <button ng-hide="x.alter.length<=1" ng-click="rollLeft(x)" class="btn btn-default "  
                                             data-toggle="tooltip" title="intervento precedente" > 
-                                <span class="glyphicon glyphicon-chevron-left"/>
+                                <span class="glyphicon glyphicon-step-backward"/>
                               </button>
                           <button ng-hide="x.alter.length<=1" ng-click="rollRight(x)" class="btn btn-default "  
                                           data-toggle="tooltip" title="intervento successivo" > 
-                              <span class="glyphicon glyphicon-chevron-right"/>
+                              <span class="glyphicon glyphicon-step-forward"/>
                              </button>
                         </div>
 

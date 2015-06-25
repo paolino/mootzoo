@@ -149,7 +149,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                             glyphicon:"glyphicon glyphicon-share",text:"Apri"});
                 if(x.canRetract){
                         as.push({action:function(){$scope.retractMessage(x)},
-                          glyphicon:"glyphicon glyphicon-trash",text:"Rinuncia"});
+                          glyphicon:"glyphicon glyphicon-trash",text:"Cancella"});
                         as.push({action:function(){$scope.correctMessage(x)},
                           glyphicon:"glyphicon glyphicon-pencil",text:"Correggi"});
                         }
@@ -183,6 +183,10 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 				});
                         });
                 }
+        $scope.rollHome=function(x){
+	    x.roll=0;
+            $scope.getConversation(x.alter[x.roll]);
+            }
         $scope.rollLeft=function(x){
             if(x.roll>0)
               x.roll -= 1;
