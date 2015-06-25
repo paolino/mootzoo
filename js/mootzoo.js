@@ -10,8 +10,7 @@ app.controller('Input', function ($scope, $modalInstance) {
             $modalInstance.dismiss('cancel');
           };
         });
-
-app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$interval) {
+app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$interval,$filter) {
         $scope.message="ciao";        
         $scope.input= {};
         $scope.messageid=0;
@@ -131,27 +130,27 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 var as=Array()
                 if(x.canVote)
                         as.push({action:function (){$scope.voteUp(x.id)},
-                            glyphicon:"glyphicon glyphicon-thumbs-up",tooltip:"Apprezza"});
+                            glyphicon:"glyphicon glyphicon-thumbs-up",text:"Apprezza"});
                 if(x.canVote)
                         as.push({action:function (){$scope.voteDown(x.id)},
-                            glyphicon:"glyphicon glyphicon-thumbs-down",tooltip:"Disprezza"});
+                            glyphicon:"glyphicon glyphicon-thumbs-down",text:"Disprezza"});
                 if(x.canIntervein)
                         as.push({action:function(){$scope.respond(x.id)},
-                        glyphicon:"glyphicon glyphicon-comment",tooltip:"Intervieni"});
+                        glyphicon:"glyphicon glyphicon-comment",text:"Intervieni"});
                 if(x.canRespond)
                         as.push({action:function(){$scope.respond(x.id)},
-                        glyphicon:"glyphicon glyphicon-envelope",tooltip:"Rispondi"});
+                        glyphicon:"glyphicon glyphicon-envelope",text:"Rispondi"});
                 if(x.canClose)
                         as.push({action:function(){$scope.closeConv(x.id)},
-                                glyphicon:"glyphicon glyphicon-check",tooltip:"Chiudi"});
+                                glyphicon:"glyphicon glyphicon-check",text:"Chiudi"});
                 if(x.canOpen)
                         as.push({action:function(){$scope.openMessage(x.id)},
-                            glyphicon:"glyphicon glyphicon-share",tooltip:"Apri"});
+                            glyphicon:"glyphicon glyphicon-share",text:"Apri"});
                 if(x.canRetract){
                         as.push({action:function(){$scope.retractMessage(x)},
-                          glyphicon:"glyphicon glyphicon-trash",tooltip:"Rinuncia"});
+                          glyphicon:"glyphicon glyphicon-trash",text:"Rinuncia"});
                         as.push({action:function(){$scope.correctMessage(x)},
-                          glyphicon:"glyphicon glyphicon-pencil",tooltip:"Correggi"});
+                          glyphicon:"glyphicon glyphicon-pencil",text:"Correggi"});
                         }
                 return as;
                 }
@@ -277,6 +276,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $timeout(function (){
                 $scope.getConversation($scope.messageid)
             });
+	$scope.redate=function(input){return input.replace(":","").replace(":","").replace(" ","T").concat("Z")};
         $interval(function (){
             if($scope.notgetting)
                 $scope.getConversation($scope.messageid)}

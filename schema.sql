@@ -13,7 +13,7 @@ CREATE TABLE messages (
         parent integer references messages(id),
         conversation integer,
         vote integer not null default 0,
-        data string not null default (datetime('now','localtime'))
+        data string not null default (datetime('now'))
         );
 create table conversations (
         id integer primary key autoincrement not null,

@@ -1,9 +1,17 @@
+
 .mex {
   font-size:60%; 
   color:#888; 
   display:inline;
   padding-left:5px
   }
+.mexr  {
+  font-size:60%; 
+  color:#888; 
+  display:inline;
+  padding-right:15px;
+	float:right;
+	}
 .nav > li > a {
   position: relative;
   display: block;

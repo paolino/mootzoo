@@ -10,29 +10,38 @@
     <script src= "../js/jquery.min.js" color="text/javascript"></script>
     <script src= "../js/bootstrap.min.js" color="text/javascript"> </script>
     <script src= "../js/angular.min.js" color="text/javascript"></script>
+    <script src= "../js/angular-sanitize.min.js" color="text/javascript"></script>
     <script src= "../js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
     <script src= "../js/mootzoo.js" color="text/javascript"></script>
     <script src= "../js/ng-infinite-scroll.min.js" color="text/javascript"></script>
     <link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
   </head>
 
-  <body >
-    <div class="navbar navbar-inverse">
+  <body background="../background.jpg" style="background-size:cover">
+    <div class="navbar">
       <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand navbar-collapse collapse" href="/">MootZoo, la foresta delle discussioni</a>              
-        </div>
+        <a style="color:white" class="navbar-brand navbar-collapse collapse" href="/">MootZoo, una foresta di discussioni</a>              
         <div id="navbar" class="navbar-right navbar-form">
           <div class="form-group" ng-hide=false>
-              <button  ng-click="logout()" class="btn btn-danger"
-                data-toggle="tooltip" title="Invia un nuovo link di login alla tua mail (se pensi che questo sia compromesso)">               
-                Rinnovo
-              </button> 
-              <button  ng-click="invite()" class="btn btn-success"
+                  <button class="btn btn-primary" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
+                  <span class="glyphicon glyphicon-plus"/>
+                  </button>
+		<span class="dropdown">
+            <button class="btn btn-success btn-off dropdown-toggle" data-toggle="dropdown"> {{username}} </button>
+		<ul class="dropdown-menu dropdown-menu-right">
+			<li> <a  ng-click="logout()" 
+                		data-toggle="tooltip" title="Invia un nuovo link di login alla tua mail.">               
+               				<span class="glyphicon glyphicon-off"/> Esci
+              			</a> 
+			</li>
+              <li>
+		<a  ng-click="invite()" 
                 data-toggle="tooltip" title="Invia una e-mail di invito ad un'altro indirizzo">               
-                Invita
-              </button> 
-            <div class="label label-default"> {{username}} </div>
+                  <span class="glyphicon glyphicon-send"/> Invita
+              </a> 
+		</li>
+		</ul>
+		</span>
           </div>
         </div>
       </div>
@@ -43,32 +52,32 @@
         <div class=col-md-4>
           <div class="panel panel-primary">
             <div  class="panel-body" ng-init="notifiche='personali'">
-              <div  style="overflow-y:auto; overflow-x:hidden; height:350px;">
+              <div  style="overflow-y:auto; overflow-x:hidden; height:400px;">
                 <ul class="nav nav-pills">
-                    <li data-toggle="tooltip" title="tutte le conversazioni" 
-                        ng-class="notifiche == 'radici'?'active':''"> <a ng-click="notifiche='radici'"> 
+                    <button data-toggle="tooltip" title="tutte le conversazioni" class="btn btn-primary" 
+                        ng-class="notifiche == 'radici'?'active':''" ng-click="notifiche='radici'"> 
                     <span class="glyphicon glyphicon-home"/>
-                    </a> </li> 
-                    <li data-toggle="tooltip" title="conversazioni proposte" 
-                        ng-class="notifiche == 'aperture'?'active':''"> <a ng-click="notifiche='aperture'"> 
+                    </button> 
+                    <button data-toggle="tooltip" title="conversazioni proposte" class="btn btn-primary" 
+                        ng-class="notifiche == 'aperture'?'active':''" ng-click="notifiche='aperture'"> 
                     <span class="glyphicon glyphicon-eye-open"/>
-                    </a> </li> 
-                    <li data-toggle="tooltip" title="messaggi dove solo tu puoi rispondere" 
-                        ng-class="notifiche == 'personali'?'active':''"> <a ng-click="notifiche='personali'"> 
+                    </button> 
+                    <button data-toggle="tooltip" title="messaggi dove solo tu puoi rispondere" class="btn btn-primary" 
+                        ng-class="notifiche == 'personali'?'active':''" ng-click="notifiche='personali'"> 
                     <span class="glyphicon glyphicon-download"/>
-                    </a> </li> 
-                    <li data-toggle="tooltip" title="messaggi spediti e non risposti" 
-                        ng-class="notifiche == 'detti'?'active':''"> <a ng-click="notifiche='detti'"> 
+                    </button> 
+                    <button data-toggle="tooltip" title="messaggi spediti e non risposti" class="btn btn-primary" 
+                        ng-class="notifiche == 'detti'?'active':''" a ng-click="notifiche='detti'"> 
                     <span class="glyphicon glyphicon-upload"/>
-                    </a> </li> 
+                    </button> 
                 </ul>
                 <ul ng-show="notifiche == 'radici'" class=list-group >
                   <li class="list-group-item" ng-repeat="x in roots">
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <p><div class=mex> -- </div> 
-                       {{x.text}}</p>
-                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       <div class=mex> -- </div> 
+                       {{x.text}}<br>
+                       <div class=mexr> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
@@ -78,8 +87,8 @@
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
                        <div class=mex> -- </div> 
-                       {{x.text}} 
-                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       {{x.text}} <br>
+                       <div class=mexr> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
@@ -89,8 +98,8 @@
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
                        <div class=mex> -- </div> 
-                       {{x.text}} 
-                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       {{x.text}}<br> 
+                       <div class=mexr> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
@@ -100,8 +109,8 @@
                     <div  class=row> 
                       <div ng-click="getConversation(x.id)" class="message col-md-12">
                        <div class=mex> -- </div> 
-                       {{x.text}} 
-                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       {{x.text}} <br>
+                       <div class=mexr> {{redate(x.date) | date :'udd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                     </div><!--action -->
                   </li> 
@@ -113,43 +122,35 @@
         </div>
         <div class=col-md-8>
           <div class="panel panel-primary">
-            <div class="panel-heading">
-              <div  class=row> 
-                <div class=col-md-10>
-                  <button class="btn btn-success btn-xs" ng-click="moot()" data-toggle="tooltip" title="proponi conversazione">
-                  <span class="glyphicon glyphicon-plus"/>
-                  </button>
-                </div>
-              </div>
-            </div>
             <div  class="panel-body"> 
-              <div  style="overflow-y:auto;overflow-x:hidden; height:370px;">
+              <div  style="overflow-y:auto;overflow-x:hidden; height:400px;">
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
-                      <div class=col-md-2 >
-                            <button ng-click="rollLeft(x)" class="btn btn-default btn-xs"  
-                                            data-toggle="tooltip" title="intervento precedente" > 
-                                <span class="glyphicon glyphicon-step-backward"/>
-                              </button>
-                          <button data-toggle="tooltip" title="intervento selezionato / numero interventi" class="btn btn-default btn-xs btn-off">{{x.roll + 1}}/{{x.alter.length}}
-                          </button>
-                          <button  ng-click="rollRight(x)" class="btn btn-default btn-xs"  
-                                          data-toggle="tooltip" title="intervento successivo" > 
-                              <span class="glyphicon glyphicon-step-forward"/>
-                             </button>
-                        </div>
-                      <div class=col-md-7>
+                      <div class=col-md-9>
                        <div class=mex> -- </div> 
-                       {{x.text}} 
-                       <div class=mex> {{x.date | date:'dd/MM/yyyy @ h:mma'}} </div> 
+                       {{x.text}} <br>
+                       <div class=mexr> {{redate(x.date) |date :'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
                       <div class=col-md-3>
-                          <button ng-repeat = "a in x.actions" ng-click="a.action()" class="btn btn-default btn-xs"  
-                                          data-toggle="tooltip" title="{{a.tooltip}}" >
-                        <span ng-class="a.glyphicon"/>
-                          </button>
-                      </div>
+                      <span class="dropdown" ng-show="x.actions.length > 0">
+			<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-cog"/></button>
+			<ul class="dropdown-menu dropdown-menu-right">
+                          <li ng-repeat = "a in x.actions" > <a ng-click="a.action()">
+                            <span ng-class="a.glyphicon"/> {{a.text}} </a>
+                          </li>
+			</ul>
+                      </span>
+                            <button ng-hide="x.alter.length<=1" ng-click="rollLeft(x)" class="btn btn-default "  
+                                            data-toggle="tooltip" title="intervento precedente" > 
+                                <span class="glyphicon glyphicon-chevron-left"/>
+                              </button>
+                          <button ng-hide="x.alter.length<=1" ng-click="rollRight(x)" class="btn btn-default "  
+                                          data-toggle="tooltip" title="intervento successivo" > 
+                              <span class="glyphicon glyphicon-chevron-right"/>
+                             </button>
+                        </div>
+
                     </div><!--action -->
                   </li> 
                 </ul>
