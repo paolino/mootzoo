@@ -29,11 +29,12 @@
   position: relative;
   display: block;
   padding: 0px 0px;
-  margin-bottom: -1px;
+  margin-bottom:0px;
   padding-left:1px;
   background-color: #fefafa;
   border-right: 1px solid #dddddd;
-  border-left: 1px solid #dddddd;
+
+  border:0;  border-bottom: 1px solid #dddddd;
 }
  
 
