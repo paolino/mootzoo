@@ -198,7 +198,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 				});
                         });
                 }
-	input.getConversation=function(id) {
+	$scope.input.getConversation=function(id) {
 		$scope.getConversation(id);
 		};
         $scope.rollHome=function(x){
