@@ -48,6 +48,21 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.gotox=function(){
                 $scope.getConversation($scope.gotoConversation);
                 }
+        $scope.selectRoots = function (next) {
+		$scope.input.roots=$scope.roots;
+                var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: '../roots.html',
+                        controller: 'Input',
+                        size: 'md',
+                        scope:$scope
+                        });
+                modalInstance.result.then(
+                        function () {next ($scope.input.message);}, 
+                        function () {}
+                        );
+                };
+
         $scope.open = function (next) {
                 var modalInstance = $modal.open({
                         animation: true,
@@ -183,6 +198,9 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
 				});
                         });
                 }
+	input.getConversation=function(id) {
+		$scope.getConversation(id);
+		};
         $scope.rollHome=function(x){
 	    x.roll=0;
             $scope.getConversation(x.alter[x.roll]);
