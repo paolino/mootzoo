@@ -20,19 +20,9 @@
     <div class="navbar navbar-fixed-top">
       <div class="container-fluid">
 	<div id="navbar" class="navbar-right navbar-form">
-		 <span class="dropdown dropper">
-			<button ng-show="roots.length>0"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+			<button ng-show="roots.length>0"  class="btn btn-primary" ng-click="selectRoots()"> 
 				<span class="glyphicon glyphicon-home"/>
 			</button>
-			<ul class="dropdown-menu dropdown-menux"  >
-			  <li  ng-repeat="x in roots" ng-click="getConversation(x.id)">
-				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-			       {{x.text}}
- 
-			  </li> 
-			</ul>
-
-                      </span>
 		 <span class="dropdown dropper">
 			<button ng-show="opens.length>0"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
 				<span class="glyphicon glyphicon-eye-open"/>
