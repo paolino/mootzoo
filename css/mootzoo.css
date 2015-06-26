@@ -1,7 +1,11 @@
-.dropdown-menu {
-	min-width:350px;
+.containerb {padding-top:50px;}
+.dropdown-menux {
+	min-width:400px;
+	opacity:0.9;
 	}
-
+.dropdown-menu>li:hover{
+	background-color:#bbb;
+	}
 .mex {
   font-size:60%; 
   color:#888; 

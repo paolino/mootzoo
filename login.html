@@ -17,41 +17,63 @@
   </head>
 
   <body background="../background.jpg" style="background-size:cover">
-    <div class="navbar">
-      <div class="container">
-        <a style="color:white" class="navbar-brand navbar-collapse collapse" href="/">MootZoo, prove di pensiero collettivo</a>              
-                   
-            
-
+    <div class="navbar navbar-fixed-top">
+      <div class="container-fluid">
 	<div id="navbar" class="navbar-right navbar-form">
 		 <span class="dropdown dropper">
-			<button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+			<button ng-show="roots.length>0"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
 				<span class="glyphicon glyphicon-home"/>
 			</button>
-			<ul class="dropdown-menu"  >
-			  <li  ng-repeat="x in roots"> <a ng-click="getConversation(x.id)">
-			       <div class=mex> -- </div> 
-			       {{x.text}} 
-			      </a>
+			<ul class="dropdown-menu dropdown-menux"  >
+			  <li  ng-repeat="x in roots" ng-click="getConversation(x.id)">
+				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
+			       {{x.text}}
+ 
+			  </li> 
+			</ul>
+
+                      </span>
+		 <span class="dropdown dropper">
+			<button ng-show="opens.length>0"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+				<span class="glyphicon glyphicon-eye-open"/>
+			</button>
+			<ul class="dropdown-menu dropdown-menux"  >
+			  <li  ng-repeat="x in opens" ng-click="getConversation(x.id)">
+				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
+			       {{x.text}}
+ 
+			  </li> 
+			</ul>
+
+                      </span>
+		 <span class="dropdown dropper">
+			<button ng-show="personal.length>0" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+				<span class="glyphicon glyphicon-download"/>
+			</button>
+			<ul class="dropdown-menu dropdown-menux"  >
+			  <li  ng-repeat="x in personal" ng-click="getConversation(x.id)">
+				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
+			       {{x.text}}
+ 
+			  </li> 
+			</ul>
+
+                      </span>
+		 <span class="dropdown dropper">
+			<button ng-show="detti.length>0" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+				<span class="glyphicon glyphicon-upload"/>
+			</button>
+			<ul class="dropdown-menu dropdown-menux"  >
+			  <li  ng-repeat="x in detti" ng-click="getConversation(x.id)">
+				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
+			       {{x.text}}
+ 
 			  </li> 
 			</ul>
 
                       </span>
 
-                    <button data-toggle="tooltip" title="conversazioni proposte" class="btn btn-primary" 
-                        ng-class="notifiche == 'aperture'?'active':''" ng-click="notifiche='aperture'"> 
-                    <span class="glyphicon glyphicon-eye-open"/>
-                    </button> 
-                    <button data-toggle="tooltip" title="messaggi dove solo tu puoi rispondere" class="btn btn-primary" 
-                        ng-class="notifiche == 'personali'?'active':''" ng-click="notifiche='personali'"> 
-                    <span class="glyphicon glyphicon-download"/>
-                    </button> 
-                    <button data-toggle="tooltip" title="messaggi spediti e non risposti" class="btn btn-primary" 
-                        ng-class="notifiche == 'detti'?'active':''" a ng-click="notifiche='detti'"> 
-                    <span class="glyphicon glyphicon-upload"/>
-                    </button> 
-
-                  <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
+                   <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
                   <span class="glyphicon glyphicon-bullhorn"/>
                   </button>
 		<span class="dropdown">
@@ -74,65 +96,19 @@
       </div>
     </div>
 
-    <div class=container> 
-      <div class=row>
-        <div class=col-md-4>
-          <div class="panel panel-primary">
-            <div  class="panel-body" ng-init="notifiche='personali'">
-              <div  >
-		<div class=collapse id=radici>
-                <ul  class="list-group" id=collapseExample>
-                  <li class="list-group-item" ng-repeat="x in roots">
-                    <div  class=row> 
-                      <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div class=mex> -- </div> 
-                       {{x.text}}<br>
-                       <div class=mexr> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-                      </div>
-                    </div><!--action -->
-                  </li> 
-                </ul>
-		</div>
-                <ul ng-show="notifiche == 'personali'" class=list-group >
-                  <li class="list-group-item" ng-repeat="x in personali">
-                    <div  class=row> 
-                      <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div class=mex> -- </div> 
-                       {{x.text}}<br> 
-                       <div class=mexr> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-                      </div>
-                    </div><!--action -->
-                  </li> 
-                </ul>
-                <ul ng-show="notifiche == 'detti'" class=list-group >
-                  <li class="list-group-item" ng-repeat="x in detti">
-                    <div  class=row> 
-                      <div ng-click="getConversation(x.id)" class="message col-md-12">
-                       <div class=mex> -- </div> 
-                       {{x.text}} <br>
-                       <div class=mexr> {{redate(x.date) | date :'dd/MM/yyyy @ h:mma'}} </div> 
-                      </div>
-                    </div><!--action -->
-                  </li> 
-                </ul>
-
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class=col-md-8>
+    <div class="container-fluid containerb"> 
           <div class="panel panel-primary">
             <div  class="panel-body"> 
               <div >
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
-                      <div class=col-md-8>
+                      <div class="col-xs-7 col-sm-8 col-md-9 col-lg-10">
                        <div class=mex> -- </div> 
                        {{x.text}} <br>
                        <div class=mexr> {{redate(x.date) |date :'dd/MM/yyyy @ h:mma'}} </div> 
                       </div>
-                      <div class=col-md-4>
+                      <div class="col-xs-5 col-sm-4 col-md-3 col-lg-2">
                             <button ng-hide="x.alter.length<=1" ng-click="rollHome(x)" class="btn btn-default "  
                                             data-toggle="tooltip" title="intervento precedente" > 
                                 <span class="glyphicon glyphicon-fast-backward"/>
@@ -159,8 +135,6 @@
                   </li> 
                 </ul>
               </div>
-            </div>
-          </div>
       </div>
     </div><!-- container -->
 <button ng-hide=true type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
