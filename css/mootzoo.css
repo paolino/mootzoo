@@ -6,6 +6,12 @@
 .dropdown-menu>li:hover{
 	background-color:#bbb;
 	}
+.dropdown-menu>li{
+	padding-top: 3px;
+  border-bottom: 1px;
+  border-bottom-style: dotted;
+  border-bottom-color:#aaa;
+	}
 .mex {
   font-size:60%; 
   color:#888; 
@@ -38,10 +44,9 @@
   padding: 0px 0px;
   margin-bottom:0px;
   padding-left:1px;
-  background-color: #fefafa;
-  border-right: 1px solid #dddddd;
-
-  border:0;  border-bottom: 1px solid #dddddd;
+  background-color: #eee;
+  border:0;
+  border-bottom: 1px dashed #dddddd;
 }
  
 
