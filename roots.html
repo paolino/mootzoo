@@ -1,18 +1,14 @@
 
 
 <div class="modal-body"> 
-			<ul >
-			  <li  ng-repeat="x in input.roots" ng-click="input.getConversation(x.id)">
+			<ul>
+			  <li  ng-repeat="x in input.roots" ng-click="input.getConversation(x.id);gotMessage()">
 				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
 			       {{x.text}}
  
 			  </li> 
 			</ul>
 </div><!-- row -->
-<div class="modal-footer"> 
-        <button class="btn btn-primary" ng-click="gotMessage()">Invita</button>
-        <button class="btn btn-warning" ng-click="cancel()">Cancella</button>
-</div>
 
 
 
