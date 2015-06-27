@@ -1,17 +1,13 @@
 
 
-<div class="modal-body"> 
-                <textarea  style="overflow:hidden" class="form-control" ng-model="input.message" placeholder="Scrivi.."></textarea>
+<div class="modal-body">
+		<div role=form > 
+                <textarea style="overflow:hidden" class="form-control" ng-model="input.message" placeholder="Messaggio..."></textarea>
+</div><!-- row -->
 </div><!-- row -->
 <div class="modal-footer"> 
-                <button  style="color:black" ng-show="canCopi()" ng-click="copi()" class="btn btn-xs"  
-                        data-toggle="tooltip" title="Copia dall'area di testo" >Copia</button>
-                <button  style="color:black" ng-show="canPaste()" ng-click="paste()" class="btn btn-xs"  
-                        data-toggle="tooltip" title="Incolla nell'area di testo" >Incolla</button>
-                <button  style="color:black" ng-show="canClean()" ng-click="clean()" class="btn btn-xs"  
-                        data-toggle="tooltip" title="Pulisci l'area di testo" >Pulisci</button>
-        <button class="btn btn-primary" ng-click="gotMessage()">Spedisci</button>
-        <button class="btn btn-warning" ng-click="cancel()">Cancella</button>
+        <button class="btn btn-primary" ng-click="gotMessage()">Invia</button>
+        <button class="btn btn-warning" ng-click="cancel()">Evita</button>
 </div>
 
 

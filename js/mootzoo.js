@@ -36,7 +36,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 }
         $timeout($scope.getDetti);
         $scope.getPersonal=function(){$http.get("../api/Personal/" + $scope.userkey).success(function(xs){
-                        $scope.personali=xs.result;
+                        $scope.personal=xs.result;
                         });
                 }
         $timeout($scope.getPersonal);
@@ -48,17 +48,18 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         $scope.gotox=function(){
                 $scope.getConversation($scope.gotoConversation);
                 }
-        $scope.selectRoots = function (next) {
-		$scope.input.roots=$scope.roots;
+        $scope.select = function (msgs,what) {
+		$scope.input.msgs=msgs;
+		$scope.input.what=what;
                 var modalInstance = $modal.open({
                         animation: true,
-                        templateUrl: '../roots.html',
+                        templateUrl: '../msgs.html',
                         controller: 'Input',
                         size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
-                        function () {next ($scope.input.message);}, 
+                        function () {}, 
                         function () {}
                         );
                 };
@@ -68,7 +69,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../input.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
@@ -81,7 +82,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../invite.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
@@ -94,7 +95,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../logout.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
@@ -107,7 +108,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../close.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
@@ -120,7 +121,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../open.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(
@@ -134,7 +135,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                         animation: true,
                         templateUrl: '../delete.html',
                         controller: 'Input',
-                        size: 'sm',
+                        size: 'md',
                         scope:$scope
                         });
                 modalInstance.result.then(

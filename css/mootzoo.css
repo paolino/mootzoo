@@ -1,27 +1,25 @@
-.containerb {padding-top:50px;}
-.dropdown-menux {
-	min-width:400px;
+.containerb {padding-top:70px;}
+.dropdown-menu {
+	min-width:100px;
 	opacity:0.9;
 	}
 .dropdown-menu>li:hover{
 	background-color:#bbb;
 	}
-.dropdown-menu>li{
-	padding-top: 3px;
-  border-bottom: 1px;
-  border-bottom-style: dotted;
-  border-bottom-color:#aaa;
-	}
+.dropdown-toggle:hover{
+	text-decoration:none;
+	background-color:#ddd;
+	cursor:pointer;
+}
 .mex {
-  font-size:60%; 
-  color:#888; 
+  font-size:80%; 
+  color:#999; 
   display:inline;
   padding-left:5px
   }
 .mexr  {
   font-size:60%; 
   color:#888; 
-  display:inline;
   padding-right:15px;
 	float:right;
 	}
@@ -57,6 +55,10 @@
 .message{
         cursor:pointer;
 }
+.message:hover{
+        cursor:pointer;
+	background-color:#ccc;
+}
 .vote{
     vertical-align: bottom;
     width:30px;
@@ -85,6 +87,7 @@
         background-color:black;
         color:white;
         }
+.btn {padding:12px;}
 .btn {
     color:white;
     white-space: normal;
@@ -103,6 +106,7 @@
 .btn-default{
         background-color:#aaa;
         color:white;
+	padding:5px;
         }
 .btn-grey > .btn-default {
         background-color:#fff;     
@@ -125,3 +129,8 @@ textarea {
   background-color:#aaa;
   color:white;
 }
+.panel-body {padding:3px;}
+.modal-body {padding:3px;}
+.btn-success {margin-left:20px};
+
+

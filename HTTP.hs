@@ -48,8 +48,8 @@ checkUserId g sl s loc = do
                 let (WGet g') = g
                 (c,_) <- runWriterT $ g' (Check sl)
                 return $ case c of Left x -> insertHeaders [Header HdrLocation loc] $  sendHTML Found $ "<h1>Unidentified</h1>"
-                                   Right e -> sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
-                                                        $ replace "username=" ("username='"++e++"'") $  s
+                                   Right e -> let (name,_)= break (=='@') e in sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
+                                                        $ replace "username=" ("username='"++name++"'") $  s
 sendResponseP mail pwd p v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do

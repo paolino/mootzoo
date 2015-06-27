@@ -16,53 +16,23 @@
     <link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
   </head>
 
-  <body background="../background.jpg" style="background-size:cover">
+  <body style="background-color:#abc">
     <div class="navbar navbar-fixed-top">
       <div class="container-fluid">
 	<div id="navbar" class="navbar-right navbar-form">
-			<button ng-show="roots.length>0"  class="btn btn-primary" ng-click="selectRoots()"> 
+			<button ng-show="roots.length>0"  class="btn btn-primary" ng-click="select(roots,'Radici delle discussioni')"> 
 				<span class="glyphicon glyphicon-home"/>
 			</button>
-		 <span class="dropdown dropper">
-			<button ng-show="opens.length>0"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+			<button ng-show="opens.length>0"  class="btn btn-primary" ng-click="select(opens,'Proposte di conversazioni')"> 
 				<span class="glyphicon glyphicon-eye-open"/>
 			</button>
-			<ul class="dropdown-menu dropdown-menux"  >
-			  <li  ng-repeat="x in opens" ng-click="getConversation(x.id)">
-				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-			       {{x.text}}
- 
-			  </li> 
-			</ul>
-
-                      </span>
-		 <span class="dropdown dropper">
-			<button ng-show="personal.length>0" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+			<button ng-show="personal.length>0" class="btn btn-primary" ng-click="select(personal,'Messaggi per te')"> 
 				<span class="glyphicon glyphicon-download"/>
 			</button>
-			<ul class="dropdown-menu dropdown-menux"  >
-			  <li  ng-repeat="x in personal" ng-click="getConversation(x.id)">
-				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-			       {{x.text}}
- 
-			  </li> 
-			</ul>
 
-                      </span>
-		 <span class="dropdown dropper">
-			<button ng-show="detti.length>0" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+			<button ng-show="detti.length>0" class="btn btn-primary" ng-click="select(detti,'Messaggi da te')"> 
 				<span class="glyphicon glyphicon-upload"/>
 			</button>
-			<ul class="dropdown-menu dropdown-menux"  >
-			  <li  ng-repeat="x in detti" ng-click="getConversation(x.id)">
-				 <div class=mex> {{redate(x.date) | date:'dd/MM/yyyy @ h:mma'}} </div> 
-			       {{x.text}}
- 
-			  </li> 
-			</ul>
-
-                      </span>
-
                    <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
                   <span class="glyphicon glyphicon-bullhorn"/>
                   </button>
@@ -85,18 +55,30 @@
         </div>
       </div>
     </div>
-
     <div class="container-fluid containerb"> 
+              <div class=row >
+              <div class="col-xs-12 col-sm-9 col-md-8 col-lg-7" >
           <div class="panel panel-primary">
             <div  class="panel-body"> 
-              <div >
                 <ul class=list-group >
                   <li class="list-group-item" ng-repeat="x in conversation">
                     <div  class=row> 
                       <div class="col-xs-7 col-sm-8 col-md-9 col-lg-10">
-                       <div class=mex> -- </div> 
-                       {{x.text}} <br>
-                       <div class=mexr> {{redate(x.date) |date :'dd/MM/yyyy @ h:mma'}} </div> 
+                       <span class="dropdown dropper">
+			<div class="messaggio dropdown-toggle" ng-show="x.actions.length > 0" data-toggle="dropdown" >
+                          <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp</span> 
+                          <span style="color:#222"> {{x.text}} </span>
+                        </div>
+			<div class=messaggio ng-show="x.actions.length <= 0">
+                          <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp </span> 
+                          <span style="color:#222"> {{x.text}} </span>
+                        </div>
+			<ul class="dropdown-menu dropdown-menu">
+                          <li ng-repeat = "a in x.actions" > <a ng-click="a.action()">
+                            <span ng-class="a.glyphicon"/> {{a.text}} </a>
+                          </li>
+			</ul>
+                       </span>
                       </div>
                       <div class="col-xs-5 col-sm-4 col-md-3 col-lg-2">
                             <button ng-hide="x.alter.length<=1" ng-click="rollHome(x)" class="btn btn-default "  
@@ -111,43 +93,12 @@
                                           data-toggle="tooltip" title="intervento successivo" > 
                               <span class="glyphicon glyphicon-step-forward"/>
                              </button>
-                      <span class="dropdown dropper" ng-show="x.actions.length > 0">
-			<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-cog"/></button>
-			<ul class="dropdown-menu dropdown-menu-right">
-                          <li ng-repeat = "a in x.actions" > <a ng-click="a.action()">
-                            <span ng-class="a.glyphicon"/> {{a.text}} </a>
-                          </li>
-			</ul>
-                      </span>
                         </div>
 
                     </div><!--action -->
                   </li> 
                 </ul>
               </div>
+            </div>
       </div>
     </div><!-- container -->
-<button ng-hide=true type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Rinnovo link di login</h4>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancella</button>
-        <button type="button" class="btn btn-primary">Rinnova</button>
-      </div>
-    </div>
-  </div>
-</div>
-  </body>
-</html>
