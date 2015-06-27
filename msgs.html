@@ -1,0 +1,21 @@
+<div class="modal-heading">
+	<div class="label label-primary label-md">
+	{{input.what}}
+	</div>
+</div><!-- row -->
+
+
+<div class="modal-body"> 
+			<ul class=list-group>
+			  <li class="list-group-item message" ng-repeat="x in input.msgs" ng-click="input.getConversation(x.id);gotMessage()">
+				 <span style="float:right" class=mex> {{redate(x.date) | date:'dd-MMM-yy HH:mm'}}  </span> 
+				<span style="color:#bbb" class="glyphicon glyphicon-minus"/>
+			       <span>{{x.text}}</span>
+ 
+			  </li> 
+			</ul>
+</div><!-- row -->
+
+
+
+
