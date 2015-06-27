@@ -16,24 +16,24 @@
     <link rel="stylesheet" href="../css/mootzoo.css" color="text/css">
   </head>
 
-  <body style="background-color:#abc">
+  <body style="background-color:#436">
     <div class="navbar navbar-fixed-top">
       <div class="container-fluid">
 	<div id="navbar" class="navbar-right navbar-form">
-			<button ng-show="roots.length>0"  class="btn btn-primary" ng-click="select(roots,'Radici delle discussioni')"> 
+			<button ng-show="roots.length>0"  class="btn btn-primary" data-toggle="tooltip" title="Radici delle discussioni"  ng-click="select(roots,'Radici delle discussioni')"> 
 				<span class="glyphicon glyphicon-home"/>
 			</button>
-			<button ng-show="opens.length>0"  class="btn btn-primary" ng-click="select(opens,'Proposte di conversazioni')"> 
+			<button ng-show="opens.length>0"  class="btn btn-success" data-toggle="tooltip" title="Proposte di conversazione" ng-click="select(opens,'Proposte di conversazione')"> 
 				<span class="glyphicon glyphicon-eye-open"/>
 			</button>
-			<button ng-show="personal.length>0" class="btn btn-primary" ng-click="select(personal,'Messaggi per te')"> 
+			<button ng-show="personal.length>0" class="btn btn-danger" data-toggle="tooltip" title="Messaggi in arrivo" ng-click="select(personal,'Messaggi per te')"> 
 				<span class="glyphicon glyphicon-download"/>
 			</button>
 
-			<button ng-show="detti.length>0" class="btn btn-primary" ng-click="select(detti,'Messaggi da te')"> 
+			<button ng-show="detti.length>0" class="btn btn-info" data-toggle="tooltip" title="Messaggi inviati" ng-click="select(detti,'Messaggi da te')"> 
 				<span class="glyphicon glyphicon-upload"/>
 			</button>
-                   <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Proponi una nuova discusssione">
+                   <button class="btn btn-warning" ng-click="moot()" data-toggle="tooltip" title="Nuova discusssione">
                   <span class="glyphicon glyphicon-bullhorn"/>
                   </button>
 		<span class="dropdown">
