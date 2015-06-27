@@ -1,36 +1,93 @@
 
 <!DOCTYPE html>
-<html lang="en" ng-app="app" ng-controller="conversations" ng-init="userkey=;username=;">
-  <head>
-    <title>Mootzoo forest</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css" color="text/css">
-    <script src= "js/jquery.min.js" color="text/javascript"></script>
-    <script src= "js/bootstrap.min.js" color="text/javascript"> </script>
-    <script src= "js/angular.min.js" color="text/javascript"></script>
-    <script src= "js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
-    <script src= "js/mootzoo.js" color="text/javascript"></script>
-    <script src= "js/ng-infinite-scroll.min.js" color="text/javascript"></script>
-    <link rel="stylesheet" href="css/mootzoo.css" color="text/css">
-  </head>
-
-  <body >
-    <div class="navbar navbar-inverse">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand navbar-collapse collapse" href="/">Mootzoo, una foresta di discussioni</a>              
-        </div>
-        <div id="navbar" class="navbar-right navbar-form">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MootZoo, una foresta di discussioni</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<style type="text/css">
+/* Custom Styles */
+ul.nav-tabs {
+	width: 140px;
+	margin-top: 20px;
+	border-radius: 4px;
+	border: 1px solid #ddd;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+}
+ul.nav-tabs li {
+	margin: 0;
+	border-top: 1px solid #ddd;
+}
+ul.nav-tabs li:first-child {
+	border-top: none;
+}
+ul.nav-tabs li a {
+	margin: 0;
+	padding: 8px 16px;
+	border-radius: 0;
+}
+ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover {
+	color: #fff;
+	background: #0088cc;
+	border: 1px solid #0088cc;
+}
+ul.nav-tabs li:first-child a {
+	border-radius: 4px 4px 0 0;
+}
+ul.nav-tabs li:last-child a {
+	border-radius: 0 0 4px 4px;
+}
+ul.nav-tabs.affix {
+	top: 30px; /* Set the top position of pinned element */
+}
+</style>
+</head>
+<body data-spy="scroll" data-target="#myScrollspy">
+<div class="container">
+    <div class="jumbotron">
+          <h1 style="display:inline">Dentro MootZoo</h1> 
+          <form style="display:inline; float:right" class="form-inline" role="form">
 						<div class="form-group">
-							<div >
 								<input color="text" ng-model="input.mailremainder" placeholder="Il tuo indirizzo e-mail" class="form-control">
-								<button  ng-click="reminds()" color="submit" class="btn btn-danger" data-toggle="tootip" title="Rimanda il link di login al tuo indirizzo e-mail">Rimanda</button>
-							</div>
+								<button  ng-click="reminds()" color="submit" class="btn btn-danger" data-toggle="tootip" title="Manda un link di login al tuo indirizzo e-mail">Entra o rientra</button>
 						</div>
+          </form>
+          
+    </div>
+    <div class="row">
+        <div class="col-xs-3" id="myScrollspy">
+            <ul class="nav nav-tabs nav-stacked affix-top" data-spy="affix" data-offset-top="125">
+                <li class="active"><a href="#section-1">Cos'è</a></li>
+                <li><a href="#section-2">Come si entra</a></li>
+                <li><a href="#section-21">Come si entra</a></li>
+                <li><a href="#section-3">Regole di ingaggio</a></li>
+                <li><a href="#section-4">Valore del feedback</a></li>
+                <li><a href="#section-5">Valore delle conversazioni</a></li>
+            </ul>
+        </div>
+        <div class="col-xs-9">
+            <h2 id="section-1">Cos'è</h2>
+            <p>MootZoo è un sistema di comunicazione anonima e pubblica basato su alcune semplici regole di ingaggio.</p>
+            <p>Gli elementi fondamentali sono le conversazioni che vengono sviluppate soltanto tra due persone, sono pubbliche e possono formare il contesto di altre conversazioni</p>
+            <p>Le conversazioni sono quindi organizzate in discussioni in una struttura ad albero dove ogni conversazione, esclusa la prima, ha il suo contesto in una precedente.</p>
+            <p>MootZoo presenta alcune caratteristiche strutturali delle mailing list e dinamiche di IRC</p>
+            <hr>
+            <h2 id="section-2">Come si entra</h2>
+            <p>In MootZoo si entra per invito o attraverso l'ingresso libero in fondo a questa pagina</p>
+            <p>Quando si entra per invito ci si trova nella stessa posizione di chi ci ha invitato, si ricevono le stesse notifiche e si hanno gli stessi potenziali interlocutori, che chiameremo vicini</p>
+            <p>Quando si entra senza invito, ci vengono assegnati dei vicini a caso.</p>
+            <hr>
+            <h2 id="section-2">Come ci si muove</h2>
+            <p>Ogni volta che intratteniamo una conversazione allarghiamo il nostro raggio di interazione incorporando i vicini del nostro interlocutore. Da quel momento le nostre conversazioni verranno pubblicizzate a loro e le loro a noi </p>
+            <p>Se forniamo un feedback negativo ad un messaggio il suo autore verrà escluso dai nostri vicini e quindi non lo aiuteremo ad espandere i suoi vicini</p>
+            <p>Quindi attraverso le conversazioni che teniamo lentamente espandiamo la nostra esperienza nella foresta mentre attraverso i feedback specifichiamo la nostra zona di interesse</p>
+            
+            <hr>
           </div>
         </div>
       </div>
-    </div>
+    </body>
 
