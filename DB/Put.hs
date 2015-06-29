@@ -18,6 +18,7 @@ import Control.Exception
 import Control.Monad.Error
 import Lib
 import DB0
+import DB.Client
 
 
 
@@ -35,36 +36,9 @@ newMessage e ui DontAttach x = do
         tell [EvNewMessage mi]
         ci <- newConversation e mi 
         eexecute e "update messages set conversation = ? where id=?" (ci,mi)
-{-
-newMessage e ui (Pass mi) _ = do
-        r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
-        let insert  ci = do 
-                eexecute e "update messages set type=? where id=?" (Passage,mi) 
-                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,?)" (x,ui,Closed,mi,ci)
-                mi'' <- lastRow e
-                tell [EvNewMessage mi'']
-                eexecute e "update conversations set head=? , count = count + 1 where id=?" (mi'',ci)
-
-        case r :: [(MessageType,Maybe UserId,UserId,ConvId)] of
-                [(_,_,eq ui -> True,_)] -> throwError Proponent
-                [(Closed,Just mi',_,ci)] -> do
-                        r' <- equery e "select user from messages where id=?" (Only mi')
-                        case r' of
-                                [Only (eq ui -> True)] -> insert ci 
-                                [_] -> throwError NotOpponent
-                [(Open,_,_,ci)] ->  insert ci 
-                [(Passage,_,_,_)] -> do
-                                eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,null)" (x,ui,Closed,mi)
-                                mi' <- lastRow e
-                                tell [EvNewMessage mi']
-                                ci <- newConversation e mi'
-                                eexecute e "update messages set conversation = ? where id=?" (ci,mi')
-                                -- check conversation
-                [_] -> throwError NotAttachable
-                [] -> throwError UnknownIdMessage
--}
+        checkingMessage e mi $ follow' e ui 
+        
 newMessage e ui (Attach mi) x = do
-        r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
         let insert  ci = do 
                 eexecute e "update messages set type=? where id=?" (Passage,mi) 
                 eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,?)" (x,ui,Closed,mi,ci)
@@ -72,6 +46,7 @@ newMessage e ui (Attach mi) x = do
                 tell [EvNewMessage mi'']
                 eexecute e "update conversations set head=? , count = count + 1 where id=?" (mi'',ci)
 
+        r <- equery e "select type,parent,user,conversation from messages where id=?" (Only mi)
         case r :: [(MessageType,Maybe UserId,UserId,ConvId)] of
                 [(_,_,eq ui -> True,_)] -> throwError Proponent
                 [(Closed,Just mi',_,ci)] -> do
@@ -79,13 +54,17 @@ newMessage e ui (Attach mi) x = do
                         case r' of
                                 [Only (eq ui -> True)] -> insert ci 
                                 [_] -> throwError NotOpponent
-                [(Open,_,_,ci)] ->  insert ci 
-                [(Passage,_,_,_)] -> do
+                [(Open,_,_,ci)] ->  insert ci >> checkingMessage e mi (follow' e ui)
+                [(Passage,_,ui',_)] -> do
                                 eexecute e "insert into messages (id,message,user,type,parent,conversation)  values (null,?,?,?,?,null)" (x,ui,Closed,mi)
                                 mi' <- lastRow e
                                 tell [EvNewMessage mi']
                                 ci <- newConversation e mi'
                                 eexecute e "update messages set conversation = ? where id=?" (ci,mi')
+                                checkingMessage e mi $ \mr -> do
+                                  follow' e ui mr
+                                  follow' e ui' mr
+    
                                 -- check conversation
                 [_] -> throwError NotAttachable
                 [] -> throwError UnknownIdMessage
@@ -109,6 +88,7 @@ retractMessage e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ 
         case r :: [(MessageType,UserId,Maybe MessageId,ConvId)] of
                 [(Passage,_,_,_)] -> throwError IsPassage
                 [(Open, (==ui) -> True,_,ci)] ->  do
+                        checkingMessage e mi $ retractEffect e 
                         eexecute e "delete from conversations where id=?" (Only ci)
                         eexecute e "delete from messages where id=?" (Only mi)
                 [(Closed, (==ui) -> True,Just mi',ci)] ->  do
@@ -116,6 +96,7 @@ retractMessage e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ 
                         case r :: [Only ConvId] of
                                 [Only ((== ci) -> False)] -> eexecute e "delete from conversations where id=?" (Only ci)
                                 [Only ((== ci) -> True)] -> eexecute e "update conversations set head=? , count = count - 1 where id=?" (mi',ci)
+                        checkingMessage e mi $ retractEffect e 
                         eexecute e "delete from messages where id=?" (Only mi) 
                 [_] -> throwError NotProponent
                 [] -> throwError UnknownIdMessage

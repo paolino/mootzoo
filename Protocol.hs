@@ -21,12 +21,14 @@ import Control.Exception
 import Control.Monad.Error
 import Text.Read hiding (lift, get)
 import System.Directory
+import Data.ByteString (ByteString)
 
 import DB0
 import DB.Users
 import DB.Put
 import DB.Get
 import DB.Votes
+import DB.Client
 
 data Put
         = Boot Mail	String	
@@ -38,10 +40,13 @@ data Put
         | Retract Login MessageId
         | Leave Login Dispose MessageId
         | Vote Login MessageId Bool
+        | Follow Login MessageId
+        | Unfollow Login MessageId
+        | Store Login MessageId String ByteString
         deriving Read
 
 put' :: Env -> Put -> ConnectionMonad ()
-put' e (Boot s m) = boot e m s
+put' e (Boot m s) = boot e m s
 put' e (Invite l m s) = inviteUser e l m s (\_ _ -> return ())
 put' e (Logout l s) = logout e l s
 put' e (Reminds m s) = reminder e m s
@@ -50,6 +55,9 @@ put' e (New l at x) = insertMessage e l at x
 put' e (Retract l mi) = retractMessage e l mi
 put' e (Leave l d mi) = disposeMessage e l d mi 
 put' e (Vote l mi v) = vote e l mi v
+put' e (Follow l mi) = follow e l mi 
+put' e (Unfollow l mi) = unfollow e l mi
+put' e (Store l mi k v) = setInterface e l mi k v
       
 put :: Env -> Put -> WriterT [Event] IO (Either DBError ())
 put e l = runErrorT (put' e l)
@@ -63,6 +71,10 @@ data Get a where
         Owned :: Login -> Get [Exposed]
         Opens :: Login -> Get [Exposed]
         Check :: Login -> Get String
+        Following :: Login -> Get [MessageId]
+        Notificate :: Login -> MessageId -> Get Notification
+        Single :: Login -> MessageId -> Get Exposed
+        Restore :: Login -> MessageId -> String -> Get ByteString
         Logins :: Get [Login] -- debugging
         
 get'  :: Env -> Get a -> ConnectionMonad a
@@ -75,6 +87,10 @@ get' e (Owned l ) = getOwned e l
 get' e (Opens l ) = getOpen e l 
 get' e Logins = getLogins e
 get' e (Check l) = getLogin e l
+get' e (Following l ) = getFollowing e l
+get' e (Restore l mi k) = getInterface e l mi k 
+get' e (Notificate l mi) = notifications e l mi
+get' e (Single l mi) = getSingle e l mi
 
 get :: Env -> Get a -> WriterT [Event] IO (Either DBError a)
 get e l = runErrorT (get' e l)
@@ -89,7 +105,7 @@ prepare = do
         when (not b) clean
         conn <- open "mootzoo.db"
         execute_ conn "PRAGMA foreign_keys = ON"
-        let     p = put (mkEnv conn)
+        let     p v = liftIO (open "mootzoo.db") >>= \conn -> put (mkEnv conn) v
                 g = WGet (get (mkEnv conn))
         return (not b,p,g)
 {-

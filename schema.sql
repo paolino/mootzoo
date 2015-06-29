@@ -38,3 +38,19 @@ CREATE INDEX voting2 on voting (message);
 CREATE INDEX store1 on store (message,user);
 CREATE INDEX store2 on store (user);
 CREATE INDEX store3 on store (message);
+CREATE TABLE client (
+        id integer primary key autoincrement not null,
+        user integer references users(id),
+        message integer references messages(id) on delete cascade,
+        data string not null,
+        unique (message,user)
+        );
+create table blobs (
+        client integer references client(id) on delete cascade,
+        interface string not null,
+        blob blob
+        );
+CREATE INDEX client1 on client (user);
+CREATE INDEX client2 on client (data);
+CREATE INDEX blobs1 on blobs (client);
+CREATE INDEX blobs2 on blobs (interface);

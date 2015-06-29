@@ -11,6 +11,22 @@
 	background-color:#ddd;
 	cursor:pointer;
 }
+
+.bitem{
+  padding:3px;
+  border-radius:4px;
+  width:400px;
+        
+  background:white;
+  margin:1px;  
+  
+    }
+.item {
+  padding:0px;
+  }
+.navi{
+        float:right;
+}
 .mex {
   font-size:80%; 
   color:#999; 
@@ -106,7 +122,9 @@
 .btn-default{
         background-color:#aaa;
         color:white;
-	padding:5px;
+	padding:0px;
+        padding-right:3px;
+               padding-left:3px;
         }
 .btn-grey > .btn-default {
         background-color:#fff;     
@@ -133,4 +151,4 @@ textarea {
 .modal-body {padding:3px;}
 .login {margin-left:20px};
 
-
+.badge {background-color:#faa;};

@@ -56,8 +56,8 @@ data DBError
         | Proponent
         | Opponent
         | AlreadyVoted
-        | AlreadyStored
-        | NotStored
+        | AlreadyFollowing
+        | NotFollowing
         | DatabaseError String
         deriving Show
 
@@ -212,6 +212,5 @@ newConversation :: Env -> MessageId -> ConnectionMonad ConvId
 newConversation e t = do
         eexecute e "insert into conversations values (null,?,?,?)" (t,t,1::Integer)
         lastRow e
-
 
 

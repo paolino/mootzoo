@@ -27,8 +27,10 @@ import Data.List(isPrefixOf)
 import Data.List.Split
 import Data.String.Utils (replace)
 import Control.Concurrent
-
+import Data.ByteString (pack)
+import Data.ByteString.Internal (c2w)
 import System.Environment
+import System.Time
 
 jsError x = makeObj [("error",JSString $ toJSString x)]
 jsDBError x  = makeObj [("dberror",JSString $ toJSString $ show x)]
@@ -41,9 +43,10 @@ sendResponse g v = case v of
         Just v -> do
                 let (WGet g') = g
                 (x,w) <- runWriterT $ g' v
-                case x of 
+                z <- case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
                         Right x -> return $ sendJSON OK $ jsCompund x w
+                return z
 checkUserId g sl s loc = do
                 let (WGet g') = g
                 (c,_) <- runWriterT $ g' (Check sl)
@@ -57,7 +60,7 @@ sendResponseP mail pwd p v = case v of
                 forM_ w $ \y ->
                         case y of
                                 EvSendMail s m h -> do
-                                        void $ forkIO $ sendAMail mail pwd s h m
+                                        void $ forkIO $ sendAMail mail pwd s m h
                                 _ -> return ()
                 case x of 
                         Left x -> return $ sendJSON BadRequest $ jsDBError $ x
@@ -70,7 +73,7 @@ main = do
         let responseP = sendResponseP mail pwd p
         putStrLn "running"
         when t $ void $ responseP $ Just $ Boot mailbooter reloc 
-        serverWith defaultConfig { srvLog = quietLogger, srvPort = 8888 }
+        serverWith defaultConfig{ srvLog = stdLogger, srvPort = 8888 }
                 $ \_ url request -> do
                           let   URI a (Just (URIAuth _ b _)) _ _ _  = rqURI request
                                 href = reloc
@@ -91,6 +94,9 @@ main = do
                                         ["New",sl,"Correct",sci] ->  responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ New sl (Correct ci) msg
+                                        ["Store",sl,sci,k,v] -> responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ Store sl ci k $ pack $map c2w v
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of
@@ -109,6 +115,12 @@ main = do
                                         ["Close",sl,sci] -> responseP $ do
                                                         ci <- readMaybe sci
                                                         return $ Leave sl Accept ci
+                                        ["Follow",sl,sci] -> responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ Follow sl ci
+                                        ["Unfollow",sl,sci] -> responseP $ do
+                                                        ci <- readMaybe sci
+                                                        return $ Unfollow sl ci
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             GET -> do 
                                 case splitOn "/" $ url_path url of
@@ -133,6 +145,18 @@ main = do
                                                         return $ Owned sl 
                                         ["Opens",sl]-> sendResponse g $ do
                                                         return $ Opens sl 
+                                        ["Following",sl]-> sendResponse g $ do
+                                                        return $ Following sl
+                                        ["Restore",sl,smi,k]-> sendResponse g $ do
+                                                        mi <- readMaybe smi
+                                                        return $ Restore sl mi k
+                                        ["Notificate",sl,smi] -> sendResponse g $ do
+                                                        mi <- readMaybe smi
+                                                        return $ Notificate sl mi 
+                                        ["Single",sl,smi] -> sendResponse g $ do
+                                                        mi <- readMaybe smi
+                                                        return $ Single sl mi 
+
                                         _ -> return $ sendJSON BadRequest $ JSNull
 
 sendText       :: StatusCode -> String -> Response String

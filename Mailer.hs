@@ -31,8 +31,10 @@ getTemplateMail m (LogginOut l) href = do
         let x' = replace "linklogin" (pack $ href ++"/Login/" ++ l) $ x
         return ("Il tuo nuovo login link per accedere a MootZoo",S.pack m,x')
 
-sendAMail :: String -> String -> Mail -> String -> Mailer -> IO ()
-sendAMail mail pwd as href ty = do
+sendAMail :: String -> String -> Mail -> Mailer -> String -> IO ()
+sendAMail mail pwd as ty href = do
+        print as
         (t,m,b) <- getTemplateMail as ty href 
+        print (mail,pwd,t,m,b)
         sendGmail (pack mail) (pack pwd) (Address (Just "mootzoo service") $ S.pack $ mail ++ "@gmail.com") [Address (Just m) m] [] [] t b [] 50000000
 
