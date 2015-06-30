@@ -1,12 +1,16 @@
 module JSON where
 
 import Text.JSON
-import DB0
 
-import DB.Get
+import DB.Messages
+import DB.Exposed
 import DB.Client
+import DB.Labels
 import DB0
 
+
+instance JSON LabelNotification where
+  showJSON (LabelNotification i j) = makeObj [("nbranches",showJSON i),("nmessages",showJSON j)]
 instance JSON Event where
   showJSON (EvNewMessage mid) = makeObj [("newmessage",JSRational False $ fromIntegral mid)]
   showJSON _ = JSNull

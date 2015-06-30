@@ -3,7 +3,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
-module DB.Put where 
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+module DB.Messages where 
 
 import Prelude hiding (readFile, putStrLn)
 import Control.Applicative
@@ -19,8 +22,19 @@ import Control.Monad.Error
 import Lib
 import DB0
 import DB.Client
+import DB.Exposed
+
+pastMessages :: Env -> MessageId -> ConnectionMonad [MessageRow]
+pastMessages e mi = do
+        checkingMessage e mi $ \_ -> return () 
+        equery e "with recursive ex(id,parent,message,vote,type,user,conversation,data) as (select id,parent,message,vote,type,user,conversation,data from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation,messages.data from messages,ex where messages.id=ex.parent) select id,message,user,type,parent,conversation,vote,data from ex" (Only mi)
 
 
+
+newConversation :: Env -> MessageId -> ConnectionMonad ConvId
+newConversation e t = do
+        eexecute e "insert into conversations values (null,?,?,?)" (t,t,1::Integer)
+        lastRow e
 
 data Attach 
         = Attach MessageId
@@ -78,9 +92,6 @@ newMessage e ui (Correct mi) x = do
                 [_] -> throwError NotProponent
                 [] -> throwError UnknownIdMessage
 
-insertMessage :: Env -> Login -> Attach -> String -> ConnectionMonad ()
-insertMessage e l at x = transactOnLogin e l $ \ui -> newMessage e ui at x
-
         
 retractMessage :: Env -> Login -> MessageId -> ConnectionMonad ()
 retractMessage e l mi =  transactOnLogin e l $ \ui -> checkingMessage e mi $ \_ -> do
@@ -126,7 +137,35 @@ disposeMessage e l Diffuse mi = transactOnLogin e l $ \ui -> checkingMessage e m
                                 [(_,_,_,(==) ui -> false)] -> throwError $ NotProponent
                                 [_] -> throwError $ NotClosed
                                 [] -> throwError $ UnknownIdMessage
-                  
+             
+data MessagesPut
+
+instance Putter MessagesPut where
+  data Put MessagesPut 
+    = New Login Attach String
+    | Retract Login MessageId
+    | Leave Login Dispose MessageId
+
+  put e (New l at x) = transactOnLogin e l $ \ui -> newMessage e ui at x
+  put e (Retract l mi) = retractMessage e l mi
+  put e (Leave l di mi) = disposeMessage e l di mi
+
+data MessageGet a where
+        Conversation :: Login -> MessageId -> MessageGet [Exposed]
+        Single :: Login -> MessageId -> MessageGet Exposed
+
+runMessageGet :: Env -> MessageGet b -> ConnectionMonad b
+runMessageGet e (Conversation l mi) = checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _ _) -> do
+        [(last,n::Integer)] <- equery e "select head,count from conversations where id=?" (Only ci)
+        checkingMessage e last $ \_ -> getPast' e ui last 
+runMessageGet e (Single l mi) = checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $  mkExposed e ui
+    
+getPast' :: Env -> UserId -> MessageId -> ConnectionMonad [Exposed]
+getPast' e ui mi =  pastMessages e mi >>= (mapM (mkExposed e ui) . reverse)
+
+instance Getter MessageGet where
+  get e = WGet $ runMessageGet e
+
 
 
  

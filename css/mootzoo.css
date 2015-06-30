@@ -120,11 +120,11 @@
         color:white;
         }
 .btn-default{
-        background-color:#aaa;
+        background-color:#3f3;
         color:white;
-	padding:0px;
+	      padding:0px;
         padding-right:3px;
-               padding-left:3px;
+        padding-left:3px;
         }
 .btn-grey > .btn-default {
         background-color:#fff;     
@@ -149,6 +149,7 @@ textarea {
 }
 .panel-body {padding:3px;}
 .modal-body {padding:3px;}
-.login {margin-left:20px};
+.login {margin-left:20px}
 
-.badge {background-color:#faa;};
+.news {background-color:#d33;}
+.branches {background-color:#33d;}

@@ -50,6 +50,11 @@ create table blobs (
         interface string not null,
         blob blob
         );
+create table labels (
+        client integer references client(id) on delete cascade,
+        label string not null
+        );
+        
 CREATE INDEX client1 on client (user);
 CREATE INDEX client2 on client (data);
 CREATE INDEX blobs1 on blobs (client);

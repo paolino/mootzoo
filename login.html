@@ -48,10 +48,10 @@
         <div class="bitem {{'bitem'+x.id}}"  ng-show="x.visibility" ng-style="">
             <span class=item > 
               <span style="float:right" class="dropdown {{'dropper'+x.id}}">
-                  <span class="badge news">{{x.notifications.newscount}}</span>
-                  <span class="badge branches">{{x.notifications.branchcount}}</span>
+                  <span data-toggle="tooltip" title="Nuovi messaggi" class="badge news">{{x.notifications.newscount}}</span>
+                  <span data-toggle="tooltip" title="Nuovi interventi" class="badge branches">{{x.notifications.branchcount}}</span>
                 <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown">  
-                      <span class="glyphicon glyphicon-cog"/> 
+                      <span class="glyphicon glyphicon-wrench"/> 
                 </button>
                 <ul class="dropdown-menu dropdown-menu">
                   <li ng-repeat = "a in x.actions" > <a ng-click="a.action()">

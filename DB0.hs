@@ -3,11 +3,16 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ImpredicativeTypes #-}
 
 module DB0 where 
 
 import Prelude hiding (readFile, putStrLn)
 import System.Console.Haskeline hiding (catch)
+import System.Directory
 import Control.Applicative
 import Data.String
 import Control.Monad
@@ -29,6 +34,7 @@ import Database.SQLite.Simple.FromField
 import Database.SQLite.Simple.ToField
 import Database.SQLite.Simple.Ok
 
+
 type Mail = String
 type Login = String
 type UserId = Integer
@@ -49,7 +55,7 @@ data DBError
         | NotClosed
         | IsClosed
         | NotOpen
-        | UserInvitedBySomeoneElse
+        | AlreadyInvited
         | NotRetractable
         | NotOpponent
         | NotProponent
@@ -78,34 +84,12 @@ instance Error DBError where
 
 type ConnectionMonad = ErrorT DBError (WriterT [Event] IO)
 
-data Env = Env {
-        equery :: (ToRow q, FromRow r) => Query -> q -> ConnectionMonad [r],
-        eexecute :: ToRow q => Query -> q -> ConnectionMonad (),
-        eexecute_ :: Query -> ConnectionMonad (),
-        etransaction :: forall a. ConnectionMonad a -> ConnectionMonad a
-        }
-
 catchDBException :: IO a -> ConnectionMonad a
 catchDBException f = do
         	r <- liftIO $ catch (Right <$> f) (\(e :: SomeException) -> return (Left e)) 
                 case r of 
                         Left e -> throwError $ DatabaseError (show e)
                         Right x -> return x
-mkEnv :: Connection -> Env
-mkEnv conn = Env 
-        (\q r -> catchDBException $ query conn q r) 
-        (\q r -> catchDBException $ execute conn q r) (\q -> catchDBException $ execute_ conn q) 
-        $ 
-        \c -> do
-                liftIO $ execute_ conn "begin transaction"
-                r <- lift $ runErrorT c
-                case r of 
-                        Left e -> do
-                                liftIO $ execute_ conn "rollback"
-                                throwError e
-                        Right x -> do
-                                liftIO $ execute_ conn "commit transaction"
-                                return  x
 data CheckLogin = CheckLogin UserId Mail (Maybe UserId)
 
 instance FromRow CheckLogin where
@@ -156,7 +140,6 @@ data MessageRow = MessageRow {
         mvote :: Integer,
         mdata :: String
         }
-        deriving Show
 
 instance FromRow MessageRow where
         fromRow = MessageRow <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
@@ -169,38 +152,8 @@ checkingMessage e mi f = do
                                 [x] -> f x
                                 _ -> throwError $ DatabaseError "multiple message id inconsistence"
 
-pastMessages :: Env -> MessageId -> ConnectionMonad [MessageRow]
-pastMessages e mi = do
-        checkingMessage e mi $ \_ -> return () 
-        equery e "with recursive ex(id,parent,message,vote,type,user,conversation,data) as (select id,parent,message,vote,type,user,conversation,data from messages where messages.id=?  union all select messages.id,messages.parent,messages.message,messages.vote,messages.type,messages.user,messages.conversation,messages.data from messages,ex where messages.id=ex.parent) select id,message,user,type,parent,conversation,vote,data from ex" (Only mi)
 
 
-futureMessages :: Env -> Maybe MessageId  -> ConnectionMonad [MessageRow]
-futureMessages e (Just mi) = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent=?" (Only mi)
-futureMessages e Nothing = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent isnull"  ()
-
-personalMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
-personalMessages e ui = equery e ("select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 join messages as m2 on  m1.parent = m2.id where m1.type=? and m2.user=?")  (Closed,ui)
-
-
-ownedMessages :: Env -> UserId  -> ConnectionMonad [MessageRow]
-ownedMessages e ui = equery e "select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 where m1.type<>? and m1.user=?"  (Passage,ui)
-
-openConversations ::  Env -> UserId  -> ConnectionMonad [MessageRow]
-openConversations e ui = equery e "select m1.id,m1.message,m1.user,m1.type,m1.parent,m1.conversation,m1.vote,m1.data from messages as m1 where m1.type=? and m1.user<>?"  (Open,ui)
-
--- run :: (Env -> ConnectionMonad a) -> IO (a,[Event])
-run f = do        
-        conn <- open "mootzoo.db"
-        r <- runWriterT $ do
-
-                r <- runErrorT $ f (mkEnv conn)
-                case r of 
-                        Left e -> liftIO $ print e
-                        Right x -> liftIO $ print x
-        print r
-        close conn
-        --return r
 lastRow :: Env -> ConnectionMonad Integer
 lastRow e = do
         r <- equery e "select last_insert_rowid()" ()
@@ -208,9 +161,48 @@ lastRow e = do
                 [Only x] -> return x
                 _ -> throwError $ DatabaseError "last rowid lost"
 
-newConversation :: Env -> MessageId -> ConnectionMonad ConvId
-newConversation e t = do
-        eexecute e "insert into conversations values (null,?,?,?)" (t,t,1::Integer)
-        lastRow e
 
 
+data Env = Env {
+        equery :: (ToRow q, FromRow r) => Query -> q -> ConnectionMonad [r],
+        eexecute :: ToRow q => Query -> q -> ConnectionMonad (),
+        eexecute_ :: Query -> ConnectionMonad (),
+        etransaction :: forall a. ConnectionMonad a -> ConnectionMonad a
+        }
+mkEnv :: Connection -> Env
+mkEnv conn = Env 
+        (\q r -> catchDBException $ query conn q r) 
+        (\q r -> catchDBException $ execute conn q r) (\q -> catchDBException $ execute_ conn q) 
+        $ 
+        \c -> do
+                liftIO $ execute_ conn "begin transaction"
+                r <- lift $ runErrorT c
+                case r of 
+                        Left e -> do
+                                liftIO $ execute_ conn "rollback"
+                                throwError e
+                        Right x -> do
+                                liftIO $ execute_ conn "commit transaction"
+                                return  x
+class Putter a where
+    data Put a 
+    put :: Env -> Put a -> ConnectionMonad ()
+
+data WGet a = WGet (forall b. a b ->  ConnectionMonad b)
+
+class Getter a where
+    get :: Env -> WGet a
+
+rget :: Getter t => Env -> t b -> ConnectionMonad b
+rget e q = let WGet f = get e in f q
+
+
+clean = callCommand "cat schema.sql | sqlite3 mootzoo.db"
+
+prepare :: IO (Bool,Env,IO Env)
+prepare = do         
+        b <- doesFileExist "mootzoo.db"
+        when (not b) clean
+        conn <- open "mootzoo.db"
+        execute_ conn "PRAGMA foreign_keys = ON"
+        return (not b,mkEnv conn, mkEnv <$> open "mootzoo.db" )

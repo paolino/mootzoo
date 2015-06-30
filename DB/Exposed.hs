@@ -3,23 +3,21 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
-module DB.Get where 
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-import Prelude hiding (readFile, putStrLn)
-import Control.Applicative
-import Data.String
-import Control.Monad
-import Control.Monad.Writer
-import Database.SQLite.Simple
-import Database.SQLite.Simple.FromRow
-import System.Random
-import Data.Typeable
-import Control.Exception
-import Control.Monad.Error
+module DB.Exposed where
+
 import DB0
-import Data.List (delete)
+import DB.Votes
+import Database.SQLite.Simple
+import Control.Monad.Error
 
-                
+futureMessages :: Env -> Maybe MessageId  -> ConnectionMonad [MessageRow]
+futureMessages e (Just mi) = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent=?" (Only mi)
+futureMessages e Nothing = equery e "select id,message,user,type,parent,conversation,vote,data from messages where parent isnull"  ()
+
 data Interface = Interface {
         canVote :: Bool, -- feedback for the message
         canPropose :: Bool, -- open a new conversation on the message
@@ -87,58 +85,9 @@ data Exposed = Exposed {
     }
   deriving Show
 
-
--- messages for me
-{-
-getClosed :: Env -> Login -> ConnectionMonad [Exposed]
-getClosed e l = checkingLogin e l $ \(CheckLogin ui _ _) -> equery e "select m1.id,0,m1.message,m1.vote from messages as m1 join messages as m2 on m1.parent = m2.id where m1.type = ? and m2.user = ?" (Closed,ui)
-
--- messages from me, Open and Closed
-getEnvelopes :: Env -> Login -> ConnectionMonad [Exposed]
-getEnvelopes e l = checkingLogin e l $ \(CheckLogin ui _ _) -> equery e 
-        "select id,0,message,vote from messages as m1 where type <> ? and user = ?" (Passage,ui)
--}
-
-
-
-mkExposed  e ui mr@(MessageRow mi tx mu mt mmp co v md) = do
-        
+mkExposed  e ui mr@(MessageRow mi tx mu mt mmp co v md) = do        
         fs <- case mmp of
             Nothing -> return []
             Just mi' -> map (\(MessageRow mi'' _ _ _ _ co'' _ _) -> mi'') <$> futureMessages e (Just mi') 
         Exposed mi md mmp tx v  fs <$> mkInterface e ui mr
-
-getSingle e l mi = checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $  mkExposed e ui
-    
-getPast' :: Env -> UserId -> MessageId -> ConnectionMonad [Exposed]
-getPast' e ui mi =  pastMessages e mi >>= (mapM (mkExposed e ui) . reverse)
-
-getPast :: Env -> Login -> MessageId -> ConnectionMonad [Exposed]
-getPast e l mi = checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $ \_ -> getPast' e ui mi  
-
-getFuture :: Env -> Login -> MessageId -> ConnectionMonad [Exposed] 
-getFuture e l mi =  checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $ \mr ->  futureMessages e (Just mi) >>= mapM (mkExposed e ui) 
-
-getConversation :: Env -> Login -> MessageId ->  ConnectionMonad [Exposed]
-getConversation e l 0 = checkingLogin e l $ \(CheckLogin ui _ _) -> do
-        r <- equery e "select head,count from conversations limit 1" ()
-        case r of 
-            [(last,n::Integer)]  -> checkingMessage e last $ \_ -> getPast' e ui last
-            [] -> throwError UnknownIdMessage
-getConversation e l mi = checkingLogin e l $ \(CheckLogin ui _ _) -> checkingMessage e mi $ \(MessageRow _ _ _ _ _ ci _ _) -> do
-        [(last,n::Integer)] <- equery e "select head,count from conversations where id=?" (Only ci)
-        checkingMessage e last $ \_ -> getPast' e ui last 
-        
-        
-getPersonal ::  Env -> Login -> ConnectionMonad [Exposed]
-getPersonal e l =   checkingLogin e l $ \(CheckLogin ui _ _) -> personalMessages e ui >>= mapM (mkExposed e ui)      
-
-getOwned ::  Env -> Login -> ConnectionMonad [Exposed]
-getOwned e l =   checkingLogin e l $ \(CheckLogin ui _ _) -> ownedMessages e ui >>= mapM (mkExposed e ui)      
-
-getOpen ::  Env -> Login -> ConnectionMonad [Exposed]
-getOpen e l =   checkingLogin e l $ \(CheckLogin ui _ _) -> openConversations e ui >>= mapM (mkExposed e ui)      
-
-getRoots :: Env -> Login -> ConnectionMonad [Exposed]
-getRoots e l = checkingLogin e l $ \(CheckLogin ui _ _) -> futureMessages e Nothing >>= mapM (mkExposed e ui) 
 
