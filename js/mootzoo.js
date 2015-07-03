@@ -18,7 +18,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
   $scope.messageid=0;
   $scope.getting=0;
   $scope.stopRefresh=false;
-
+  $scope.conversationing=false;
 	// aux
 	$scope.redate=function(input){return input.replace(":","").replace(":","").replace(" ","T").concat("Z")};
   $scope.color= function(x) {
@@ -27,7 +27,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
       if (x.canOpen) return {"background-color":"#aff"};
       return {"background-color":"#ccc"};
       }
-  $scope.margin=function(i,j){return {"margin-left":i*j,"margin-top":i*j}}
+  $scope.margin=function(i,j){return {"margin-top":i*j}}
 	// parametric modal. file is the template without extension, next is a function for positive
   $scope.modalopen = function (file,next) {
     var modalInstance = $modal.open({
@@ -75,9 +75,12 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         }
         return false;
     }
-
+  $scope.conversazioneDeActive=function() {
+    $scope.conversazioneActive=false;
+    }
   $scope.getConversation = function(id) {
     $scope.notgetting=false;
+    $scope.conversazioneActive=true;
     $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
       if(!$scope.stopRefresh){
         $scope.conversation=messages.result;
@@ -232,8 +235,6 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 // closure for j and id
                 var callbacks = function(j){
                       $timeout(function () {
-                          $('.bitem'+$scope.following[j].id).draggable();
-                          $('.bitem'+$scope.following[j].id).resizable();
                           });
                       }
                 // search for a message and update the object if found
@@ -253,7 +254,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 }
               ).error(function () {$scope.getting--})
         };
-      
+    $scope.setLabelfilter($scope.labelfilter);
     $http.get("../api/Following/" + $scope.userkey ).success (
       function(messages) {
         var ms=messages.result;
@@ -267,6 +268,13 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
           
         for(var i=0;i<messages.result.length;i++)
             getMessage (ms[i]);
+        if($scope.conversationing)  
+          if(!$scope.contains(ms,$scope.messageid)) {
+          $scope.messageid=null;
+          $scope.conversationing=false;
+          }
+          else $scope.getConversation($scope.messageid);
+        
         }
       );
     $http.get("../api/Labels/"+ $scope.userkey).success(

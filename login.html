@@ -18,30 +18,28 @@
     <script src= "../js/ui-bootstrap-tpls-0.13.0.js" color="text/javascript"></script>
     <script src= "../jquery-ui-1.11.4/jquery-ui.min.js" color="text/javascript"></script>
     <script src= "../js/xeditable.js" color="text/javascript"></script>
+    <script src= "../js/jquery.ui.touch-punch.min.js" color="text/javascript"></script>
     <script src= "../js/mootzoo.js" color="text/javascript"></script>
 
   </head>
 
-  <body style="background: linear-gradient(75deg, #def, #fde);">
+  <body >
     <div id=moot class=top ng-init="mooting=false">
       <button  class="btn btn-warning" ng-click="mooting=true" data-toggle="tooltip" title="Nuova discusssione">
         <span class="glyphicon glyphicon-bullhorn"/>
       </button>
-      <div ng-show=mooting>
+      <form class=form-group ng-show=mooting>
+        <textarea class=form-control id=textmoot placeholder="Proponi ......" ng-model="input.message"> </textarea>
+        <input class=form-control placeholder="Etichette separate da spazi ....." ng-model="input.labels"> </input>
         <div class=response>
-          <div>
           <button  class="btn btn-xs btn-success" ng-click="mooting=false;moot()" data-toggle="tooltip" title="Posta">
             <span class="glyphicon glyphicon-ok"/>
           </button>
-        </div>  
-          <div>
-          <button  class="btn btn-xs btn-danger" ng-click="mooting=false;input.message=null" data-toggle="tooltip" title="Lascia">
+          <button  class="btn btn-xs btn-danger" ng-click="mooting=false;input.message=null;input.labels=null" data-toggle="tooltip" title="Lascia">
             <span class="glyphicon glyphicon-remove"/>
           </button>
-        </div>  
-        </div>  
-        <textarea class=form-control id=textmoot placeholder="Proponi ......" ng-model="input.message"> </textarea>
-      </div>
+        </div>
+      </form>  
     </div>
     <div id=login class="dropdown top">
       <button id=login class="login btn btn-success dropdown-toggle" data-toggle="dropdown"> {{username}} 
@@ -59,47 +57,96 @@
         </li>
       </ul>
     </div>
-    <div class=top id=tags>
-      <ul class="nav nav-pills nav-stacked">
-        <li ng-repeat="x in labels"  ng-class="filterActive(x)"> 
-          <a  ng-click="setLabelfilter(x)" data-toggle="tooltip" title="mostra le conversazioni in questa classe">               
-            {{x}}
-          </a> 
-        </li>
-      </ul>
-    </div>
-    <div class=containerb>
-      <div ng-repeat="x in following">
-        <div ng-style="margin($index,30)" class="bitem {{'bitem'+x.id}}"  ng-show="contains(filtered,x.id)" >
-            <span class=item > 
-              <span style="float:right" class="">
-                  <span data-toggle="tooltip" title="Nuovi messaggi" class="badge news">{{x.notifications.newscount}}</span>
-                  <span data-toggle="tooltip" title="Nuovi interventi" class="badge branches">{{x.notifications.branchcount}}</span>
-              </span>
-              <span class="message" >
-                  <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp</span> 
-                  <span style="color:#222"> {{x.text}} </span>
-              </span>
-          </span>
-              <span >
-                <ul style="background-color:#eee" class="list-group list-inline"> 
-                  <li class=list-group-item ng-repeat="l in x.labels"> 
-                    <div ng-if="l !== '****'"> <a buttons=no editable-text="l" onbeforesave="updateLabel(x,l,$data)"> {{l}} </a> </div>  
+    <div class="container col-sm-6 containerb" ng-init="conversazioneActive=false">
+      <tabset>
+        <tab heading=notifiche select="conversazioneDeActive()">
+          <div>
+            <div ng-repeat="x in following">
+              <div  class="bitem {{'bitem'+x.id}}"  ng-show="contains(filtered,x.id)" >
+                <span class=item > 
+                  <span style="float:right" class="">
+                      <span data-toggle="tooltip" title="Nuovi messaggi" class="badge news">{{x.notifications.newscount}}</span>
+                      <span data-toggle="tooltip" title="Nuovi interventi" class="badge branches">{{x.notifications.branchcount}}</span>
+                  </span>
+                  <span class="message" ng-click="getConversation(x.id)">
+                      <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp</span> 
+                      <span style="color:#222"> {{x.text}} </span>
+                  </span>
+                </span>
+                <span >
+                  <ul style="background-color:#eee" class="list-group list-inline"> 
+                    <li class=list-group-item ng-repeat="l in x.labels"> 
+                      <div ng-if="l !== '****'"> <a buttons=no editable-text="l" onbeforesave="updateLabel(x,l,$data)"> {{l}} </a> </div>  
 
-                    <div ng-if="l === '****'"> <a buttons=no editable-text="null" onbeforesave="updateLabel(x,l,$data)" e-placeholder="Nuova etichetta">  <span class="glyphicon glyphicon-plus"/> </a> </div> </li>
- 
-                  <li class=dropdown> 
-                    <a class="dropdown-toggle" data-toggle="dropdown">               
-                      <span class="glyphicon glyphicon-minus"/>
-                    </a> 
-                    <ul class="dropdown-menu dropdown-menu-right list-group">
-                      <li class=list-group-item ng-repeat="l in x.labels"> <a ng-click="removeLabel(l,x)"> {{l}} </a> </li> 
-                    </ul>
-                  </li>
-                </ul>
-              </span>
-          </div> 
-        </div> 
-      </div> 
+                      <div ng-if="l === '****'"> <a buttons=no editable-text="null" onbeforesave="updateLabel(x,l,$data)" e-placeholder="Nuova etichetta">  <span class="glyphicon glyphicon-plus"/> </a> </div> </li>
+   
+                    <li class=dropdown> 
+                      <a class="dropdown-toggle" data-toggle="dropdown">               
+                        <span class="glyphicon glyphicon-minus"/>
+                      </a> 
+                      <ul class="dropdown-menu dropdown-menu-right list-group">
+                        <li class=list-group-item ng-repeat="l in x.labels"> <a ng-click="removeLabel(l,x)"> {{l}} </a> </li> 
+                      </ul>
+                    </li>
+                  </ul>
+                </span>
+              </div> 
+            </div>
+          </div>
+        </tab>
+        <tab heading=conversazione active="conversazioneActive">
+          <div>
+            <ul class=list-group >
+              <li class="list-group-item" ng-repeat="x in conversation">
+                <div  class=row> 
+                  <div class="col-xs-7 col-sm-8 col-md-9 col-lg-10">
+                    <span class="dropdown dropper">
+                      <div class="messaggio dropdown-toggle" ng-show="x.actions.length > 0" data-toggle="dropdown" >
+                        <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp</span> 
+                        <span style="color:#222"> {{x.text}} </span>
+                      </div>
+                      <div class=messaggio ng-show="x.actions.length <= 0">
+                        <span class=mex> {{redate(x.date) |date :'dd-MMM-yy HH:mm'}} &nbsp&nbsp&nbsp </span> 
+                        <span style="color:#222"> {{x.text}} </span>
+                      </div>
+                      <ul class="dropdown-menu dropdown-menu">
+                        <li ng-repeat = "a in x.actions" > <a ng-click="a.action()">
+                          <span ng-class="a.glyphicon"/> {{a.text}} </a>
+                        </li>
+                      </ul>
+                    </span>
+                  </div>
+                  <div class="col-xs-5 col-sm-4 col-md-3 col-lg-2">
+                    <button ng-hide="x.alter.length<=1" ng-click="rollHome(x)" class="btn btn-default "  
+                                        data-toggle="tooltip" title="intervento precedente" > 
+                      <span class="glyphicon glyphicon-fast-backward"/>
+                    </button>
+                    <button ng-hide="x.alter.length<=1" ng-click="rollLeft(x)" class="btn btn-default "  
+                                        data-toggle="tooltip" title="intervento precedente" > 
+                      <span class="glyphicon glyphicon-step-backward"/>
+                    </button>
+                    <button ng-hide="x.alter.length<=1" ng-click="rollRight(x)" class="btn btn-default "  
+                                      data-toggle="tooltip" title="intervento successivo" > 
+                      <span class="glyphicon glyphicon-step-forward"/>
+                    </button>
+                  </div>
+                </div><!--action -->
+              </li> 
+            </ul>
+          </div>
+        </tab>
+        <tab heading=filtri>
+          <div id=filtri>
+            <ul class="nav nav-pills nav-stacked">
+              <li ng-repeat="x in labels"  ng-class="filterActive(x)"> 
+                <a  ng-click="setLabelfilter(x)" data-toggle="tooltip" title="mostra le conversazioni in questa classe">               
+                  {{x}}
+                </a> 
+              </li>
+            </ul>
+          </div>
+        </tab>
+      </tabset> 
+    </div>
   </body>
 </html>
