@@ -139,12 +139,11 @@ disposeMessage e l Diffuse mi = transactOnLogin e l $ \ui -> checkingMessage e m
                                 [] -> throwError $ UnknownIdMessage
              
 data MessagesPut
-
-instance Putter MessagesPut where
-  data Put MessagesPut 
     = New Login Attach String
     | Retract Login MessageId
     | Leave Login Dispose MessageId
+
+instance Put MessagesPut where
 
   put e (New l at x) = transactOnLogin e l $ \ui -> newMessage e ui at x
   put e (Retract l mi) = retractMessage e l mi

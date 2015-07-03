@@ -3,9 +3,7 @@
 	min-width:100px;
 	opacity:0.9;
 	}
-.dropdown-menu>li:hover{
-	background-color:#bbb;
-	}
+
 .dropdown-toggle:hover{
 	text-decoration:none;
 	background-color:#ddd;
@@ -14,9 +12,10 @@
 
 .bitem{
   padding:3px;
+  padding-left:8px;
   border-radius:4px;
   width:400px;
-        
+  position:fixed; 
   background:white;
   margin:1px;  
   
@@ -42,7 +41,7 @@
 .nav > li > a {
   position: relative;
   display: block;
-  padding: 5px 5px;
+  padding: 1px;
 }
 /* Margini e padding inferiore */
 .list-group {
@@ -153,3 +152,10 @@ textarea {
 
 .news {background-color:#d33;}
 .branches {background-color:#33d;}
+.top {z-index:100;
+position:fixed;}
+#tags {right:10px;}
+#moot{left:10px;}
+#login {left:50px;}
+#textmoot{float:left;height:130px;width:400px;}
+.response{float:right}

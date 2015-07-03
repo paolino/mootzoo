@@ -25,10 +25,9 @@ import DB0
 import DB.Operations
 
 data VotePut
-
-instance Putter VotePut where
-  data Put VotePut
     = Vote Login MessageId Bool
+
+instance Put VotePut where
   put e (Vote l mi b) = transactOnLogin  e  l $ \ui -> checkingMessage e mi $ \_ ->  do
     r <- equery e "select user from voting where user=? and message=?" (ui,mi)
     case r :: [(Only UserId)] of 

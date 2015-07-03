@@ -1,12 +1,8 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ImpredicativeTypes #-}
+{-# LANGUAGE RankNTypes #-}
 
 module DB0 where 
 
@@ -184,9 +180,9 @@ mkEnv conn = Env
                         Right x -> do
                                 liftIO $ execute_ conn "commit transaction"
                                 return  x
-class Putter a where
-    data Put a 
-    put :: Env -> Put a -> ConnectionMonad ()
+
+class Put a where
+    put :: Env -> a -> ConnectionMonad ()
 
 data WGet a = WGet (forall b. a b ->  ConnectionMonad b)
 

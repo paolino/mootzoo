@@ -27,14 +27,13 @@ mkLogin :: ConnectionMonad Login
 mkLogin =  liftIO $ show <$> foldr (\n m -> m *10 + n) 1 <$> forM [0..30] (const $ randomRIO (0,9::Integer))
 
 data UserPut 
-
-instance Putter UserPut  where
-  data Put UserPut
       = Boot Mail String
       | Invite Login Mail String 
       | Logout Login String
       | Reminder Mail String
       | Migrate Login Mail String
+
+instance Put UserPut  where
 
   put e (Boot m href) = do 
         l <- mkLogin 

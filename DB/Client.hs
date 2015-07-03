@@ -21,11 +21,14 @@ import Control.Exception
 import Data.ByteString (ByteString)
 import DB.Operations
 import DB0 -- (transactOnLogin, checkingLogin, MessageId, CheckLogin (..), ConnectionMonad, Login,Env)
+import DB.Labels
 
 
 follow' :: Env -> UserId -> MessageRow -> ConnectionMonad ()
 follow' e ui mr@(MessageRow mi _ _ _ _ _ _ da) = do
     eexecute e "insert into client (user,message,data) values (?,?,?)" (ui,mi,da)
+    ci <- lastRow e
+    baseLabel e ci
 
 retractEffect :: Env -> MessageRow -> ConnectionMonad ()
 retractEffect e mr@(MessageRow mi _ _ _ Nothing _ _ _) = do
@@ -43,12 +46,11 @@ data Notification = Notification {
 
 
 data ClientPut
-
-instance Putter ClientPut where
-  data Put ClientPut 
     = Follow Login MessageId
     | Unfollow Login MessageId
     | Store Login MessageId String ByteString
+
+instance Put ClientPut where
   put e (Follow l mi) = transactOnLogin e l $ \ui  -> checkingMessage e mi $ \mr@(MessageRow _ _ _ _ _ _ co _) -> do
     r <- equery e "select conversation from client join messages on messages.id = client.message where client.user = ? and conversation =? " (ui,co)
     case r of
@@ -87,6 +89,7 @@ runClientGet e (Restore l mi int) = checkingLogin e l $ \(CheckLogin ui _ _)  ->
       [] -> throwError NotFollowing 
       [Only x] -> return x
 
+  
 
 instance Getter ClientGet where
   get e = WGet $ runClientGet e

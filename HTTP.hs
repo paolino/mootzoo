@@ -72,8 +72,8 @@ checkUserId env sl s loc = do
                                    Right e -> let (name,_)= break (=='@') e in sendHTML OK $  replace "userkey=" ("userkey='"++sl++"'") 
                                                         $ replace "username=" ("username='"++name++"'") $  s
 
-sendPutter :: Putter a => String -> String -> IO Env -> Maybe (Put a) -> IO (Response String)
-sendPutter mail pwd mkEnv v = case v of 
+sendPut :: Put a => String -> String -> IO Env -> Maybe a -> IO (Response String)
+sendPut mail pwd mkEnv v = case v of 
         Nothing -> return $ sendJSON BadRequest $ jsError "Not parsed"
         Just v -> do
                 (x,w) <- mkEnv >>= \e -> runWriterT . runErrorT $ put e v
@@ -90,8 +90,8 @@ main = do
         [mail,pwd,mailbooter,reloc] <- getArgs
         (t,g,p) <- prepare
           
-        let   sp :: Putter a => Maybe (Put a) -> IO (Response String) 
-              sp = sendPutter mail pwd p
+        let   sp :: Put a => Maybe a -> IO (Response String) 
+              sp = sendPut mail pwd p
               sg :: (JSON a,Getter b) => Maybe (b a) -> IO (Response String)
               sg = sendGetter g
         putStrLn "running"
@@ -117,10 +117,12 @@ main = do
                                         ["Store",sl,sci,k,v] -> sp $ do
                                                         ci <- readMaybe sci
                                                         return $ Store sl ci k $ pack $map c2w v
-                                        ["AddLabel",sl,s] -> sp . Just $ AddLabel sl s
-                                        ["ChangeLabel",sl,sli] -> sp $ do
-                                                      li <- readMaybe sli
-                                                      return $ ChangeLabel sl li msg
+                                        ["RemoveLabel",sl,smi] -> sp $ do
+                                                      mi <- readMaybe smi
+                                                      return $ RemoveLabel sl mi msg
+                                        ["UpdateLabel",sl,smi,s1] -> sp $ do
+                                                      mi <- readMaybe smi
+                                                      return $ UpdateLabel sl mi s1 msg
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             PUT -> do 
                                  case splitOn "/" $ url_path url of
@@ -144,17 +146,6 @@ main = do
                                         ["Unfollow",sl,sci] -> sp $ do
                                                         ci <- readMaybe sci
                                                         return $ Unfollow sl ci
-                                        ["LabelOn",sl,sci,sli] -> sp $ do
-                                                      ci <- readMaybe sci
-                                                      li <- readMaybe sli
-                                                      return $ LabelOn sl ci li
-                                        ["LabelOff",sl,sci,sli] -> sp $ do
-                                                      ci <- readMaybe sci
-                                                      li <- readMaybe sli
-                                                      return $ LabelOn sl ci li
-                                        ["RemoveLabel",sl,sli] -> sp $ do
-                                                      li <- readMaybe sli
-                                                      return $ RemoveLabel sl li
                                         _ -> return $ sendJSON BadRequest $ JSNull
                             GET -> do 
                                 case splitOn "/" $ url_path url of
@@ -169,13 +160,18 @@ main = do
                                         ["Restore",sl,smi,k]-> sg $ do
                                                         mi <- readMaybe smi
                                                         return $ Restore sl mi k
-                                        ["Notificate",sl,"Message",smi] -> sg $ do
+                                        ["Notificate",sl,smi] -> sg $ do
                                                         mi <- readMaybe smi
                                                         return $ Notificate sl mi 
                                         ["Single",sl,smi] -> sg $ do
                                                         mi <- readMaybe smi
                                                         return $ Single sl mi 
                                         ["Labels",sl] -> sg . Just $ GetLabels sl 
+                                        ["MessageLabels",sl,smi] -> sg $ do
+                                                        mi <- readMaybe smi
+                                                        return $ GetMessageLabels sl mi 
+                                        ["LabelMessages",sl,l] -> sg $ do
+                                                        return $ GetLabelMessages sl l
                                         ["Notificate",sl,"Label",smi] -> sg $ do
                                                         mi <- readMaybe smi
                                                         return $ GetLabelNotification sl mi 

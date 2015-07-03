@@ -1,5 +1,6 @@
 {
-var app = angular.module("app",['ui.bootstrap']);
+var app = angular.module("app",['ui.bootstrap','xeditable']);
+app.run(function(editableOptions){editableOptions.theme='bs3'});
 app.controller('Input', function ($scope, $modalInstance) {
           
           $scope.gotMessage = function () {
@@ -26,7 +27,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
       if (x.canOpen) return {"background-color":"#aff"};
       return {"background-color":"#ccc"};
       }
-  $scope.margin=function(i){return {"margin-left":i*4}}
+  $scope.margin=function(i,j){return {"margin-left":i*j,"margin-top":i*j}}
 	// parametric modal. file is the template without extension, next is a function for positive
   $scope.modalopen = function (file,next) {
     var modalInstance = $modal.open({
@@ -66,6 +67,15 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
       }
     return as;
     }
+    $scope.contains=function(a, obj) {
+        for (var i = 0; i < a.length; i++) {
+            if (a[i] === obj) {
+                return true;
+            }
+        }
+        return false;
+    }
+
   $scope.getConversation = function(id) {
     $scope.notgetting=false;
     $http.get("../api/Conversation/" + $scope.userkey + "/" + id).success (function(messages) {
@@ -100,7 +110,7 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
             function () {$scope.input.mailremainder=null;});
       });
     }
-
+  
   $scope.logout=function (){
     $scope.modalopen('logout',function(){
       $http.put("../api/Logout/"+$scope.userkey).success(
@@ -135,13 +145,11 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
       })
     };
   $scope.moot=function(){
-    $scope.modalopen('input',function (){
       $http.post("../api/New/"+$scope.userkey + "/DontAttach",$scope.input.message).success(
         function (rs) {
           $scope.refresh(); 
           $scope.input.message=null;
         });
-      })
     };
   $scope.correctMessage=function(x){
     $scope.input.message=x.text;
@@ -153,33 +161,62 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
         });
       })
     };
+  $scope.updateLabel=function(x,l1,l){
+      $http.post("../api/UpdateLabel/"+$scope.userkey + "/" + x.id + "/" + l1,l).success(
+        function () {
+           $scope.refresh(); 
+        });
+      return true;
+    }
+  $scope.removeLabel=function(l,x) {
+      $http.post("../api/RemoveLabel/"+$scope.userkey + "/" + x.id,l).success(
+        function () {
+           $scope.refresh(); 
+        });
+      return true;
 
+    }
+  $scope.labelingTrue=function(id) {
+      $scope.labeling = true;
+      $timeout($('#newlabel'+id).focus());
+      }
   $scope.retractMessage = function (x){
     $scope.modalopen('delete',function (){
         $http.put("../api/Retract/"+$scope.userkey + "/" + x.id).success(
           function () {$scope.refresh()});
         });
     }
-       
+  $scope.setLabelfilter = function(x) {
+      $scope.labelfilter=x;
+        $http.get("../api/LabelMessages/" + $scope.userkey + "/" + $scope.labelfilter).success (
+          function (messages) {$scope.filtered=messages.result});
+      }
+
+  $scope.setLabelfilter("****");
+  $scope.filterActive = function (x) {
+      return $scope.labelfilter == x ? 'active' : ''
+      }
   //voting stuff
   $scope.voteUp=function(id){
     $http.put("../api/Vote/"+$scope.userkey + "/" +  id  + "/True").success(function () {$scope.getConversation(id)});}
   $scope.voteDown=function(id){
     $http.put("../api/Vote/"+$scope.userkey + "/" + id + "/False").success(function () {$scope.getConversation(id)});};
-  $timeout(function (){
-    $scope.getConversation($scope.messageid)
-      });
+  
   $scope.dropperclass=function(x){return }
   $scope.refresh= function (){
+    getLabels = function (j) {
+      $http.get("../api/MessageLabels/" + $scope.userkey +"/"+ $scope.following[j].id).success (
+        function(y) {
+          $scope.following[j].labels=y.result;
+          }
+        )
+      }
     getNotifications = function(m,x) {
             x.notifications={newscount:0,branchcount:0};
             $http.get("../api/Notificate/" + $scope.userkey +"/"+ m).success (
               function(y) {
                 var x = y.result;
-                $log.log(y.result.branches);
                 if(x.followup){
-                  $log.log(x.followup.head);
-                  $log.log(x.followup.count);
                   }
                 }
               )
@@ -191,32 +228,32 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
                 var x=y.result;
                 x.actions=$scope.actions(x);
                 getNotifications(m,x);
-                x.stopRefresh=false;
                 x.visibility=true;
                 // closure for j and id
-                var callbacks = function(j,id){
+                var callbacks = function(j){
                       $timeout(function () {
-                          $('.dropper'+id).on('show.bs.dropdown', function () {$scope.following[j].stopRefresh=true});
-                          $('.dropper'+id).on('hidden.bs.dropdown', function () {$scope.following[j].stopRefresh=false});
-                          $('.bitem'+id).draggable();
+                          $('.bitem'+$scope.following[j].id).draggable();
+                          $('.bitem'+$scope.following[j].id).resizable();
                           });
                       }
                 // search for a message and update the object if found
                 for(j=0;j<$scope.following.length;j++)
                   if ($scope.following[j].id==x.id){
-                    if (!$scope.following[j].stopRefresh)
-                      $.extend($scope.following[j],x);
+                    $.extend($scope.following[j],x);
+                    getLabels(j);
                     break;
                     }
                 if (j>=$scope.following.length){
                     $scope.following.push(x);
-                    callbacks(j,x.id);
+                    getLabels(j);
+                    callbacks(j);
                     }
                 // countdown the receiving event
                 $scope.getting--;
                 }
               ).error(function () {$scope.getting--})
         };
+      
     $http.get("../api/Following/" + $scope.userkey ).success (
       function(messages) {
         var ms=messages.result;
@@ -232,8 +269,15 @@ app.controller('conversations', function($scope,$timeout,$modal,$log,$http,$inte
             getMessage (ms[i]);
         }
       );
+    $http.get("../api/Labels/"+ $scope.userkey).success(
+      function(labels) {
+        $scope.labels = labels.result;
+        }
+      );
     }
-  $timeout($scope.refresh);
+  $timeout(function (){
+    $scope.refresh();
+    });
   $interval(function (){if($scope.getting <= 0)$scope.refresh()},10000);
   });
     
